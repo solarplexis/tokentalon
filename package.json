@@ -1,0 +1,27 @@
+{
+  "name": "tokentalon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TokenTalon - Web3 Claw Machine Game",
+  "workspaces": [
+    "client",
+    "server",
+    "common"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:common && npm run build:client && npm run build:server",
+    "build:common": "cd common && npm run build",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
