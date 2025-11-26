@@ -23,6 +23,7 @@ export default function GamePage() {
   const { data: balance } = useTokenBalance(address, chain?.id);
   const [payForGrabFn, setPayForGrabFn] = useState<(() => Promise<boolean>) | null>(null);
   const [showOverlay, setShowOverlay] = useState(true);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const gameContainerRef = useRef<HTMLDivElement>(null);
 
   const handleGameReady = useCallback((payForGrab: () => Promise<boolean>) => {
@@ -64,13 +65,21 @@ export default function GamePage() {
 
       <div className="text-center space-y-8 w-full max-w-6xl">
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4">
-          <h2 className="text-white text-xl mb-2">🎯 How to Play</h2>
-          <div className="text-white/80 space-y-1">
-            <p>← → Arrow Keys: Move the claw left/right</p>
-            <p>↑ ↓ Arrow Keys: Move the claw forward/backward</p>
-            <p>SPACE: Drop the claw to grab a prize</p>
-            <p>Goal: Grab a prize and bring it to the center drop zone!</p>
-          </div>
+          <button
+            onClick={() => setShowHowToPlay(!showHowToPlay)}
+            className="w-full flex items-center justify-between text-white text-xl hover:text-white/80 transition"
+          >
+            <span>🎯 How to Play</span>
+            <span className="text-2xl">{showHowToPlay ? '−' : '+'}</span>
+          </button>
+          {showHowToPlay && (
+            <div className="text-white/80 space-y-1 mt-2">
+              <p>← → Arrow Keys: Move the claw left/right</p>
+              <p>↑ ↓ Arrow Keys: Move the claw forward/backward</p>
+              <p>SPACE: Drop the claw to grab a prize</p>
+              <p>Goal: Grab a prize and bring it to the center drop zone!</p>
+            </div>
+          )}
         </div>
 
         {/* Game Container */}
