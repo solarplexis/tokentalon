@@ -26,6 +26,7 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
   const [gameStarted, setGameStarted] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [justApproved, setJustApproved] = useState(false);
 
   const hasEnoughBalance = balance && gameCost && balance >= gameCost;
   const needsApproval = checkApproval();
@@ -54,12 +55,12 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
 
   // Mark game as started after approval succeeds
   useEffect(() => {
-    if (isApproveSuccess && isInitializing && needsApproval) {
-      console.log('Approval succeeded, now paying for game...');
-      // After approval, automatically call payForGrab
-      payForGrab();
+    if (isApproveSuccess && justApproved) {
+      console.log('Approval succeeded, ready to pay for game');
+      setJustApproved(false);
+      setIsInitializing(false); // Reset so button shows "Play for 10 TALON"
     }
-  }, [isApproveSuccess, isInitializing, needsApproval, payForGrab]);
+  }, [isApproveSuccess, justApproved]);
 
   const handleStartGame = async () => {
     if (!isConnected || !hasEnoughBalance) return;
@@ -70,6 +71,7 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
       // Handle approval if needed
       if (needsApproval) {
         console.log('Approving tokens...');
+        setJustApproved(true);
         await approveTokens();
         // After approval succeeds, useEffect will call payForGrab
         return;
@@ -152,12 +154,12 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               )}
-              {needsApproval 
-                ? 'Approve Tokens First'
-                : state.isApproving
-                  ? 'Approving...'
-                  : state.isPaying || isInitializing
-                    ? 'Starting Game...'
+              {state.isApproving
+                ? 'Processing Approval...'
+                : needsApproval 
+                  ? 'Approve Game Play'
+                  : (state.isPaying || isInitializing)
+                    ? 'Processing Payment...'
                     : `Play for ${gameCost ? formatUnits(gameCost, 18) : '10'} TALON`
               }
             </button>
