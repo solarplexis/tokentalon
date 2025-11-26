@@ -177,10 +177,10 @@ export function TokenAcquisition() {
         <div className="mb-6 p-4 bg-black/20 rounded-lg">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold">Free Testnet Faucet</h4>
-            <span className="text-green-400 font-bold">100 TALON</span>
+            <span className="text-green-400 font-bold">500 TALON</span>
           </div>
           <p className="text-xs text-purple-200 mb-3">
-            Claim free tokens once every 24 hours for testing
+            Claim free tokens once every 5 minutes for testing
           </p>
           {isLoadingCanClaim || isLoadingCooldown ? (
             <div className="text-center py-2 text-sm text-purple-300">
@@ -192,7 +192,7 @@ export function TokenAcquisition() {
               disabled={isClaiming || isClaimConfirming}
               className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded transition-colors"
             >
-              {isClaiming || isClaimConfirming ? 'Claiming...' : 'Claim 100 TALON'}
+              {isClaiming || isClaimConfirming ? 'Claiming...' : 'Claim 500 TALON'}
             </button>
           ) : (
             <div className="text-center py-2 text-sm text-yellow-300">

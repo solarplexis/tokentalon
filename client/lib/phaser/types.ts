@@ -13,6 +13,7 @@ export interface PrizeData {
   rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
   value: number;
   position3D?: { x: number; y: number; z: number }; // Add 3D position tracking
+  customTraits?: Record<string, string>; // AI-generated custom traits from backend
   attributes?: {
     color?: string;
     pattern?: string;
@@ -31,11 +32,18 @@ export interface GameInput {
 }
 
 export interface ReplayData {
+  sessionId: string;
   startTime: number;
   inputs: GameInput[];
   prizePositions: Array<{ id: string; x: number; y: number; z: number }>; // Now includes Z
-  result: 'win' | 'loss';
+  result: 'won' | 'loss';
   prizeWon?: PrizeData;
+  physicsData: {
+    clawPath: Array<{ x: number; y: number; timestamp: number }>;
+    prizePosition: { x: number; y: number; z: number };
+    grabForce: number;
+    dropHeight: number;
+  };
 }
 
 export enum GameState {

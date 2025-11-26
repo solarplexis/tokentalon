@@ -17,10 +17,10 @@ contract GameToken is ERC20, Ownable {
     uint256 public tokenPrice;
 
     /// @dev Faucet amount (tokens given per claim)
-    uint256 public constant FAUCET_AMOUNT = 100 * 10**18; // 100 tokens
+    uint256 public constant FAUCET_AMOUNT = 500 * 10**18; // 500 tokens
 
-    /// @dev Faucet cooldown period (24 hours)
-    uint256 public constant FAUCET_COOLDOWN = 24 hours;
+    /// @dev Faucet cooldown period (5 minutes for testing)
+    uint256 public constant FAUCET_COOLDOWN = 5 minutes;
 
     /// @dev Track last faucet claim time for each address
     mapping(address => uint256) public lastFaucetClaim;

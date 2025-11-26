@@ -26,8 +26,8 @@ contract ClawMachine is Ownable {
     // Track used vouchers to prevent replay attacks
     mapping(bytes32 => bool) public usedVouchers;
 
-    // Track total games played per player (for NFT metadata)
-    mapping(address => uint256) public gamesPlayed;
+    // Track total grab attempts per player (for NFT metadata)
+    mapping(address => uint256) public grabCounts;
 
     // Events
     event GameStarted(address indexed player, uint256 timestamp);

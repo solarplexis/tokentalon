@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import gameService from '../services/gameService';
 import oracleService from '../services/oracleService';
 import ipfsService from '../services/ipfsService';
+import aiImageService from '../services/aiImageService';
+import prizeMapper from '../utils/prizeMapper';
 
 const router = Router();
 
@@ -60,22 +62,18 @@ router.post('/submit-win', async (req: Request, res: Response) => {
       walletAddress,
       replayData,
       prizeId,
-      prizeImageHash,
       network = 'sepolia'
     } = req.body;
 
-    // Validate required fields
+    // Validate required fields (sessionId kept for replay validation, but not validated as active session)
     if (!sessionId || !walletAddress || !replayData || !prizeId) {
       return res.status(400).json({
         error: 'Missing required fields: sessionId, walletAddress, replayData, prizeId'
       });
     }
 
-    // Validate session
-    const sessionValidation = gameService.validateSession(sessionId, walletAddress);
-    if (!sessionValidation.valid) {
-      return res.status(400).json({ error: sessionValidation.reason });
-    }
+    // Note: Session validation removed since contract no longer uses sessions
+    // sessionId is still used for replay data validation to prevent replay attacks
 
     // Validate replay data deterministically
     const validation = await oracleService.validateReplayData(replayData, sessionId);
@@ -86,15 +84,62 @@ router.post('/submit-win', async (req: Request, res: Response) => {
     // Upload replay data to IPFS
     const replayHash = await ipfsService.uploadReplayData(replayData);
 
+    // Get prize info and image path
+    const prizeInfo = prizeMapper.getPrizeInfo(prizeId);
+    const prizeImagePath = prizeMapper.getPrizeImagePath(prizeId);
+    
+    // Determine prize rarity based on difficulty
+    const difficulty = validation.difficulty || 5;
+    const rarity = difficulty >= 8 ? 'Legendary' : 
+                   difficulty >= 6 ? 'Epic' : 
+                   difficulty >= 4 ? 'Rare' : 
+                   difficulty >= 2 ? 'Uncommon' : 'Common';
+
+    // Generate custom traits for this specific NFT
+    const customTraits = prizeMapper.generateCustomTraits(
+      prizeId,
+      difficulty,
+      replayData.tokensSpent || 10,
+      walletAddress
+    );
+
+    console.log(`🎨 Generating unique AI image for prize #${prizeId} (${prizeInfo.key}, ${rarity})...`);
+    console.log(`📁 Base image: ${prizeImagePath}`);
+    console.log(`✨ Custom traits:`, customTraits);
+
+    // Generate unique AI image for this specific NFT based on the prize image
+    const imageBuffer = await aiImageService.generatePrizeImage({
+      basePrizeName: prizeInfo.key,
+      basePrizeType: prizeInfo.key.replace('prize_', '').replace(/_/g, ' '),
+      basePrizeImagePath: prizeImagePath,
+      customTraits,
+      rarity,
+      difficulty,
+      tokensSpent: replayData.tokensSpent || 10,
+      playerAddress: walletAddress,
+      timestamp: Date.now()
+    });
+
+    // Upload generated image to IPFS
+    console.log(`📤 Uploading AI-generated image to IPFS...`);
+    const prizeImageHash = await ipfsService.uploadPrizeImage(imageBuffer, prizeId);
+    console.log(`✅ Image uploaded: ipfs://${prizeImageHash}`);
+
+    // Generate readable prize name with rarity
+    const prizeName = prizeMapper.getPrizeName(prizeInfo.key);
+    const rarityLabel = rarity.charAt(0).toUpperCase() + rarity.slice(1);
+    const nftName = `${rarityLabel} ${prizeName}`; // e.g., "Epic Nemo" or "Legendary Dragon Egg"
+
     // Upload prize metadata to IPFS
     const metadataHash = await ipfsService.uploadPrizeMetadata(
       prizeId,
-      `Prize #${prizeId}`,
-      'TokenTalon Claw Machine Prize',
+      nftName,
+      `A ${rarity} prize from the TokenTalon Claw Machine featuring ${prizeName}`,
       prizeImageHash,
       replayHash,
-      validation.difficulty || 5,
-      replayData.tokensSpent || 10
+      difficulty,
+      replayData.tokensSpent || 10,
+      customTraits // Include custom traits in metadata
     );
 
     const metadataUri = `ipfs://${metadataHash}`;
@@ -128,7 +173,8 @@ router.post('/submit-win', async (req: Request, res: Response) => {
         replayDataHash: replayHash,
         difficulty: validation.difficulty
       },
-      prizeId
+      prizeId,
+      customTraits // Include generated traits for frontend display
     });
   } catch (error: any) {
     console.error('Error submitting win:', error);

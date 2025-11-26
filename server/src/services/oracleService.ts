@@ -51,6 +51,9 @@ export async function signWinVoucher(
   try {
     // Get oracle wallet
     const oracleWallet = getOracleWallet(network);
+    
+    // DEBUG: Log oracle address
+    console.log('🔑 Oracle wallet address:', oracleWallet.address);
 
     // Create voucher hash
     const voucherHash = createVoucherHash(voucher);

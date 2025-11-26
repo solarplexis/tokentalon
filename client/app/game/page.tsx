@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useAccount } from 'wagmi';
@@ -23,6 +23,7 @@ export default function GamePage() {
   const { data: balance } = useTokenBalance(address, chain?.id);
   const [payForGrabFn, setPayForGrabFn] = useState<(() => Promise<boolean>) | null>(null);
   const [showOverlay, setShowOverlay] = useState(true);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
 
   const handleGameReady = useCallback((payForGrab: () => Promise<boolean>) => {
     setPayForGrabFn(() => payForGrab);
@@ -30,6 +31,18 @@ export default function GamePage() {
 
   const handleGameStart = useCallback(() => {
     setShowOverlay(false);
+    // Focus the game container after overlay hides (increased delay)
+    setTimeout(() => {
+      const container = document.getElementById('game-container');
+      container?.focus();
+      console.log('Game container focused');
+    }, 200);
+  }, []);
+
+  const handleGameClick = useCallback(() => {
+    // Fallback: focus on click
+    const container = document.getElementById('game-container');
+    container?.focus();
   }, []);
 
   const handleGameEnd = useCallback(() => {
@@ -61,7 +74,10 @@ export default function GamePage() {
         </div>
 
         {/* Game Container */}
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-400 bg-black">
+        <div 
+          className="relative w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-400 bg-black"
+          onClick={handleGameClick}
+        >
           {showOverlay && <GameController onGameReady={handleGameReady} onGameStart={handleGameStart} />}
           <PhaserGame onGameEnd={handleGameEnd} />
         </div>

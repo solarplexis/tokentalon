@@ -41,6 +41,7 @@ export function useGameFlow(chainId: number = sepolia.id) {
 
   const { writeContract: approveWrite, data: approveHash, error: approveError } = useWriteContract();
   const { writeContract: payForGrabWrite, data: payForGrabHash, error: payForGrabError } = useWriteContract();
+  const { writeContract: claimPrizeWrite, data: claimPrizeHash, error: claimPrizeError } = useWriteContract();
   
   const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess, isError: isApproveError } = useWaitForTransactionReceipt({ hash: approveHash });
   const { 
@@ -50,6 +51,13 @@ export function useGameFlow(chainId: number = sepolia.id) {
     error: payForGrabReceiptError 
   } = useWaitForTransactionReceipt({ 
     hash: payForGrabHash 
+  });
+  const { 
+    isLoading: isClaimPrizeConfirming, 
+    isSuccess: isClaimPrizeSuccess, 
+    isError: isClaimPrizeError 
+  } = useWaitForTransactionReceipt({ 
+    hash: claimPrizeHash 
   });
 
   const [state, setState] = useState<GameState>({
@@ -93,6 +101,44 @@ export function useGameFlow(chainId: number = sepolia.id) {
       setState(prev => ({ ...prev, isPaying: false }));
     }
   }, [isPayForGrabSuccess, payForGrabHash]);
+
+  // Log transaction hash immediately when available
+  useEffect(() => {
+    if (claimPrizeHash) {
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('⏳ NFT CLAIM TRANSACTION SUBMITTED');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📋 Transaction Hash:', claimPrizeHash);
+      console.log('🔗 Etherscan:', `https://sepolia.etherscan.io/tx/${claimPrizeHash}`);
+      console.log('⏳ Waiting for confirmation...');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    }
+  }, [claimPrizeHash]);
+
+  // Log token ID when claimPrize succeeds
+  useEffect(() => {
+    if (isClaimPrizeSuccess && claimPrizeHash) {
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🎉 NFT MINTED SUCCESSFULLY!');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📋 Transaction Hash:', claimPrizeHash);
+      console.log('🔗 Etherscan:', `https://sepolia.etherscan.io/tx/${claimPrizeHash}`);
+      console.log('');
+      console.log('📦 TO IMPORT NFT TO METAMASK:');
+      console.log('   1. Open MetaMask → NFTs tab → Import NFT');
+      console.log('   2. Contract: 0x6e3703Fa98a6cEA8086599ef407cB863e7425759');
+      console.log('   3. Token ID: Check Etherscan link above, look for "Logs" tab');
+      console.log('      The token ID is in the PrizeClaimed event (tokenId field)');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    }
+  }, [isClaimPrizeSuccess, claimPrizeHash]);
+
+  // Handle claimPrize errors
+  useEffect(() => {
+    if (claimPrizeError || isClaimPrizeError) {
+      console.error('ClaimPrize error:', claimPrizeError);
+    }
+  }, [claimPrizeError, isClaimPrizeError]);
 
   // Handle payForGrab errors
   useEffect(() => {
@@ -186,22 +232,29 @@ export function useGameFlow(chainId: number = sepolia.id) {
   }, [address, balance, gameCost, checkApproval, payForGrabWrite, clawMachineAddress]);
 
   // Submit win to backend
-  const submitWin = useCallback(async (prizeId: number, replayData: unknown) => {
+  const submitWin = useCallback(async (prizeId: number, replayData: any) => {
     if (!address) return null;
 
     try {
-      const response = await fetch(API_ENDPOINTS.submitWin, {
+      // Use sessionId from replayData (generated when recording started)
+      const sessionId = replayData.sessionId || `session_${address}_${Date.now()}`;
+      
+      // Backend will generate unique AI image for this prize
+      const response = await fetch(API_ENDPOINTS.game.submitWin, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          playerAddress: address,
+          sessionId,
+          walletAddress: address,
           prizeId,
           replayData,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit win');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Backend error:', errorData);
+        throw new Error(errorData.error || `Failed to submit win: ${response.status}`);
       }
 
       return await response.json();
@@ -237,9 +290,12 @@ export function useGameFlow(chainId: number = sepolia.id) {
         difficulty,
         nonce,
         signature,
+        account: address,
       });
+      
+      console.log('Contract address:', clawMachineAddress);
 
-      payForGrabWrite({
+      claimPrizeWrite({
         address: clawMachineAddress,
         abi: CLAWMACHINE_ABI,
         functionName: 'claimPrize',
@@ -247,11 +303,11 @@ export function useGameFlow(chainId: number = sepolia.id) {
           BigInt(prizeId),
           metadataUri,
           replayDataHash,
-          difficulty,
+          Number(difficulty), // Ensure it's a plain number for uint8
           BigInt(nonce),
           signature as `0x${string}`
         ],
-        gas: BigInt(300000),
+        gas: BigInt(500000), // Increased from 300000 to prevent out-of-gas
       });
 
       return true;
@@ -263,7 +319,7 @@ export function useGameFlow(chainId: number = sepolia.id) {
       }));
       return false;
     }
-  }, [address, payForGrabWrite, clawMachineAddress]);
+  }, [address, claimPrizeWrite, clawMachineAddress]);
 
   return {
     state,

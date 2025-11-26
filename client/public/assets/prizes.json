@@ -4,181 +4,310 @@
       "key": "prize_white_cloud",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "expression": ["happy", "sleepy", "cheerful", "surprised"],
+        "accessory": ["none", "rainbow", "lightning_bolt", "rain_drops"]
+      }
     },
     {
       "key": "prize_yellow_starfish",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "pattern": ["plain", "spotted", "striped", "sparkly"],
+        "accessory": ["none", "seashell", "coral", "bubbles"]
+      }
     },
     {
       "key": "prize_piglet",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "outfit": ["none", "overalls", "bow_tie", "farmer_hat"],
+        "expression": ["happy", "shy", "playful", "sleepy"]
+      }
     },
     {
       "key": "prize_kawaii_ghost",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "expression": ["friendly", "mischievous", "shy", "winking"],
+        "accessory": ["none", "bow", "halo", "candy"]
+      }
     },
     {
       "key": "prize_lego_brick",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "color_scheme": ["classic", "rainbow", "metallic", "transparent"],
+        "configuration": ["2x4", "special_piece", "decorated", "stacked"]
+      }
     },
     {
       "key": "prize_ice_cream_cone",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "flavor": ["vanilla", "chocolate", "strawberry", "mint", "rainbow"],
+        "topping": ["none", "sprinkles", "cherry", "chocolate_drizzle", "wafer_stick"]
+      }
     },
     {
       "key": "prize_jack-o-lantern",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "carving": ["happy", "spooky", "silly", "surprised"],
+        "accessory": ["none", "witch_hat", "bow", "candle_glow"]
+      }
     },
     {
       "key": "prize_penguin",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "outfit": ["none", "scarf", "bow_tie", "top_hat", "earmuffs"],
+        "accessory": ["none", "fish", "snowflake", "ice_cream"]
+      }
     },
     {
       "key": "prize_nemo",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "eyewear": ["none", "sunglasses", "eye_patch", "long_lashes", "reading_glasses"],
+        "expression": ["happy", "surprised", "winking", "sleepy"],
+        "accessory": ["none", "bubbles", "seaweed_crown", "pearl_necklace"]
+      }
     },
     {
       "key": "prize_cow",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "pattern": ["spots", "heart_spots", "star_spots", "minimal"],
+        "accessory": ["none", "bell", "flower_crown", "bow"]
+      }
     },
     {
       "key": "prize_bunny",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "ear_style": ["floppy", "perked", "one_up_one_down", "bow_tied"],
+        "accessory": ["none", "carrot", "flower", "basket", "bowtie"]
+      }
     },
     {
       "key": "prize_bumblebee",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "pattern": ["classic_stripes", "thick_stripes", "dotted", "sparkly"],
+        "accessory": ["none", "flower", "honey_pot", "crown"]
+      }
     },
     {
       "key": "prize_baby_doll",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "outfit": ["onesie", "dress", "overalls", "pajamas"],
+        "accessory": ["none", "pacifier", "bottle", "teddy", "rattle"]
+      }
     },
     {
       "key": "prize_doll",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "outfit": ["casual", "fancy_dress", "uniform", "costume"],
+        "hair_style": ["pigtails", "bun", "long", "short_curly"]
+      }
     },
     {
       "key": "prize_teddybear",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0
+      "grabDifficulty": 1.0,
+      "customizableTraits": {
+        "color": ["brown", "honey", "cream", "chocolate"],
+        "accessory": ["none", "bow", "vest", "scarf", "heart"]
+      }
     },
     {
       "key": "prize_alien",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "antenna": ["single", "double", "spiral", "glowing"],
+        "eye_count": ["two", "three", "four", "one_large"],
+        "accessory": ["none", "space_helmet", "ray_gun", "flying_saucer"]
+      }
     },
     {
       "key": "prize_pixel_dino",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "pixel_style": ["8bit", "16bit", "glitch", "holographic"],
+        "accessory": ["none", "pixel_sunglasses", "game_controller", "power_up"]
+      }
     },
     {
       "key": "prize_circuit_frog",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "circuit_color": ["green", "blue", "red", "rainbow"],
+        "tech_feature": ["led_eyes", "antenna", "circuit_pattern", "hologram"]
+      }
     },
     {
       "key": "prize_cyber_cat",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "cybernetics": ["visor", "ear_implants", "tail_mod", "paw_enhancements"],
+        "led_color": ["blue", "pink", "green", "rainbow"]
+      }
     },
     {
       "key": "prize_cyclops",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "eye_color": ["red", "blue", "green", "purple", "rainbow"],
+        "accessory": ["none", "eyepatch", "monocle", "visor", "laser_beam"]
+      }
     },
     {
       "key": "prize_lava_blob",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "lava_intensity": ["low_glow", "medium_heat", "high_flames", "volcanic"],
+        "expression": ["happy", "fierce", "playful", "sleepy"]
+      }
     },
     {
       "key": "prize_space_sloth",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "space_suit": ["astronaut", "alien_tech", "retro", "futuristic"],
+        "accessory": ["none", "helmet", "jetpack", "planet", "star_map"]
+      }
     },
     {
       "key": "prize_steampunk_owl",
       "rarity": "uncommon",
       "baseSize": 0.9,
-      "grabDifficulty": 1.5
+      "grabDifficulty": 1.5,
+      "customizableTraits": {
+        "gear_type": ["brass", "copper", "silver", "gold"],
+        "accessory": ["none", "monocle", "top_hat", "pocket_watch", "goggles"]
+      }
     },
     {
       "key": "prize_chibi_ninja",
       "rarity": "rare",
       "baseSize": 1.0,
-      "grabDifficulty": 2.5
+      "grabDifficulty": 2.5,
+      "customizableTraits": {
+        "weapon": ["katana", "shuriken", "staff", "dual_blades"],
+        "mask_color": ["black", "red", "blue", "purple"],
+        "element": ["fire", "water", "lightning", "shadow"]
+      }
     },
     {
       "key": "prize_dragon_egg",
       "rarity": "rare",
       "baseSize": 1.0,
-      "grabDifficulty": 2.5
+      "grabDifficulty": 2.5,
+      "customizableTraits": {
+        "egg_color": ["red", "blue", "green", "purple", "gold", "crystal"],
+        "pattern": ["scales", "gems", "runes", "flames"],
+        "glow": ["none", "soft", "pulsing", "intense"]
+      }
     },
     {
       "key": "prize_viking_walrus",
       "rarity": "rare",
       "baseSize": 1.0,
-      "grabDifficulty": 2.5
+      "grabDifficulty": 2.5,
+      "customizableTraits": {
+        "helmet": ["horned", "winged", "crowned", "battle_worn"],
+        "weapon": ["axe", "sword", "shield", "hammer"],
+        "beard_style": ["braided", "long", "decorated", "icy"]
+      }
     },
     {
       "key": "prize_wizard_gnome",
       "rarity": "rare",
       "baseSize": 1.0,
-      "grabDifficulty": 2.5
+      "grabDifficulty": 2.5,
+      "customizableTraits": {
+        "hat_style": ["pointed", "wide_brim", "starry", "crooked"],
+        "staff_type": ["crystal", "wooden", "magical", "elemental"],
+        "spell_effect": ["sparkles", "flames", "frost", "lightning"]
+      }
     },
     {
       "key": "prize_unicorn",
       "rarity": "legendary",
       "baseSize": 1.1,
-      "grabDifficulty": 4.0
+      "grabDifficulty": 4.0,
+      "customizableTraits": {
+        "horn_style": ["spiral", "crystal", "rainbow", "glowing"],
+        "mane_color": ["rainbow", "pastel", "starlight", "galaxy"],
+        "magic_aura": ["sparkles", "stars", "aurora", "celestial"]
+      }
     },
     {
       "key": "prize_minion",
       "rarity": "legendary",
       "baseSize": 0.9,
-      "grabDifficulty": 4.0
+      "grabDifficulty": 4.0,
+      "customizableTraits": {
+        "outfit": ["overalls", "suit", "maid", "superhero"],
+        "eye_count": ["one", "two"],
+        "accessory": ["none", "banana", "ray_gun", "teddy", "tool_belt"]
+      }
     },
     {
       "key": "prize_mystery",
       "rarity": "legendary",
       "baseSize": 1.1,
-      "grabDifficulty": 4.0
+      "grabDifficulty": 4.0,
+      "customizableTraits": {
+        "reveal_style": ["glowing", "smoky", "sparkly", "holographic"],
+        "color_theme": ["gold", "silver", "rainbow", "cosmic"],
+        "effect": ["question_marks", "stars", "mist", "energy"]
+      }
     }
   ]
 }

@@ -3,6 +3,7 @@ import { GameState, ClawState, ReplayData, GameInput, PrizeData } from '../types
 import { CabinetConfig } from '../utils/cabinet';
 import { CabinetLoader } from '../CabinetLoader';
 import { CoordinateUtils, DepthUtils } from '../utils/cabinet';
+import { generateCustomTraits } from '@/lib/prizeTraits';
 
 export class GameScene extends Phaser.Scene {
   private cabinetConfig?: CabinetConfig;
@@ -631,19 +632,39 @@ export class GameScene extends Phaser.Scene {
           
           // Get grab accuracy from stored data
           const grabAccuracy = grabbedPrize.getData('grabAccuracy') || 0;
-          const prizeId = grabbedPrize.getData('id');
+          const prizeIdString = grabbedPrize.getData('id');
           const rarity = grabbedPrize.getData('rarity');
           
-          // Generate unique attributes for this prize
-          const attributes = this.generatePrizeAttributes(prizeId, rarity, grabAccuracy);
+          // Convert prize key to numeric ID (1-based)
+          const prizeIndex = this.prizeTypes.findIndex(p => p.key === prizeIdString);
+          const prizeId = prizeIndex >= 0 ? prizeIndex + 1 : 1;
           
-          this.replayData.result = 'win';
+          // Get player address from registry
+          const playerAddress = this.game.registry.get('playerAddress') || '0x0000000000000000000000000000000000000000';
+          
+          // Generate custom traits (matching backend algorithm)
+          const difficulty = grabbedPrize.getData('grabDifficulty') || 1;
+          const tokensSpent = 10; // TODO: Get from actual game cost
+          const customTraits = generateCustomTraits(
+            prizeId,
+            difficulty * 10, // Scale to 1-10 range
+            tokensSpent,
+            playerAddress
+          );
+          
+          console.log('✨ Generated custom traits:', customTraits);
+          
+          // Generate legacy attributes for backward compatibility
+          const attributes = this.generatePrizeAttributes(prizeIdString, rarity, grabAccuracy);
+          
+          this.replayData.result = 'won';
           this.replayData.prizeWon = {
-            id: prizeId,
-            type: prizeId,
+            id: prizeIdString,
+            type: prizeIdString,
             rarity: rarity,
             value: 100,
             attributes: attributes,
+            customTraits: customTraits, // Add custom traits
           };
           
           // Open claw
@@ -692,7 +713,7 @@ export class GameScene extends Phaser.Scene {
     this.gameState = GameState.IDLE;
     
     // Check if player won
-    if (this.replayData.result === 'win' && this.replayData.prizeWon) {
+    if (this.replayData.result === 'won' && this.replayData.prizeWon) {
       // Show win overlay after a short delay
       this.time.delayedCall(800, () => {
         this.showWinOverlay();
@@ -782,10 +803,34 @@ export class GameScene extends Phaser.Scene {
     rarityText.setOrigin(0.5);
     rarityText.setDepth(1003);
 
-    // Prize attributes display
+    // Prize attributes display - show custom traits if available
+    const customTraits = this.replayData.prizeWon.customTraits;
     const attrs = this.replayData.prizeWon.attributes;
     let attributeElements: Phaser.GameObjects.GameObject[] = [];
-    if (attrs) {
+    
+    if (customTraits && Object.keys(customTraits).length > 0) {
+      // Display custom traits from backend (AI-generated)
+      const attrY = centerY + 210;
+      const traitLines = Object.entries(customTraits).map(([category, value]) => {
+        // Convert snake_case to Title Case
+        const displayCategory = category.split('_').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+        const displayValue = value.replace(/_/g, ' ');
+        return `${displayCategory}: ${displayValue}`;
+      }).join('\n');
+      
+      const attrText = this.add.text(centerX - 220, attrY, traitLines, {
+        fontSize: '14px',
+        fontFamily: 'Arial',
+        color: '#ecf0f1',
+        align: 'left',
+        lineSpacing: 4
+      });
+      attrText.setDepth(1002);
+      attributeElements.push(attrText);
+    } else if (attrs) {
+      // Fallback to old generic attributes
       const attrY = centerY + 210;
       const attrText = this.add.text(centerX - 220, attrY, 
         `Color: ${attrs.color}\n` +
@@ -847,11 +892,95 @@ export class GameScene extends Phaser.Scene {
     claimButton.on('pointerout', () => {
       claimButton.setFillStyle(0xf39c12);
     });
-    claimButton.on('pointerdown', () => {
-      console.log('🪙 NFT Claim clicked - To be implemented');
+    claimButton.on('pointerdown', async () => {
+      console.log('🪙 NFT Claim clicked');
       console.log('Prize attributes:', this.replayData.prizeWon?.attributes);
-      // TODO: Implement NFT claiming logic
-      this.closeWinOverlay(allElements);
+      
+      // Disable button and show loading
+      claimButton.disableInteractive();
+      claimButton.setFillStyle(0x95a5a6);
+      claimText.setText('Claiming...');
+      
+      try {
+        // Get claim functions from registry
+        const submitWin = this.game.registry.get('submitWin');
+        const claimPrize = this.game.registry.get('claimPrize');
+        
+        if (!submitWin || !claimPrize) {
+          throw new Error('Claim functions not available');
+        }
+        
+        if (!this.replayData.prizeWon) {
+          throw new Error('No prize data available');
+        }
+        
+        // Step 1: Submit win to backend to get signature
+        claimText.setText('Validating win...');
+        const prizeIdString = this.replayData.prizeWon.id;
+        
+        // Convert prize key to numeric ID by finding its index in prizeTypes array
+        // Backend expects 1-based indexing (Prize ID 1 = first prize)
+        const prizeIndex = this.prizeTypes.findIndex(p => p.key === prizeIdString);
+        const prizeId = prizeIndex >= 0 ? prizeIndex + 1 : 1; // Default to 1 if not found
+        
+        console.log(`🎁 Prize key: ${prizeIdString} → Prize ID: ${prizeId}`);
+        
+        const winData = await submitWin(prizeId, this.replayData);
+        
+        if (!winData || !winData.voucher) {
+          throw new Error('Failed to get win voucher from backend');
+        }
+        
+        console.log('🎫 Win voucher received from backend:', winData);
+        
+        // Store custom traits from backend for overlay display
+        if (winData.customTraits) {
+          this.replayData.prizeWon.customTraits = winData.customTraits;
+        }
+        
+        // Step 2: Call blockchain claimPrize with signature
+        claimText.setText('Minting NFT...');
+        console.log('📝 Calling claimPrize with:', {
+          prizeId: winData.prizeId,
+          metadataUri: winData.metadata.uri,
+          replayDataHash: winData.metadata.replayDataHash,
+          difficulty: winData.metadata.difficulty,
+          nonce: winData.voucher.nonce,
+          signature: winData.voucher.signature
+        });
+        
+        const success = await claimPrize(
+          winData.prizeId,
+          winData.metadata.uri,
+          winData.metadata.replayDataHash,
+          winData.metadata.difficulty,
+          winData.voucher.nonce,
+          winData.voucher.signature
+        );
+        
+        if (success) {
+          claimText.setText('NFT Claimed! 🎉');
+          console.log('✅ NFT claimed successfully!');
+          
+          // Wait a moment to show success, then close
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          this.closeWinOverlay(allElements);
+        } else {
+          throw new Error('Failed to claim NFT on blockchain');
+        }
+        
+      } catch (error) {
+        console.error('Failed to claim NFT:', error);
+        claimText.setText('Claim Failed ❌');
+        claimButton.setFillStyle(0xe74c3c);
+        
+        // Re-enable after delay
+        setTimeout(() => {
+          claimButton.setInteractive({ useHandCursor: true });
+          claimButton.setFillStyle(0xf39c12);
+          claimText.setText('🪙 Claim NFT');
+        }, 2000);
+      }
     });
 
     closeButton.on('pointerover', () => {
@@ -948,7 +1077,9 @@ export class GameScene extends Phaser.Scene {
   // Replay recording methods
   private startRecording() {
     this.isRecording = true;
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     this.replayData = {
+      sessionId,
       startTime: Date.now(),
       inputs: [],
       prizePositions: this.prizes.map((p) => ({
@@ -958,6 +1089,12 @@ export class GameScene extends Phaser.Scene {
         z: 0, // Will add proper 3D positioning in Phase D
       })),
       result: 'loss',
+      physicsData: {
+        clawPath: [],
+        prizePosition: { x: 0, y: 0, z: 0 },
+        grabForce: 0,
+        dropHeight: 0
+      }
     };
   }
 
@@ -968,6 +1105,15 @@ export class GameScene extends Phaser.Scene {
       timestamp: Date.now() - this.replayData.startTime,
       direction,
     });
+    
+    // Record claw position for physics validation
+    if (this.replayData.physicsData && this.claw) {
+      this.replayData.physicsData.clawPath.push({
+        x: this.claw.x,
+        y: this.claw.y,
+        timestamp: Date.now() - this.replayData.startTime
+      });
+    }
   }
 
   private stopRecording() {

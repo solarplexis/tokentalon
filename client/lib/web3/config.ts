@@ -5,7 +5,7 @@ import { injected, walletConnect } from 'wagmi/connectors';
 // Contract addresses from deployment
 export const CONTRACTS = {
   sepolia: {
-    gameToken: '0xF3Ab5d4c91415a5fFDdFec3C8084409d4403962c' as `0x${string}`,
+    gameToken: '0xba2300B8c318b8054D7Bd688ADFd659bD4EBECc2' as `0x${string}`,
     prizeNFT: process.env.NEXT_PUBLIC_SEPOLIA_PRIZENFT_ADDRESS as `0x${string}`,
     clawMachine: process.env.NEXT_PUBLIC_SEPOLIA_CLAWMACHINE_ADDRESS as `0x${string}`,
   },

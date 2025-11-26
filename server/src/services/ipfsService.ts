@@ -58,14 +58,21 @@ export async function uploadReplayData(replayData: ReplayData): Promise<string> 
 }
 
 /**
- * Upload prize image to IPFS (if not already cached)
+ * Upload prize image to IPFS
+ * Accepts Buffer (from AI generation) or file path
  */
-export async function uploadPrizeImage(_imagePath: string): Promise<string> {
+export async function uploadPrizeImage(imageData: Buffer | string, prizeId: number): Promise<string> {
   try {
-    // In production, you would upload the actual image file
-    // For now, we'll assume images are pre-uploaded and return the hash
-    // TODO: Implement actual file upload
-    throw new Error('Image upload not yet implemented - use pre-uploaded images');
+    if (Buffer.isBuffer(imageData)) {
+      // Upload Buffer directly (AI-generated image)
+      const blob = new Blob([imageData], { type: 'image/png' });
+      const file = new File([blob], `prize-${prizeId}.png`, { type: 'image/png' });
+      const upload = await pinata.upload.public.file(file);
+      return upload.cid;
+    } else {
+      // TODO: Handle file path upload if needed
+      throw new Error('File path upload not yet implemented');
+    }
   } catch (error) {
     console.error('Error uploading image to IPFS:', error);
     throw error;
@@ -82,32 +89,45 @@ export async function uploadPrizeMetadata(
   prizeImageHash: string,
   replayDataHash: string,
   difficulty: number,
-  tokensSpent: number
+  tokensSpent: number,
+  customTraits?: Record<string, string>
 ): Promise<string> {
   try {
+    const baseAttributes = [
+      {
+        trait_type: 'Prize ID',
+        value: prizeId
+      },
+      {
+        trait_type: 'Difficulty',
+        value: difficulty
+      },
+      {
+        trait_type: 'Tokens Spent',
+        value: tokensSpent
+      },
+      {
+        trait_type: 'Rarity',
+        value: difficulty >= 8 ? 'Legendary' : difficulty >= 6 ? 'Epic' : difficulty >= 4 ? 'Rare' : 'Common'
+      }
+    ];
+
+    // Add custom traits as attributes
+    const customAttributes = customTraits
+      ? Object.entries(customTraits).map(([category, value]) => ({
+          trait_type: category.split('_').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+          ).join(' '), // Convert snake_case to Title Case
+          value: value.replace(/_/g, ' ') // Convert snake_case to readable
+        }))
+      : [];
+
     const metadata: PrizeMetadata = {
-      name: `${prizeName} #${prizeId}`,
+      name: prizeName,
       description: prizeDescription,
       image: `ipfs://${prizeImageHash}`,
       external_url: `${process.env.FRONTEND_URL || 'https://tokentalon.com'}/prize/${prizeId}`,
-      attributes: [
-        {
-          trait_type: 'Prize ID',
-          value: prizeId
-        },
-        {
-          trait_type: 'Difficulty',
-          value: difficulty
-        },
-        {
-          trait_type: 'Tokens Spent',
-          value: tokensSpent
-        },
-        {
-          trait_type: 'Rarity',
-          value: difficulty >= 8 ? 'Legendary' : difficulty >= 6 ? 'Epic' : difficulty >= 4 ? 'Rare' : 'Common'
-        }
-      ],
+      attributes: [...baseAttributes, ...customAttributes],
       replay_data: `ipfs://${replayDataHash}`
     };
 

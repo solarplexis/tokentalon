@@ -10,7 +10,7 @@ async function main() {
   console.log("💰 Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployerAddress)), "ETH\n");
 
   // Contract addresses
-  const gameTokenAddress = "0xF3Ab5d4c91415a5fFDdFec3C8084409d4403962c"; // NEW GameToken with faucet
+  const gameTokenAddress = "0xba2300B8c318b8054D7Bd688ADFd659bD4EBECc2"; // NEW GameToken with 500 TALON faucet / 5min
   const prizeNFTAddress = "0x6e3703Fa98a6cEA8086599ef407cB863e7425759"; // Existing PrizeNFT
   const COST_PER_PLAY = ethers.parseEther("10"); // 10 tokens per game
 
