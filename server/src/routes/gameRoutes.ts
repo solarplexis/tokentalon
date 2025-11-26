@@ -88,12 +88,9 @@ router.post('/submit-win', async (req: Request, res: Response) => {
     const prizeInfo = prizeMapper.getPrizeInfo(prizeId);
     const prizeImagePath = prizeMapper.getPrizeImagePath(prizeId);
     
-    // Determine prize rarity based on difficulty
+    // Use prize's inherent rarity from prizes.json
+    const rarity = prizeInfo.rarity || 'common';
     const difficulty = validation.difficulty || 5;
-    const rarity = difficulty >= 8 ? 'Legendary' : 
-                   difficulty >= 6 ? 'Epic' : 
-                   difficulty >= 4 ? 'Rare' : 
-                   difficulty >= 2 ? 'Uncommon' : 'Common';
 
     // Generate custom traits for this specific NFT
     const customTraits = prizeMapper.generateCustomTraits(
