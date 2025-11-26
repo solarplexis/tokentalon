@@ -1,0 +1,75 @@
+{
+  "name": "Standard Claw Machine",
+  "enclosureImage": "/assets/images/cabinet/claw_machine_enclosure_wide.png",
+  "enclosureDimensions": {
+    "width": 500,
+    "height": 361
+  },
+  "playArea": {
+    "comment": "Basin area - top-down view with perspective",
+    "x": {
+      "front": { "min": 56, "max": 448 },
+      "back": { "min": 106, "max": 397 },
+      "comment": "X varies by depth due to perspective"
+    },
+    "y": {
+      "min": 191,
+      "max": 280,
+      "comment": "Y is DEPTH: back (191) to front (280)"
+    }
+  },
+  "dropBox": {
+    "comment": "Prize dispenser area - avoid spawning prizes here",
+    "x": {
+      "front": { "min": 249, "max": 337 },
+      "back": { "min": 252, "max": 332 },
+      "comment": "X varies by depth - shifted 40px right"
+    },
+    "y": {
+      "min": 225,
+      "max": 265,
+      "comment": "Y is DEPTH: back (225) to front (265) - expanded for better exclusion"
+    },
+    "isExclusionZone": true
+  },
+  "clawStartPosition": {
+    "x": 280,
+    "y": 200,
+    "comment": "Start at center X, toward back for higher resting position"
+  },
+  "clawIdleY": 90,
+  "clawIdleYComment": "Base Y position where claw rests - adjusted by depth for perspective",
+  "visualMapping": {
+    "comment": "Physical measurements for reference",
+    "consoleHeader": { "y": { "min": 0, "max": 67 } },
+    "clawIdleHeight": { "y": { "back": 75, "front": 140 }, "comment": "Claw idle: back=75 (higher on screen), front=140 (lower on screen)" },
+    "basinFloor": { "y": { "back": 192, "front": 240 }, "comment": "Basin floor when dropping: back=192 (higher), front=240 (lower)" },
+    "prizeFloor": { "y": { "back": 200, "front": 248 }, "comment": "Prize resting position on basin floor: back=200, front=248" },
+    "machineBase": { "y": { "min": 291, "max": 361 } }
+  },
+  "depthRendering": {
+    "comment": "Scale based on Y (depth) for perspective",
+    "scaleAtFront": 1.2,
+    "scaleAtBack": 0.95,
+    "yOffsetMultiplier": 1.0,
+    "comment2": "Larger Y (front) = larger scale"
+  },
+  "physics": {
+    "clawSpeed": {
+      "horizontal": 120,
+      "depth": 100
+    },
+    "grabRadius": 30,
+    "grabDepthTolerance": 15
+  },
+  "rendering": {
+    "sortByDepth": true,
+    "shadowEnabled": true,
+    "shadowOpacity": 0.3
+  },
+  "prizes": {
+    "minCount": 72,
+    "maxCount": 96,
+    "spawnPadding": 10
+  }
+}

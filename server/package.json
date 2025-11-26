@@ -10,7 +10,12 @@
     "lint": "eslint src --ext .ts",
     "test": "jest"
   },
-  "keywords": ["blockchain", "web3", "game", "nft"],
+  "keywords": [
+    "blockchain",
+    "web3",
+    "game",
+    "nft"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {

@@ -1,0 +1,184 @@
+{
+  "prizeTypes": [
+    {
+      "key": "prize_white_cloud",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_yellow_starfish",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_piglet",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_kawaii_ghost",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_lego_brick",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_ice_cream_cone",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_jack-o-lantern",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_penguin",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_nemo",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_cow",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_bunny",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_bumblebee",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_baby_doll",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_doll",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_teddybear",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1.0
+    },
+    {
+      "key": "prize_alien",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_pixel_dino",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_circuit_frog",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_cyber_cat",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_cyclops",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_lava_blob",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_space_sloth",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_steampunk_owl",
+      "rarity": "uncommon",
+      "baseSize": 0.9,
+      "grabDifficulty": 1.5
+    },
+    {
+      "key": "prize_chibi_ninja",
+      "rarity": "rare",
+      "baseSize": 1.0,
+      "grabDifficulty": 2.5
+    },
+    {
+      "key": "prize_dragon_egg",
+      "rarity": "rare",
+      "baseSize": 1.0,
+      "grabDifficulty": 2.5
+    },
+    {
+      "key": "prize_viking_walrus",
+      "rarity": "rare",
+      "baseSize": 1.0,
+      "grabDifficulty": 2.5
+    },
+    {
+      "key": "prize_wizard_gnome",
+      "rarity": "rare",
+      "baseSize": 1.0,
+      "grabDifficulty": 2.5
+    },
+    {
+      "key": "prize_unicorn",
+      "rarity": "legendary",
+      "baseSize": 1.1,
+      "grabDifficulty": 4.0
+    },
+    {
+      "key": "prize_minion",
+      "rarity": "legendary",
+      "baseSize": 0.9,
+      "grabDifficulty": 4.0
+    },
+    {
+      "key": "prize_mystery",
+      "rarity": "legendary",
+      "baseSize": 1.1,
+      "grabDifficulty": 4.0
+    }
+  ]
+}

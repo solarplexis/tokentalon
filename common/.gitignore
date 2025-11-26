@@ -1,0 +1,16 @@
+# Hardhat files
+cache/
+artifacts/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+
+# Node
+node_modules/
+
+# Logs
+*.log
