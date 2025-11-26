@@ -26,20 +26,19 @@ import type {
 export interface ClawMachineInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "activeSessions"
       | "claimPrize"
       | "costPerPlay"
-      | "forfeitGame"
       | "gameToken"
-      | "getGameSession"
+      | "getGrabCount"
+      | "grabCounts"
       | "isVoucherUsed"
       | "oracleAddress"
       | "owner"
+      | "payForGrab"
       | "prizeNFT"
       | "renounceOwnership"
       | "setCostPerPlay"
       | "setOracleAddress"
-      | "startGame"
       | "transferOwnership"
       | "usedVouchers"
       | "withdrawTokens"
@@ -49,16 +48,13 @@ export interface ClawMachineInterface extends Interface {
     nameOrSignatureOrTopic:
       | "CostPerPlayUpdated"
       | "GameStarted"
+      | "GrabAttempt"
       | "OracleAddressUpdated"
       | "OwnershipTransferred"
       | "PrizeClaimed"
       | "TokensWithdrawn"
   ): EventFragment;
 
-  encodeFunctionData(
-    functionFragment: "activeSessions",
-    values: [AddressLike]
-  ): string;
   encodeFunctionData(
     functionFragment: "claimPrize",
     values: [
@@ -74,13 +70,13 @@ export interface ClawMachineInterface extends Interface {
     functionFragment: "costPerPlay",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "forfeitGame",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "gameToken", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getGameSession",
+    functionFragment: "getGrabCount",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "grabCounts",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
@@ -92,6 +88,10 @@ export interface ClawMachineInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "payForGrab",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "prizeNFT", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -105,7 +105,6 @@ export interface ClawMachineInterface extends Interface {
     functionFragment: "setOracleAddress",
     values: [AddressLike]
   ): string;
-  encodeFunctionData(functionFragment: "startGame", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [AddressLike]
@@ -119,24 +118,17 @@ export interface ClawMachineInterface extends Interface {
     values?: undefined
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "activeSessions",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "claimPrize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "costPerPlay",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "forfeitGame",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "gameToken", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getGameSession",
+    functionFragment: "getGrabCount",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "grabCounts", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isVoucherUsed",
     data: BytesLike
@@ -146,6 +138,7 @@ export interface ClawMachineInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "payForGrab", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "prizeNFT", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
@@ -159,7 +152,6 @@ export interface ClawMachineInterface extends Interface {
     functionFragment: "setOracleAddress",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "startGame", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -188,11 +180,33 @@ export namespace CostPerPlayUpdatedEvent {
 }
 
 export namespace GameStartedEvent {
-  export type InputTuple = [player: AddressLike, tokensEscrowed: BigNumberish];
-  export type OutputTuple = [player: string, tokensEscrowed: bigint];
+  export type InputTuple = [player: AddressLike, timestamp: BigNumberish];
+  export type OutputTuple = [player: string, timestamp: bigint];
   export interface OutputObject {
     player: string;
-    tokensEscrowed: bigint;
+    timestamp: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace GrabAttemptEvent {
+  export type InputTuple = [
+    player: AddressLike,
+    grabNumber: BigNumberish,
+    tokensPaid: BigNumberish
+  ];
+  export type OutputTuple = [
+    player: string,
+    grabNumber: bigint,
+    tokensPaid: bigint
+  ];
+  export interface OutputObject {
+    player: string;
+    grabNumber: bigint;
+    tokensPaid: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -307,18 +321,6 @@ export interface ClawMachine extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  activeSessions: TypedContractMethod<
-    [arg0: AddressLike],
-    [
-      [bigint, bigint, boolean] & {
-        tokensEscrowed: bigint;
-        timestamp: bigint;
-        active: boolean;
-      }
-    ],
-    "view"
-  >;
-
   claimPrize: TypedContractMethod<
     [
       prizeId: BigNumberish,
@@ -334,21 +336,11 @@ export interface ClawMachine extends BaseContract {
 
   costPerPlay: TypedContractMethod<[], [bigint], "view">;
 
-  forfeitGame: TypedContractMethod<[], [void], "nonpayable">;
-
   gameToken: TypedContractMethod<[], [string], "view">;
 
-  getGameSession: TypedContractMethod<
-    [player: AddressLike],
-    [
-      [bigint, bigint, boolean] & {
-        tokensEscrowed: bigint;
-        timestamp: bigint;
-        active: boolean;
-      }
-    ],
-    "view"
-  >;
+  getGrabCount: TypedContractMethod<[player: AddressLike], [bigint], "view">;
+
+  grabCounts: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
 
   isVoucherUsed: TypedContractMethod<
     [voucherHash: BytesLike],
@@ -359,6 +351,8 @@ export interface ClawMachine extends BaseContract {
   oracleAddress: TypedContractMethod<[], [string], "view">;
 
   owner: TypedContractMethod<[], [string], "view">;
+
+  payForGrab: TypedContractMethod<[], [void], "nonpayable">;
 
   prizeNFT: TypedContractMethod<[], [string], "view">;
 
@@ -376,8 +370,6 @@ export interface ClawMachine extends BaseContract {
     "nonpayable"
   >;
 
-  startGame: TypedContractMethod<[], [void], "nonpayable">;
-
   transferOwnership: TypedContractMethod<
     [newOwner: AddressLike],
     [void],
@@ -392,19 +384,6 @@ export interface ClawMachine extends BaseContract {
     key: string | FunctionFragment
   ): T;
 
-  getFunction(
-    nameOrSignature: "activeSessions"
-  ): TypedContractMethod<
-    [arg0: AddressLike],
-    [
-      [bigint, bigint, boolean] & {
-        tokensEscrowed: bigint;
-        timestamp: bigint;
-        active: boolean;
-      }
-    ],
-    "view"
-  >;
   getFunction(
     nameOrSignature: "claimPrize"
   ): TypedContractMethod<
@@ -423,24 +402,14 @@ export interface ClawMachine extends BaseContract {
     nameOrSignature: "costPerPlay"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "forfeitGame"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "gameToken"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "getGameSession"
-  ): TypedContractMethod<
-    [player: AddressLike],
-    [
-      [bigint, bigint, boolean] & {
-        tokensEscrowed: bigint;
-        timestamp: bigint;
-        active: boolean;
-      }
-    ],
-    "view"
-  >;
+    nameOrSignature: "getGrabCount"
+  ): TypedContractMethod<[player: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "grabCounts"
+  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
   getFunction(
     nameOrSignature: "isVoucherUsed"
   ): TypedContractMethod<[voucherHash: BytesLike], [boolean], "view">;
@@ -450,6 +419,9 @@ export interface ClawMachine extends BaseContract {
   getFunction(
     nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "payForGrab"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "prizeNFT"
   ): TypedContractMethod<[], [string], "view">;
@@ -462,9 +434,6 @@ export interface ClawMachine extends BaseContract {
   getFunction(
     nameOrSignature: "setOracleAddress"
   ): TypedContractMethod<[newOracle: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "startGame"
-  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
@@ -488,6 +457,13 @@ export interface ClawMachine extends BaseContract {
     GameStartedEvent.InputTuple,
     GameStartedEvent.OutputTuple,
     GameStartedEvent.OutputObject
+  >;
+  getEvent(
+    key: "GrabAttempt"
+  ): TypedContractEvent<
+    GrabAttemptEvent.InputTuple,
+    GrabAttemptEvent.OutputTuple,
+    GrabAttemptEvent.OutputObject
   >;
   getEvent(
     key: "OracleAddressUpdated"
@@ -539,6 +515,17 @@ export interface ClawMachine extends BaseContract {
       GameStartedEvent.InputTuple,
       GameStartedEvent.OutputTuple,
       GameStartedEvent.OutputObject
+    >;
+
+    "GrabAttempt(address,uint256,uint256)": TypedContractEvent<
+      GrabAttemptEvent.InputTuple,
+      GrabAttemptEvent.OutputTuple,
+      GrabAttemptEvent.OutputObject
+    >;
+    GrabAttempt: TypedContractEvent<
+      GrabAttemptEvent.InputTuple,
+      GrabAttemptEvent.OutputTuple,
+      GrabAttemptEvent.OutputObject
     >;
 
     "OracleAddressUpdated(address,address)": TypedContractEvent<

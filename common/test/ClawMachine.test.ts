@@ -144,32 +144,27 @@ describe("ClawMachine", function () {
   });
 
   describe("Starting Game", function () {
-    it("Should allow player to start game with sufficient tokens", async function () {
-      await gameToken.connect(player1).approve(await clawMachine.getAddress(), COST_PER_PLAY);
-      
+    it("Should allow player to start game", async function () {
       await expect(clawMachine.connect(player1).startGame())
         .to.emit(clawMachine, "GameStarted")
-        .withArgs(player1Address, COST_PER_PLAY);
+        .withArgs(player1Address, await ethers.provider.getBlockNumber() + 1);
     });
 
-    it("Should escrow tokens when game starts", async function () {
-      await gameToken.connect(player1).approve(await clawMachine.getAddress(), COST_PER_PLAY);
-      
+    it("Should NOT transfer tokens when game starts", async function () {
       const balanceBefore = await gameToken.balanceOf(player1Address);
       await clawMachine.connect(player1).startGame();
       const balanceAfter = await gameToken.balanceOf(player1Address);
 
-      expect(balanceBefore - balanceAfter).to.equal(COST_PER_PLAY);
-      expect(await gameToken.balanceOf(await clawMachine.getAddress())).to.equal(COST_PER_PLAY);
+      expect(balanceBefore).to.equal(balanceAfter);
+      expect(await gameToken.balanceOf(await clawMachine.getAddress())).to.equal(0);
     });
 
-    it("Should create active game session", async function () {
-      await gameToken.connect(player1).approve(await clawMachine.getAddress(), COST_PER_PLAY);
+    it("Should create active game session with zero grabs", async function () {
       await clawMachine.connect(player1).startGame();
 
       const session = await clawMachine.getGameSession(player1Address);
       expect(session.active).to.be.true;
-      expect(session.tokensEscrowed).to.equal(COST_PER_PLAY);
+      expect(session.grabCount).to.equal(0);
     });
 
     it("Should revert if player has insufficient balance", async function () {
@@ -243,8 +238,8 @@ describe("ClawMachine", function () {
         .claimPrize(PRIZE_ID, METADATA_URI, REPLAY_HASH, DIFFICULTY, NONCE, signature);
 
       const session = await clawMachine.getGameSession(player1Address);
-      expect(session.active).to.be.false;
-      expect(session.tokensEscrowed).to.equal(0);
+      expect(session.active).to.be.true;
+      expect(session.grabCount).to.equal(0);
     });
 
     it("Should mark voucher as used", async function () {

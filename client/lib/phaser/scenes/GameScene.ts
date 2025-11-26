@@ -458,6 +458,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private dropClaw() {
+    // Payment already handled by GameController before game started
     this.gameState = GameState.DROPPING;
     console.log('Dropping claw...');
   }
@@ -700,6 +701,12 @@ export class GameScene extends Phaser.Scene {
       // Reset after delay for loss
       this.time.delayedCall(2000, () => {
         this.resetGame();
+        
+        // Notify parent that game ended
+        const onGameEnd = this.game.registry.get('onGameEnd');
+        if (onGameEnd && typeof onGameEnd === 'function') {
+          onGameEnd();
+        }
       });
     }
   }
@@ -869,6 +876,12 @@ export class GameScene extends Phaser.Scene {
       }
     });
     this.resetGame();
+    
+    // Notify parent that game ended
+    const onGameEnd = this.game.registry.get('onGameEnd');
+    if (onGameEnd && typeof onGameEnd === 'function') {
+      onGameEnd();
+    }
   }
 
   private resetGame() {

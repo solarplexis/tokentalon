@@ -26,17 +26,12 @@ contract ClawMachine is Ownable {
     // Track used vouchers to prevent replay attacks
     mapping(bytes32 => bool) public usedVouchers;
 
-    // Track active game sessions
-    mapping(address => GameSession) public activeSessions;
-
-    struct GameSession {
-        uint256 tokensEscrowed;
-        uint256 timestamp;
-        bool active;
-    }
+    // Track total games played per player (for NFT metadata)
+    mapping(address => uint256) public gamesPlayed;
 
     // Events
-    event GameStarted(address indexed player, uint256 tokensEscrowed);
+    event GameStarted(address indexed player, uint256 timestamp);
+    event GrabAttempt(address indexed player, uint256 grabNumber, uint256 tokensPaid);
     event PrizeClaimed(
         address indexed player,
         uint256 indexed tokenId,
@@ -72,11 +67,10 @@ contract ClawMachine is Ownable {
     }
 
     /**
-     * @notice Start a new game session by escrowing tokens
-     * @dev Player must have approved this contract to spend their tokens
+     * @notice Pay for a claw grab attempt
+     * @dev Player must approve contract to spend tokens before each grab
      */
-    function startGame() external {
-        require(!activeSessions[msg.sender].active, "Game already in progress");
+    function payForGrab() external {
         require(
             gameToken.balanceOf(msg.sender) >= costPerPlay,
             "Insufficient token balance"
@@ -86,20 +80,16 @@ contract ClawMachine is Ownable {
             "Insufficient token allowance"
         );
 
-        // Transfer tokens to contract (escrow)
+        // Transfer tokens to contract
         require(
             gameToken.transferFrom(msg.sender, address(this), costPerPlay),
             "Token transfer failed"
         );
 
-        // Create game session
-        activeSessions[msg.sender] = GameSession({
-            tokensEscrowed: costPerPlay,
-            timestamp: block.timestamp,
-            active: true
-        });
+        // Increment grab count
+        grabCounts[msg.sender]++;
 
-        emit GameStarted(msg.sender, costPerPlay);
+        emit GrabAttempt(msg.sender, grabCounts[msg.sender], costPerPlay);
     }
 
     /**
@@ -119,7 +109,7 @@ contract ClawMachine is Ownable {
         uint256 nonce,
         bytes calldata signature
     ) external {
-        require(activeSessions[msg.sender].active, "No active game session");
+        require(grabCounts[msg.sender] > 0, "No grabs recorded");
 
         // Create and verify voucher
         bytes32 voucherHash = keccak256(
@@ -139,29 +129,25 @@ contract ClawMachine is Ownable {
             "Invalid oracle signature"
         );
 
-        // Mark voucher as used and save tokens before clearing session
+        // Mark voucher as used and get grab count before resetting
         usedVouchers[voucherHash] = true;
-        uint256 tokensSpent = activeSessions[msg.sender].tokensEscrowed;
-        delete activeSessions[msg.sender];
+        uint256 totalGrabs = grabCounts[msg.sender];
+        grabCounts[msg.sender] = 0; // Reset grab count after claiming
 
-        // Mint NFT prize to player
+        // Mint NFT prize to player (tokensSpent = grabs * costPerPlay)
         emit PrizeClaimed(
             msg.sender,
-            prizeNFT.mintPrize(msg.sender, prizeId, metadataUri, replayDataHash, difficulty, tokensSpent),
+            prizeNFT.mintPrize(
+                msg.sender, 
+                prizeId, 
+                metadataUri, 
+                replayDataHash, 
+                difficulty, 
+                totalGrabs * costPerPlay
+            ),
             prizeId,
             voucherHash
         );
-    }
-
-    /**
-     * @notice Forfeit active game (lose escrowed tokens)
-     * @dev Allows player to cancel game without claiming prize
-     */
-    function forfeitGame() external {
-        require(activeSessions[msg.sender].active, "No active game session");
-
-        // Clear game session (tokens remain in contract)
-        delete activeSessions[msg.sender];
     }
 
     /**
@@ -198,20 +184,11 @@ contract ClawMachine is Ownable {
     }
 
     /**
-     * @notice Get active game session info
+     * @notice Get player's current grab count
      * @param player Player address
      */
-    function getGameSession(address player)
-        external
-        view
-        returns (
-            uint256 tokensEscrowed,
-            uint256 timestamp,
-            bool active
-        )
-    {
-        GameSession memory session = activeSessions[player];
-        return (session.tokensEscrowed, session.timestamp, session.active);
+    function getGrabCount(address player) external view returns (uint256) {
+        return grabCounts[player];
     }
 
     /**

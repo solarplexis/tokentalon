@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import {
   useTokenBalance,
@@ -14,10 +14,8 @@ import {
 import { sepolia } from 'wagmi/chains';
 
 export interface GameState {
-  sessionId: bigint | null;
-  isPlaying: boolean;
   isApproving: boolean;
-  isStarting: boolean;
+  isPaying: boolean;
   needsApproval: boolean;
   error: string | null;
 }
@@ -41,29 +39,82 @@ export function useGameFlow(chainId: number = sepolia.id) {
     chainId
   );
 
-  const { writeContract: approveWrite, data: approveHash } = useWriteContract();
-  const { writeContract: startGameWrite, data: startGameHash } = useWriteContract();
+  const { writeContract: approveWrite, data: approveHash, error: approveError } = useWriteContract();
+  const { writeContract: payForGrabWrite, data: payForGrabHash, error: payForGrabError } = useWriteContract();
   
-  const { isLoading: isApproveConfirming } = useWaitForTransactionReceipt({ hash: approveHash });
-  const { isLoading: isStartGameConfirming, isSuccess: isStartGameSuccess } = useWaitForTransactionReceipt({ 
-    hash: startGameHash 
+  const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess, isError: isApproveError } = useWaitForTransactionReceipt({ hash: approveHash });
+  const { 
+    isLoading: isPayForGrabConfirming, 
+    isSuccess: isPayForGrabSuccess, 
+    isError: isPayForGrabError,
+    error: payForGrabReceiptError 
+  } = useWaitForTransactionReceipt({ 
+    hash: payForGrabHash 
   });
 
   const [state, setState] = useState<GameState>({
-    sessionId: null,
-    isPlaying: false,
     isApproving: false,
-    isStarting: false,
+    isPaying: false,
     needsApproval: false,
     error: null,
   });
 
+  // Update approval state
+  useEffect(() => {
+    if (allowance !== undefined && gameCost !== undefined) {
+      const needsApproval = allowance < gameCost;
+      setState(prev => ({ ...prev, needsApproval }));
+    }
+  }, [allowance, gameCost]);
+
+  // Update state when approve confirms
+  useEffect(() => {
+    if (isApproveSuccess) {
+      setState(prev => ({ ...prev, isApproving: false, needsApproval: false }));
+      refetchAllowance();
+    }
+  }, [isApproveSuccess, refetchAllowance]);
+
+  // Handle approve errors
+  useEffect(() => {
+    if (approveError || isApproveError) {
+      setState(prev => ({ 
+        ...prev, 
+        isApproving: false, 
+        error: approveError?.message || 'Approval failed' 
+      }));
+    }
+  }, [approveError, isApproveError]);
+
+  // Update state when payForGrab confirms
+  useEffect(() => {
+    if (isPayForGrabSuccess) {
+      console.log('PayForGrab successful! Hash:', payForGrabHash);
+      setState(prev => ({ ...prev, isPaying: false }));
+    }
+  }, [isPayForGrabSuccess, payForGrabHash]);
+
+  // Handle payForGrab errors
+  useEffect(() => {
+    if (payForGrabError || isPayForGrabError) {
+      console.error('PayForGrab error:', {
+        writeError: payForGrabError,
+        receiptError: isPayForGrabError,
+        receiptErrorDetails: payForGrabReceiptError,
+        message: payForGrabError?.message || payForGrabReceiptError?.message,
+      });
+      setState(prev => ({ 
+        ...prev, 
+        isPaying: false, 
+        error: payForGrabError?.message || payForGrabReceiptError?.message || 'Failed to pay for grab' 
+      }));
+    }
+  }, [payForGrabError, isPayForGrabError, payForGrabReceiptError]);
+
   // Check if approval is needed
   const checkApproval = useCallback(() => {
     if (allowance && gameCost) {
-      const needsApproval = allowance < gameCost;
-      setState(prev => ({ ...prev, needsApproval }));
-      return needsApproval;
+      return allowance < gameCost;
     }
     return true;
   }, [allowance, gameCost]);
@@ -79,7 +130,8 @@ export function useGameFlow(chainId: number = sepolia.id) {
         address: tokenAddress,
         abi: GAMETOKEN_ABI,
         functionName: 'approve',
-        args: [clawMachineAddress, gameCost * BigInt(100)], // Approve for 100 games
+        args: [clawMachineAddress, gameCost * BigInt(100)], // Approve for 100 grabs
+        gas: BigInt(100000),
       });
     } catch (error) {
       setState(prev => ({ 
@@ -90,88 +142,128 @@ export function useGameFlow(chainId: number = sepolia.id) {
     }
   }, [gameCost, approveWrite, tokenAddress, clawMachineAddress]);
 
-  // Start game
-  const startGame = useCallback(async () => {
+  // Pay for grab
+  const payForGrab = useCallback(async (): Promise<boolean> => {
     if (!address) {
-      setState(prev => ({ ...prev, error: 'Wallet not connected' }));
-      return null;
+      console.error('Wallet not connected');
+      return false;
+    }
+
+    if (!balance || !gameCost || balance < gameCost) {
+      console.error('Insufficient balance:', balance?.toString(), '<', gameCost?.toString());
+      setState(prev => ({ ...prev, error: 'Insufficient token balance' }));
+      return false;
+    }
+
+    if (checkApproval()) {
+      console.error('Tokens not approved');
+      setState(prev => ({ ...prev, error: 'Please approve tokens first' }));
+      return false;
     }
 
     try {
-      setState(prev => ({ ...prev, isStarting: true, error: null }));
+      setState(prev => ({ ...prev, isPaying: true, error: null }));
 
-      // Start game on blockchain
-      startGameWrite({
+      console.log('Calling payForGrab on contract:', clawMachineAddress);
+      
+      payForGrabWrite({
         address: clawMachineAddress,
         abi: CLAWMACHINE_ABI,
-        functionName: 'startGame',
+        functionName: 'payForGrab',
+        gas: BigInt(150000),
       });
 
-      return null; // Will be updated when transaction confirms
+      return true;
     } catch (error) {
+      console.error('PayForGrab error:', error);
       setState(prev => ({ 
         ...prev, 
-        isStarting: false, 
-        error: error instanceof Error ? error.message : 'Failed to start game' 
+        isPaying: false,
+        error: error instanceof Error ? error.message : 'Failed to pay for grab' 
       }));
-      return null;
+      return false;
     }
-  }, [address, startGameWrite, clawMachineAddress]);
+  }, [address, balance, gameCost, checkApproval, payForGrabWrite, clawMachineAddress]);
 
   // Submit win to backend
-  const submitWin = useCallback(async (
-    sessionId: bigint,
-    prizeId: number,
-    replayData: any
-  ) => {
-    if (!address) {
-      throw new Error('Wallet not connected');
-    }
+  const submitWin = useCallback(async (prizeId: number, replayData: unknown) => {
+    if (!address) return null;
 
     try {
-      const response = await fetch(API_ENDPOINTS.game.submitWin, {
+      const response = await fetch(API_ENDPOINTS.submitWin, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sessionId: sessionId.toString(),
-          player: address,
+          playerAddress: address,
           prizeId,
           replayData,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit win to backend');
+        throw new Error('Failed to submit win');
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Submit win error:', error);
-      throw error;
+      console.error('Failed to submit win:', error);
+      setState(prev => ({ 
+        ...prev, 
+        error: error instanceof Error ? error.message : 'Failed to submit win' 
+      }));
+      return null;
     }
   }, [address]);
 
-  // Claim prize on blockchain
+  // Claim prize with signature
   const claimPrize = useCallback(async (
-    sessionId: bigint,
     prizeId: number,
-    replayDataCID: string,
+    metadataUri: string,
+    replayDataHash: string,
+    difficulty: number,
+    nonce: number,
     signature: string
-  ) => {
-    const { writeContract } = useWriteContract();
-    
+  ): Promise<boolean> => {
+    if (!address) {
+      console.error('Wallet not connected');
+      return false;
+    }
+
     try {
-      writeContract({
+      console.log('Claiming prize with params:', {
+        prizeId,
+        metadataUri,
+        replayDataHash,
+        difficulty,
+        nonce,
+        signature,
+      });
+
+      payForGrabWrite({
         address: clawMachineAddress,
         abi: CLAWMACHINE_ABI,
         functionName: 'claimPrize',
-        args: [sessionId, prizeId, replayDataCID, signature as `0x${string}`],
+        args: [
+          BigInt(prizeId),
+          metadataUri,
+          replayDataHash,
+          difficulty,
+          BigInt(nonce),
+          signature as `0x${string}`
+        ],
+        gas: BigInt(300000),
       });
+
+      return true;
     } catch (error) {
       console.error('Claim prize error:', error);
-      throw error;
+      setState(prev => ({ 
+        ...prev, 
+        error: error instanceof Error ? error.message : 'Failed to claim prize' 
+      }));
+      return false;
     }
-  }, [clawMachineAddress]);
+  }, [address, payForGrabWrite, clawMachineAddress]);
 
   return {
     state,
@@ -179,11 +271,10 @@ export function useGameFlow(chainId: number = sepolia.id) {
     gameCost,
     checkApproval,
     approveTokens,
-    startGame,
+    payForGrab,
     submitWin,
     claimPrize,
-    isApproveConfirming,
-    isStartGameConfirming,
-    isStartGameSuccess,
+    isApproveSuccess,
+    isPayForGrabSuccess,
   };
 }

@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useAccount } from 'wagmi';
 import { useTokenBalance } from '@/lib/web3';
 import { formatUnits } from 'viem';
+import GameController from '@/components/game/GameController';
 
 // Dynamically import PhaserGame with no SSR to avoid window/document issues
 const PhaserGame = dynamic(() => import('@/components/game/PhaserGame'), {
@@ -19,6 +21,21 @@ const PhaserGame = dynamic(() => import('@/components/game/PhaserGame'), {
 export default function GamePage() {
   const { address, chain } = useAccount();
   const { data: balance } = useTokenBalance(address, chain?.id);
+  const [payForGrabFn, setPayForGrabFn] = useState<(() => Promise<boolean>) | null>(null);
+  const [showOverlay, setShowOverlay] = useState(true);
+
+  const handleGameReady = useCallback((payForGrab: () => Promise<boolean>) => {
+    setPayForGrabFn(() => payForGrab);
+  }, []);
+
+  const handleGameStart = useCallback(() => {
+    setShowOverlay(false);
+  }, []);
+
+  const handleGameEnd = useCallback(() => {
+    // Show overlay immediately when game ends
+    setShowOverlay(true);
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
@@ -45,7 +62,8 @@ export default function GamePage() {
 
         {/* Game Container */}
         <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-400 bg-black">
-          <PhaserGame />
+          {showOverlay && <GameController onGameReady={handleGameReady} onGameStart={handleGameStart} />}
+          <PhaserGame onGameEnd={handleGameEnd} />
         </div>
 
         <div className="flex gap-4 justify-center">
