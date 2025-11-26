@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { useAccount } from 'wagmi';
+import { useTokenBalance } from '@/lib/web3';
+import { formatUnits } from 'viem';
 
 // Dynamically import PhaserGame with no SSR to avoid window/document issues
 const PhaserGame = dynamic(() => import('@/components/game/PhaserGame'), {
@@ -14,8 +17,21 @@ const PhaserGame = dynamic(() => import('@/components/game/PhaserGame'), {
 });
 
 export default function GamePage() {
+  const { address, chain } = useAccount();
+  const { data: balance } = useTokenBalance(address, chain?.id);
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
+      {/* Balance Display - Top Right */}
+      {address && balance !== undefined && (
+        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-xl px-4 py-2 border-2 border-green-400">
+          <div className="text-xs text-green-300 opacity-70">Your Balance</div>
+          <div className="text-lg font-bold text-green-400">
+            {formatUnits(balance, 18)} TALON
+          </div>
+        </div>
+      )}
+
       <div className="text-center space-y-8 w-full max-w-6xl">
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4">
           <h2 className="text-white text-xl mb-2">🎯 How to Play</h2>

@@ -26,13 +26,19 @@ import type {
 export interface GameTokenInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "FAUCET_AMOUNT"
+      | "FAUCET_COOLDOWN"
       | "MAX_SUPPLY"
       | "allowance"
       | "approve"
       | "balanceOf"
       | "buyTokens"
+      | "canClaimFaucet"
+      | "claimFaucet"
       | "decimals"
+      | "faucetCooldownRemaining"
       | "getTokenAmount"
+      | "lastFaucetClaim"
       | "mint"
       | "name"
       | "owner"
@@ -50,12 +56,21 @@ export interface GameTokenInterface extends Interface {
   getEvent(
     nameOrSignatureOrTopic:
       | "Approval"
+      | "FaucetClaimed"
       | "OwnershipTransferred"
       | "TokenPriceUpdated"
       | "TokensPurchased"
       | "Transfer"
   ): EventFragment;
 
+  encodeFunctionData(
+    functionFragment: "FAUCET_AMOUNT",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "FAUCET_COOLDOWN",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "MAX_SUPPLY",
     values?: undefined
@@ -73,10 +88,26 @@ export interface GameTokenInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "buyTokens", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "canClaimFaucet",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "claimFaucet",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "faucetCooldownRemaining",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "getTokenAmount",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lastFaucetClaim",
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
@@ -115,14 +146,38 @@ export interface GameTokenInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "FAUCET_AMOUNT",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "FAUCET_COOLDOWN",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "MAX_SUPPLY", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "buyTokens", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "canClaimFaucet",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "claimFaucet",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "faucetCooldownRemaining",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getTokenAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lastFaucetClaim",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
@@ -165,6 +220,19 @@ export namespace ApprovalEvent {
     owner: string;
     spender: string;
     value: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace FaucetClaimedEvent {
+  export type InputTuple = [claimer: AddressLike, amount: BigNumberish];
+  export type OutputTuple = [claimer: string, amount: bigint];
+  export interface OutputObject {
+    claimer: string;
+    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -277,6 +345,10 @@ export interface GameToken extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  FAUCET_AMOUNT: TypedContractMethod<[], [bigint], "view">;
+
+  FAUCET_COOLDOWN: TypedContractMethod<[], [bigint], "view">;
+
   MAX_SUPPLY: TypedContractMethod<[], [bigint], "view">;
 
   allowance: TypedContractMethod<
@@ -295,13 +367,29 @@ export interface GameToken extends BaseContract {
 
   buyTokens: TypedContractMethod<[], [void], "payable">;
 
+  canClaimFaucet: TypedContractMethod<
+    [account: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  claimFaucet: TypedContractMethod<[], [void], "nonpayable">;
+
   decimals: TypedContractMethod<[], [bigint], "view">;
+
+  faucetCooldownRemaining: TypedContractMethod<
+    [account: AddressLike],
+    [bigint],
+    "view"
+  >;
 
   getTokenAmount: TypedContractMethod<
     [ethAmount: BigNumberish],
     [bigint],
     "view"
   >;
+
+  lastFaucetClaim: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
 
   mint: TypedContractMethod<
     [to: AddressLike, amount: BigNumberish],
@@ -352,6 +440,12 @@ export interface GameToken extends BaseContract {
   ): T;
 
   getFunction(
+    nameOrSignature: "FAUCET_AMOUNT"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "FAUCET_COOLDOWN"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "MAX_SUPPLY"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
@@ -375,11 +469,23 @@ export interface GameToken extends BaseContract {
     nameOrSignature: "buyTokens"
   ): TypedContractMethod<[], [void], "payable">;
   getFunction(
+    nameOrSignature: "canClaimFaucet"
+  ): TypedContractMethod<[account: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "claimFaucet"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "decimals"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "faucetCooldownRemaining"
+  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
+  getFunction(
     nameOrSignature: "getTokenAmount"
   ): TypedContractMethod<[ethAmount: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "lastFaucetClaim"
+  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
   getFunction(
     nameOrSignature: "mint"
   ): TypedContractMethod<
@@ -437,6 +543,13 @@ export interface GameToken extends BaseContract {
     ApprovalEvent.OutputObject
   >;
   getEvent(
+    key: "FaucetClaimed"
+  ): TypedContractEvent<
+    FaucetClaimedEvent.InputTuple,
+    FaucetClaimedEvent.OutputTuple,
+    FaucetClaimedEvent.OutputObject
+  >;
+  getEvent(
     key: "OwnershipTransferred"
   ): TypedContractEvent<
     OwnershipTransferredEvent.InputTuple,
@@ -475,6 +588,17 @@ export interface GameToken extends BaseContract {
       ApprovalEvent.InputTuple,
       ApprovalEvent.OutputTuple,
       ApprovalEvent.OutputObject
+    >;
+
+    "FaucetClaimed(address,uint256)": TypedContractEvent<
+      FaucetClaimedEvent.InputTuple,
+      FaucetClaimedEvent.OutputTuple,
+      FaucetClaimedEvent.OutputObject
+    >;
+    FaucetClaimed: TypedContractEvent<
+      FaucetClaimedEvent.InputTuple,
+      FaucetClaimedEvent.OutputTuple,
+      FaucetClaimedEvent.OutputObject
     >;
 
     "OwnershipTransferred(address,address)": TypedContractEvent<

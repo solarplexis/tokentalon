@@ -47,8 +47,10 @@ export interface ReplayData {
  */
 export async function uploadReplayData(replayData: ReplayData): Promise<string> {
   try {
-    const upload = await pinata.upload.json(replayData as any);
-    return upload.IpfsHash;
+    const blob = new Blob([JSON.stringify(replayData)], { type: 'application/json' });
+    const file = new File([blob], 'replay-data.json', { type: 'application/json' });
+    const upload = await pinata.upload.public.file(file);
+    return upload.cid;
   } catch (error) {
     console.error('Error uploading replay data to IPFS:', error);
     throw new Error('Failed to upload replay data to IPFS');
@@ -109,8 +111,10 @@ export async function uploadPrizeMetadata(
       replay_data: `ipfs://${replayDataHash}`
     };
 
-    const upload = await pinata.upload.json(metadata as any);
-    return upload.IpfsHash;
+    const blob = new Blob([JSON.stringify(metadata)], { type: 'application/json' });
+    const file = new File([blob], `prize-${prizeId}-metadata.json`, { type: 'application/json' });
+    const upload = await pinata.upload.public.file(file);
+    return upload.cid;
   } catch (error) {
     console.error('Error uploading prize metadata to IPFS:', error);
     throw new Error('Failed to upload prize metadata to IPFS');
@@ -120,13 +124,13 @@ export async function uploadPrizeMetadata(
 /**
  * Retrieve content from IPFS via Pinata gateway
  */
-export async function getFromIPFS(ipfsHash: string): Promise<any> {
+export async function getFromIPFS(cid: string): Promise<any> {
   try {
-    const url = `https://${process.env.PINATA_GATEWAY || 'gateway.pinata.cloud'}/ipfs/${ipfsHash}`;
-    const response = await fetch(url);
+    const gatewayUrl = `https://silver-managing-eel-9.mypinata.cloud/ipfs/${cid}`;
+    const response = await fetch(gatewayUrl);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch from IPFS: ${response.statusText}`);
+      throw new Error(`Gateway request failed: ${response.statusText}`);
     }
     
     return await response.json();
@@ -155,8 +159,10 @@ export async function testPinataConnection(): Promise<boolean> {
   try {
     // Simple test upload
     const testData = { test: 'TokenTalon IPFS test', timestamp: Date.now() };
-    const upload = await pinata.upload.json(testData as any);
-    console.log('✅ Pinata connection successful:', upload.IpfsHash);
+    const blob = new Blob([JSON.stringify(testData)], { type: 'application/json' });
+    const file = new File([blob], 'test.json', { type: 'application/json' });
+    const upload = await pinata.upload.public.file(file);
+    console.log('✅ Pinata connection successful:', upload.cid);
     return true;
   } catch (error) {
     console.error('❌ Pinata connection failed:', error);

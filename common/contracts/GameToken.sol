@@ -16,8 +16,20 @@ contract GameToken is ERC20, Ownable {
     /// @dev Token price in wei (for purchasing with ETH)
     uint256 public tokenPrice;
 
+    /// @dev Faucet amount (tokens given per claim)
+    uint256 public constant FAUCET_AMOUNT = 100 * 10**18; // 100 tokens
+
+    /// @dev Faucet cooldown period (24 hours)
+    uint256 public constant FAUCET_COOLDOWN = 24 hours;
+
+    /// @dev Track last faucet claim time for each address
+    mapping(address => uint256) public lastFaucetClaim;
+
     /// @dev Event emitted when tokens are purchased
     event TokensPurchased(address indexed buyer, uint256 amount, uint256 cost);
+
+    /// @dev Event emitted when faucet tokens are claimed
+    event FaucetClaimed(address indexed claimer, uint256 amount);
 
     /// @dev Event emitted when token price is updated
     event TokenPriceUpdated(uint256 oldPrice, uint256 newPrice);
@@ -49,6 +61,42 @@ contract GameToken is ERC20, Ownable {
 
         _mint(msg.sender, tokenAmount);
         emit TokensPurchased(msg.sender, tokenAmount, msg.value);
+    }
+
+    /**
+     * @dev Claim free tokens from faucet (testnet only)
+     * Can be called once every 24 hours per address
+     */
+    function claimFaucet() external {
+        require(
+            block.timestamp >= lastFaucetClaim[msg.sender] + FAUCET_COOLDOWN,
+            "Faucet cooldown not expired"
+        );
+        require(totalSupply() + FAUCET_AMOUNT <= MAX_SUPPLY, "Would exceed max supply");
+
+        lastFaucetClaim[msg.sender] = block.timestamp;
+        _mint(msg.sender, FAUCET_AMOUNT);
+        emit FaucetClaimed(msg.sender, FAUCET_AMOUNT);
+    }
+
+    /**
+     * @dev Check if address can claim from faucet
+     * @param account Address to check
+     * @return True if can claim, false otherwise
+     */
+    function canClaimFaucet(address account) external view returns (bool) {
+        return block.timestamp >= lastFaucetClaim[account] + FAUCET_COOLDOWN;
+    }
+
+    /**
+     * @dev Get time until next faucet claim is available
+     * @param account Address to check
+     * @return Seconds until next claim (0 if can claim now)
+     */
+    function faucetCooldownRemaining(address account) external view returns (uint256) {
+        uint256 nextClaim = lastFaucetClaim[account] + FAUCET_COOLDOWN;
+        if (block.timestamp >= nextClaim) return 0;
+        return nextClaim - block.timestamp;
     }
 
     /**

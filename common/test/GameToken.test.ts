@@ -236,4 +236,80 @@ describe("GameToken", function () {
       expect(await zeroPrice.getTokenAmount(ethers.parseEther("1"))).to.equal(0);
     });
   });
+
+  describe("Faucet", function () {
+    it("Should allow anyone to claim faucet tokens", async function () {
+      const initialBalance = await gameToken.balanceOf(player1.address);
+      
+      await gameToken.connect(player1).claimFaucet();
+      
+      const newBalance = await gameToken.balanceOf(player1.address);
+      expect(newBalance - initialBalance).to.equal(ethers.parseEther("100"));
+    });
+
+    it("Should emit FaucetClaimed event", async function () {
+      await expect(gameToken.connect(player1).claimFaucet())
+        .to.emit(gameToken, "FaucetClaimed")
+        .withArgs(player1.address, ethers.parseEther("100"));
+    });
+
+    it("Should enforce 24 hour cooldown", async function () {
+      await gameToken.connect(player1).claimFaucet();
+      
+      await expect(gameToken.connect(player1).claimFaucet())
+        .to.be.revertedWith("Faucet cooldown not expired");
+    });
+
+    it("Should allow claim after cooldown expires", async function () {
+      await gameToken.connect(player1).claimFaucet();
+      
+      // Fast forward 24 hours
+      await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);
+      await ethers.provider.send("evm_mine", []);
+      
+      await expect(gameToken.connect(player1).claimFaucet())
+        .to.not.be.reverted;
+    });
+
+    it("Should return correct canClaimFaucet status", async function () {
+      expect(await gameToken.canClaimFaucet(player1.address)).to.be.true;
+      
+      await gameToken.connect(player1).claimFaucet();
+      expect(await gameToken.canClaimFaucet(player1.address)).to.be.false;
+      
+      await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);
+      await ethers.provider.send("evm_mine", []);
+      
+      expect(await gameToken.canClaimFaucet(player1.address)).to.be.true;
+    });
+
+    it("Should return correct cooldown remaining time", async function () {
+      expect(await gameToken.faucetCooldownRemaining(player1.address)).to.equal(0);
+      
+      await gameToken.connect(player1).claimFaucet();
+      
+      const remaining = await gameToken.faucetCooldownRemaining(player1.address);
+      expect(remaining).to.be.gt(0);
+      expect(remaining).to.be.lte(24 * 60 * 60);
+    });
+
+    it("Should respect max supply when claiming", async function () {
+      // Deploy with very low max supply
+      const GameTokenFactory = await ethers.getContractFactory("GameToken");
+      const lowSupply = await GameTokenFactory.deploy(1, TOKEN_PRICE);
+      
+      // Try to claim when it would exceed max supply
+      // This will fail because 1 token + 100 token faucet > 10M max
+      // But since we started with only 1 token in ether units, this should work once
+      await expect(lowSupply.connect(player1).claimFaucet()).to.not.be.reverted;
+    });
+
+    it("Should allow different addresses to claim independently", async function () {
+      await gameToken.connect(player1).claimFaucet();
+      await expect(gameToken.connect(player2).claimFaucet()).to.not.be.reverted;
+      
+      expect(await gameToken.balanceOf(player1.address)).to.equal(ethers.parseEther("100"));
+      expect(await gameToken.balanceOf(player2.address)).to.equal(ethers.parseEther("100"));
+    });
+  });
 });

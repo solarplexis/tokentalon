@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.10",
+    "@walletconnect/ethereum-provider": "^2.21.10",
     "next": "16.0.4",
     "phaser": "^3.90.0",
     "react": "19.2.0",
