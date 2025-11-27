@@ -933,11 +933,6 @@ export class GameScene extends Phaser.Scene {
         
         console.log('🎫 Win voucher received from backend:', winData);
         
-        // Store custom traits from backend for overlay display
-        if (winData.customTraits) {
-          this.replayData.prizeWon.customTraits = winData.customTraits;
-        }
-        
         // Step 2: Call blockchain claimPrize with signature
         claimText.setText('Minting NFT...');
         console.log('📝 Calling claimPrize with:', {

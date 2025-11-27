@@ -239,7 +239,7 @@ export function useGameFlow(chainId: number = sepolia.id) {
       // Use sessionId from replayData (generated when recording started)
       const sessionId = replayData.sessionId || `session_${address}_${Date.now()}`;
       
-      // Backend will generate unique AI image for this prize
+      // Backend will generate unique AI image for this prize using provided custom traits
       const response = await fetch(API_ENDPOINTS.game.submitWin, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -248,6 +248,7 @@ export function useGameFlow(chainId: number = sepolia.id) {
           walletAddress: address,
           prizeId,
           replayData,
+          customTraits: replayData.prizeWon?.customTraits, // Pass frontend-generated traits
         }),
       });
 

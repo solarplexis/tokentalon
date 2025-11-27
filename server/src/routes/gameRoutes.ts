@@ -92,13 +92,8 @@ router.post('/submit-win', async (req: Request, res: Response) => {
     const rarity = prizeInfo.rarity || 'common';
     const difficulty = validation.difficulty || 5;
 
-    // Generate custom traits for this specific NFT
-    const customTraits = prizeMapper.generateCustomTraits(
-      prizeId,
-      difficulty,
-      replayData.tokensSpent || 10,
-      walletAddress
-    );
+    // Use custom traits from frontend (already generated and displayed to user)
+    const customTraits = req.body.customTraits || {};
 
     console.log(`🎨 Generating unique AI image for prize #${prizeId} (${prizeInfo.key}, ${rarity})...`);
     console.log(`📁 Base image: ${prizeImagePath}`);
