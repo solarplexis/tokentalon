@@ -16,6 +16,7 @@ export function useTokenBalance(address: `0x${string}` | undefined, chainId: num
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
+      refetchInterval: 3000, // Refetch every 3 seconds to catch balance changes
     },
   });
 }

@@ -19,36 +19,46 @@ export const CONTRACTS = {
 // WalletConnect project ID (get from https://cloud.walletconnect.com)
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
 
-// Create config - only initialize once
-let configInstance: ReturnType<typeof createConfig> | null = null;
-
-export const getConfig = () => {
-  if (configInstance) return configInstance;
-  
-  configInstance = createConfig({
-    chains: [sepolia, polygonAmoy],
-    connectors: [
-      injected({ target: 'metaMask' }),
-      ...(projectId ? [walletConnect({ projectId })] : []),
-    ],
-    transports: {
-      [sepolia.id]: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com', {
-        timeout: 30_000,
-        retryCount: 3,
-        retryDelay: 1_000,
+// Create connectors once at module level
+const getConnectors = () => {
+  if (projectId) {
+    return [
+      walletConnect({ 
+        projectId,
+        showQrModal: true,
+        metadata: {
+          name: 'TokenTalon',
+          description: 'Play claw machine games and win NFT prizes',
+          url: 'https://tokentalon.com',
+          icons: ['https://tokentalon.com/icon.png'],
+        },
       }),
-      [polygonAmoy.id]: http(process.env.NEXT_PUBLIC_AMOY_RPC_URL || 'https://rpc-amoy.polygon.technology', {
-        timeout: 30_000,
-        retryCount: 3,
-        retryDelay: 1_000,
-      }),
-    },
-  });
-  
-  return configInstance;
+    ];
+  }
+  return [
+    injected({ 
+      shimDisconnect: true,
+    }),
+  ];
 };
 
-export const config = getConfig();
+// Create config once at module level
+export const config = createConfig({
+  chains: [sepolia, polygonAmoy],
+  connectors: getConnectors(),
+  transports: {
+    [sepolia.id]: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com', {
+      timeout: 30_000,
+      retryCount: 3,
+      retryDelay: 1_000,
+    }),
+    [polygonAmoy.id]: http(process.env.NEXT_PUBLIC_AMOY_RPC_URL || 'https://rpc-amoy.polygon.technology', {
+      timeout: 30_000,
+      retryCount: 3,
+      retryDelay: 1_000,
+    }),
+  },
+});
 
 // Backend API configuration
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';

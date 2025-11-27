@@ -55,6 +55,7 @@ const EXTENDED_ABI = [
 export function TokenAcquisition() {
   const { address, chain } = useAccount();
   const [ethAmount, setEthAmount] = useState('0.1');
+  const [lastTxHash, setLastTxHash] = useState<`0x${string}` | undefined>();
   
   const chainId = chain?.id || sepolia.id;
   const tokenAddress = chainId === sepolia.id 
@@ -89,7 +90,7 @@ export function TokenAcquisition() {
   });
 
   // Get cooldown remaining
-  const { data: cooldownRemaining, isLoading: isLoadingCooldown, error: cooldownError } = useReadContract({
+  const { data: cooldownRemaining, refetch: refetchCooldown, isLoading: isLoadingCooldown, error: cooldownError } = useReadContract({
     address: tokenAddress,
     abi: EXTENDED_ABI,
     functionName: 'faucetCooldownRemaining',
@@ -126,12 +127,22 @@ export function TokenAcquisition() {
     hash: claimHash,
   });
 
+  // Set transaction hash for tracking
+  useEffect(() => {
+    if (buyHash) setLastTxHash(buyHash);
+  }, [buyHash]);
+
+  useEffect(() => {
+    if (claimHash) setLastTxHash(claimHash);
+  }, [claimHash]);
+
   // Refetch when claim succeeds
   useEffect(() => {
     if (isClaimSuccess) {
       refetchCanClaim();
+      refetchCooldown();
     }
-  }, [isClaimSuccess, refetchCanClaim]);
+  }, [isClaimSuccess, refetchCanClaim, refetchCooldown]);
 
   const handleBuyTokens = () => {
     buyTokens({
