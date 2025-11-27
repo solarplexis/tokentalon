@@ -7,6 +7,7 @@ import { useAccount } from 'wagmi';
 import { useTokenBalance } from '@/lib/web3';
 import { formatUnits } from 'viem';
 import GameController from '@/components/game/GameController';
+import ClaimPrizeOverlay from '@/components/game/ClaimPrizeOverlay';
 
 // Dynamically import PhaserGame with no SSR to avoid window/document issues
 const PhaserGame = dynamic(() => import('@/components/game/PhaserGame'), {
@@ -18,12 +19,22 @@ const PhaserGame = dynamic(() => import('@/components/game/PhaserGame'), {
   ),
 });
 
+interface PrizeWon {
+  id: string;
+  name: string;
+  rarity: string;
+  prizeId: number;
+  customTraits?: Record<string, string>;
+}
+
 export default function GamePage() {
   const { address, chain } = useAccount();
   const { data: balance } = useTokenBalance(address, chain?.id);
   const [payForGrabFn, setPayForGrabFn] = useState<(() => Promise<boolean>) | null>(null);
   const [showOverlay, setShowOverlay] = useState(true);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [prizeWon, setPrizeWon] = useState<PrizeWon | null>(null);
+  const [replayData, setReplayData] = useState<any>(null);
   const gameContainerRef = useRef<HTMLDivElement>(null);
 
   const handleGameReady = useCallback((payForGrab: () => Promise<boolean>) => {
@@ -49,6 +60,18 @@ export default function GamePage() {
   const handleGameEnd = useCallback(() => {
     // Show overlay immediately when game ends
     setShowOverlay(true);
+  }, []);
+
+  const handlePrizeWon = useCallback((prize: PrizeWon, replay: any) => {
+    console.log('Prize won:', prize);
+    setPrizeWon(prize);
+    setReplayData(replay);
+  }, []);
+
+  const handleCloseClaimOverlay = useCallback(() => {
+    setPrizeWon(null);
+    setReplayData(null);
+    setShowOverlay(true); // Show the start overlay again
   }, []);
 
   return (
@@ -83,12 +106,19 @@ export default function GamePage() {
         </div>
 
         {/* Game Container */}
-        <div 
+        <div
           className="relative w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-400 bg-black"
           onClick={handleGameClick}
         >
           {showOverlay && <GameController onGameReady={handleGameReady} onGameStart={handleGameStart} />}
-          <PhaserGame onGameEnd={handleGameEnd} />
+          {prizeWon && replayData && (
+            <ClaimPrizeOverlay
+              prizeWon={prizeWon}
+              replayData={replayData}
+              onClose={handleCloseClaimOverlay}
+            />
+          )}
+          <PhaserGame onGameEnd={handleGameEnd} onPrizeWon={handlePrizeWon} />
         </div>
 
         <div className="flex gap-4 justify-center">

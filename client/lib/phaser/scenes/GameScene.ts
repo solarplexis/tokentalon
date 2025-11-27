@@ -662,6 +662,7 @@ export class GameScene extends Phaser.Scene {
             id: prizeIdString,
             type: prizeIdString,
             rarity: rarity,
+            prizeId: prizeId, // Add numeric prize ID
             value: 100,
             attributes: attributes,
             customTraits: customTraits, // Add custom traits
@@ -714,9 +715,19 @@ export class GameScene extends Phaser.Scene {
     
     // Check if player won
     if (this.replayData.result === 'won' && this.replayData.prizeWon) {
-      // Show win overlay after a short delay
+      // Notify React about prize won after a short delay
       this.time.delayedCall(800, () => {
-        this.showWinOverlay();
+        const onPrizeWon = this.game.registry.get('onPrizeWon');
+        if (onPrizeWon) {
+          const prizeWon = {
+            id: this.replayData.prizeWon.id,
+            name: this.replayData.prizeWon.id.replace('prize_', '').replace(/_/g, ' '),
+            rarity: this.replayData.prizeWon.rarity,
+            prizeId: this.replayData.prizeWon.prizeId,
+            customTraits: this.replayData.prizeWon.customTraits
+          };
+          onPrizeWon(prizeWon, this.replayData);
+        }
       });
     } else {
       // Reset after delay for loss
@@ -732,235 +743,6 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private showWinOverlay() {
-    if (!this.replayData.prizeWon) return;
-
-    const centerX = this.scale.width / 2;
-    const centerY = this.scale.height / 2;
-
-    // Semi-transparent overlay background
-    const overlay = this.add.rectangle(centerX, centerY, this.scale.width, this.scale.height, 0x000000, 0.8);
-    overlay.setDepth(1000);
-    overlay.setInteractive();
-
-    // Win panel background
-    const panelWidth = 500;
-    const panelHeight = 560;
-    const panel = this.add.rectangle(centerX, centerY, panelWidth, panelHeight, 0x2c3e50, 1);
-    panel.setDepth(1001);
-    panel.setStrokeStyle(4, 0xf39c12);
-
-    // Congratulations text
-    const congratsText = this.add.text(centerX, centerY - 220, '🎉 CONGRATULATIONS! 🎉', {
-      fontSize: '36px',
-      fontFamily: 'Arial',
-      color: '#f39c12',
-      fontStyle: 'bold',
-      align: 'center'
-    });
-    congratsText.setOrigin(0.5);
-    congratsText.setDepth(1002);
-
-    // Prize image
-    const prizeKey = this.replayData.prizeWon.id;
-    const prizeImage = this.add.image(centerX, centerY - 50, prizeKey);
-    prizeImage.setScale(0.6);
-    prizeImage.setDepth(1002);
-
-    // Prize name and rarity
-    const prizeName = prizeKey.replace('prize_', '').replace(/_/g, ' ');
-    const prizeNameText = this.add.text(centerX, centerY + 120, 
-      prizeName.charAt(0).toUpperCase() + prizeName.slice(1), {
-      fontSize: '28px',
-      fontFamily: 'Arial',
-      color: '#ecf0f1',
-      fontStyle: 'bold',
-      align: 'center'
-    });
-    prizeNameText.setOrigin(0.5);
-    prizeNameText.setDepth(1002);
-
-    // Rarity badge
-    const rarityColors: { [key: string]: number } = {
-      common: 0x95a5a6,
-      uncommon: 0x27ae60,
-      rare: 0x3498db,
-      legendary: 0x9b59b6
-    };
-    const rarityColor = rarityColors[this.replayData.prizeWon.rarity] || 0x95a5a6;
-    
-    const rarityBadge = this.add.rectangle(centerX, centerY + 170, 180, 40, rarityColor);
-    rarityBadge.setDepth(1002);
-    
-    const rarityText = this.add.text(centerX, centerY + 170, 
-      this.replayData.prizeWon.rarity.toUpperCase(), {
-      fontSize: '20px',
-      fontFamily: 'Arial',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      align: 'center'
-    });
-    rarityText.setOrigin(0.5);
-    rarityText.setDepth(1003);
-
-    // Claim NFT button
-    const buttonY = centerY + 240;
-    const claimButton = this.add.rectangle(centerX - 80, buttonY, 180, 60, 0xf39c12);
-    claimButton.setDepth(1002);
-    claimButton.setInteractive({ useHandCursor: true });
-    
-    const claimText = this.add.text(centerX - 80, buttonY, 'Claim as NFT', {
-      fontSize: '20px',
-      fontFamily: 'Arial',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      align: 'center'
-    });
-    claimText.setOrigin(0.5);
-    claimText.setDepth(1003);
-
-    // Close button
-    const closeButton = this.add.rectangle(centerX + 80, buttonY, 180, 60, 0x95a5a6);
-    closeButton.setDepth(1002);
-    closeButton.setInteractive({ useHandCursor: true });
-    
-    const closeText = this.add.text(centerX + 80, buttonY, 'Close', {
-      fontSize: '20px',
-      fontFamily: 'Arial',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      align: 'center'
-    });
-    closeText.setOrigin(0.5);
-    closeText.setDepth(1003);
-
-    // Collect all elements for cleanup
-    const allElements = [overlay, panel, congratsText, prizeImage, prizeNameText,
-                        rarityBadge, rarityText,
-                        claimButton, claimText, closeButton, closeText];
-
-    // Button hover effects
-    claimButton.on('pointerover', () => {
-      claimButton.setFillStyle(0xe67e22);
-    });
-    claimButton.on('pointerout', () => {
-      claimButton.setFillStyle(0xf39c12);
-    });
-    claimButton.on('pointerdown', async () => {
-      console.log('🪙 NFT Claim clicked');
-      console.log('Prize attributes:', this.replayData.prizeWon?.attributes);
-      
-      // Disable button and show loading
-      claimButton.disableInteractive();
-      claimButton.setFillStyle(0x95a5a6);
-      claimText.setText('Claiming...');
-      
-      try {
-        // Get claim functions from registry
-        const submitWin = this.game.registry.get('submitWin');
-        const claimPrize = this.game.registry.get('claimPrize');
-        
-        if (!submitWin || !claimPrize) {
-          throw new Error('Claim functions not available');
-        }
-        
-        if (!this.replayData.prizeWon) {
-          throw new Error('No prize data available');
-        }
-        
-        // Step 1: Submit win to backend to get signature
-        claimText.setText('Validating win...');
-        const prizeIdString = this.replayData.prizeWon.id;
-        
-        // Convert prize key to numeric ID by finding its index in prizeTypes array
-        // Backend expects 1-based indexing (Prize ID 1 = first prize)
-        const prizeIndex = this.prizeTypes.findIndex(p => p.key === prizeIdString);
-        const prizeId = prizeIndex >= 0 ? prizeIndex + 1 : 1; // Default to 1 if not found
-        
-        console.log(`🎁 Prize key: ${prizeIdString} → Prize ID: ${prizeId}`);
-        
-        const winData = await submitWin(prizeId, this.replayData);
-        
-        if (!winData || !winData.voucher) {
-          throw new Error('Failed to get win voucher from backend');
-        }
-        
-        console.log('🎫 Win voucher received from backend:', winData);
-        
-        // Step 2: Call blockchain claimPrize with signature
-        claimText.setText('Minting NFT...');
-        console.log('📝 Calling claimPrize with:', {
-          prizeId: winData.prizeId,
-          metadataUri: winData.metadata.uri,
-          replayDataHash: winData.metadata.replayDataHash,
-          difficulty: winData.metadata.difficulty,
-          nonce: winData.voucher.nonce,
-          signature: winData.voucher.signature
-        });
-        
-        const success = await claimPrize(
-          winData.prizeId,
-          winData.metadata.uri,
-          winData.metadata.replayDataHash,
-          winData.metadata.difficulty,
-          winData.voucher.nonce,
-          winData.voucher.signature
-        );
-        
-        if (success) {
-          claimText.setText('NFT Claimed! 🎉');
-          console.log('✅ NFT claimed successfully!');
-          
-          // Wait a moment to show success, then close
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          this.closeWinOverlay(allElements);
-        } else {
-          throw new Error('Failed to claim NFT on blockchain');
-        }
-        
-      } catch (error) {
-        console.error('Failed to claim NFT:', error);
-        claimText.setText('Claim Failed ❌');
-        claimButton.setFillStyle(0xe74c3c);
-        
-        // Re-enable after delay
-        setTimeout(() => {
-          claimButton.setInteractive({ useHandCursor: true });
-          claimButton.setFillStyle(0xf39c12);
-          claimText.setText('🪙 Claim NFT');
-        }, 2000);
-      }
-    });
-
-    closeButton.on('pointerover', () => {
-      closeButton.setFillStyle(0x7f8c8d);
-    });
-    closeButton.on('pointerout', () => {
-      closeButton.setFillStyle(0x95a5a6);
-    });
-    closeButton.on('pointerdown', () => {
-      console.log('Close clicked - Returning to game');
-      this.closeWinOverlay(allElements);
-    });
-  }
-
-  private closeWinOverlay(elements: Phaser.GameObjects.GameObject[]) {
-    console.log('Destroying overlay elements:', elements.length);
-    elements.forEach(el => {
-      if (el && !el.scene) {
-        console.log('Element already destroyed');
-      } else if (el) {
-        el.destroy();
-      }
-    });
-    this.resetGame();
-    
-    // Notify parent that game ended
-    const onGameEnd = this.game.registry.get('onGameEnd');
-    if (onGameEnd && typeof onGameEnd === 'function') {
-      onGameEnd();
-    }
-  }
 
   private resetGame() {
     if (!this.claw || !this.cabinetConfig) return;

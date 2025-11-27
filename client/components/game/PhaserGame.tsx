@@ -6,11 +6,20 @@ import { gameConfig } from '@/lib/phaser/config';
 import { useGameFlow } from '@/lib/web3/useGameFlow';
 import { useAccount } from 'wagmi';
 
-interface PhaserGameProps {
-  onGameEnd?: () => void;
+interface PrizeWon {
+  id: string;
+  name: string;
+  rarity: string;
+  prizeId: number;
+  customTraits?: Record<string, string>;
 }
 
-export default function PhaserGame({ onGameEnd }: PhaserGameProps) {
+interface PhaserGameProps {
+  onGameEnd?: () => void;
+  onPrizeWon?: (prizeWon: PrizeWon, replayData: any) => void;
+}
+
+export default function PhaserGame({ onGameEnd, onPrizeWon }: PhaserGameProps) {
   const gameRef = useRef<Phaser.Game | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { address, chain } = useAccount();
@@ -35,6 +44,9 @@ export default function PhaserGame({ onGameEnd }: PhaserGameProps) {
       gameRef.current.registry.set('playerAddress', address || '0x0000000000000000000000000000000000000000');
       if (onGameEnd) {
         gameRef.current.registry.set('onGameEnd', onGameEnd);
+      }
+      if (onPrizeWon) {
+        gameRef.current.registry.set('onPrizeWon', onPrizeWon);
       }
     }
 
@@ -63,7 +75,7 @@ export default function PhaserGame({ onGameEnd }: PhaserGameProps) {
         gameRef.current = null;
       }
     };
-  }, [address, payForGrab, submitWin, claimPrize, onGameEnd]);
+  }, [address, payForGrab, submitWin, claimPrize, onGameEnd, onPrizeWon]);
 
   return (
     <div
