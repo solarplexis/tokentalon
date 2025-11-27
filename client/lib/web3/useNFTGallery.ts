@@ -40,8 +40,10 @@ export function useNFTGallery(chainId: number = sepolia.id) {
     const fetchNFTs = async () => {
       setIsLoading(true);
       try {
+        // Add cache buster to ensure fresh data when address changes
+        const cacheBuster = Date.now();
         // Fetch NFTs from backend API that queries events
-        const response = await fetch(`/api/nft/owned?address=${address}&chainId=${chainId}`);
+        const response = await fetch(`/api/nft/owned?address=${address}&chainId=${chainId}&t=${cacheBuster}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch NFTs');

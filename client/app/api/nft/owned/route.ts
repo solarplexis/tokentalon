@@ -6,7 +6,7 @@ import { CONTRACTS } from '@/lib/web3/config';
 
 // Simple cache to avoid repeated queries (in production, use Redis)
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 60000; // 1 minute
+const CACHE_TTL = 10000; // 10 seconds
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

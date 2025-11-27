@@ -136,7 +136,8 @@ router.post('/submit-win', async (req: Request, res: Response) => {
       replayHash,
       difficulty,
       replayData.tokensSpent || 10,
-      customTraits // Include custom traits in metadata
+      customTraits, // Include custom traits in metadata
+      rarity // Pass the actual prize rarity
     );
 
     const metadataUri = `ipfs://${metadataHash}`;

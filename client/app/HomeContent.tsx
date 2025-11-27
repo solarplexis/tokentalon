@@ -83,11 +83,16 @@ export function HomeContent() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
       {/* Wallet Connection in Top Right */}
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-4 right-4 z-[100]">
         <WalletConnect />
       </div>
 
-      <main className="flex flex-col items-center gap-8 max-w-6xl w-full">
+      {/* Token Acquisition - Floating Right Below Wallet */}
+      <div className="hidden lg:block absolute top-32 right-4 w-96 z-10">
+        <TokenAcquisition />
+      </div>
+
+      <main className="flex flex-col items-center gap-8 max-w-4xl w-full">
         {/* Header */}
         <div className="text-center space-y-4">
           <p className="text-xl text-purple-200">
@@ -102,7 +107,7 @@ export function HomeContent() {
               src={cabinet.image}
               alt={cabinet.name}
               fill
-              className="object-contain"
+              className="object-cover"
               priority
               onError={(e) => {
                 // Fallback if image doesn't exist
@@ -147,8 +152,8 @@ export function HomeContent() {
           </Link>
         </div>
 
-        {/* Token Acquisition Section */}
-        <div className="w-full max-w-md mt-8">
+        {/* Token Acquisition for Mobile */}
+        <div className="lg:hidden w-full max-w-md">
           <TokenAcquisition />
         </div>
 

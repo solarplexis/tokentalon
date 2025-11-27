@@ -10,11 +10,27 @@ export function WalletConnect() {
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const [mounted, setMounted] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const { data: balance } = useTokenBalance(address, chain?.id);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.wallet-dropdown')) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showDropdown]);
 
   if (!mounted) {
     return null;
@@ -47,18 +63,30 @@ export function WalletConnect() {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="text-sm font-semibold mb-2 text-white">Connect Wallet</div>
-      {connectors.map((connector) => (
-        <button
-          key={connector.id}
-          onClick={() => connect({ connector })}
-          disabled={isPending}
-          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg transition-colors"
-        >
-          {connector.name}
-        </button>
-      ))}
+    <div className="relative wallet-dropdown z-[100]">
+      <button
+        onClick={() => setShowDropdown(!showDropdown)}
+        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-semibold"
+      >
+        Connect Wallet
+      </button>
+      {showDropdown && (
+        <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-white/20 rounded-lg shadow-xl overflow-hidden z-[100]">
+          {connectors.map((connector) => (
+            <button
+              key={connector.id}
+              onClick={() => {
+                connect({ connector });
+                setShowDropdown(false);
+              }}
+              disabled={isPending}
+              className="w-full px-4 py-3 text-left text-white hover:bg-blue-500/20 disabled:bg-gray-700 disabled:cursor-not-allowed transition-colors border-b border-white/10 last:border-b-0"
+            >
+              {connector.name}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

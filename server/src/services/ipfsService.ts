@@ -90,7 +90,8 @@ export async function uploadPrizeMetadata(
   replayDataHash: string,
   difficulty: number,
   tokensSpent: number,
-  customTraits?: Record<string, string>
+  customTraits?: Record<string, string>,
+  rarity?: string
 ): Promise<string> {
   try {
     const baseAttributes = [
@@ -108,7 +109,7 @@ export async function uploadPrizeMetadata(
       },
       {
         trait_type: 'Rarity',
-        value: difficulty >= 8 ? 'Legendary' : difficulty >= 6 ? 'Epic' : difficulty >= 4 ? 'Rare' : 'Common'
+        value: rarity ? rarity.charAt(0).toUpperCase() + rarity.slice(1) : (difficulty >= 8 ? 'Legendary' : difficulty >= 6 ? 'Epic' : difficulty >= 4 ? 'Rare' : 'Common')
       }
     ];
 
