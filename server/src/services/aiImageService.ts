@@ -105,7 +105,19 @@ export async function generatePrizeImage(
  * Build enhanced DALL-E prompt based on GPT-4 Vision analysis + customization
  */
 function buildEnhancedPrompt(imageDescription: string, customization: PrizeCustomization): string {
-  const { rarity, difficulty, tokensSpent, customTraits } = customization;
+  const { rarity, difficulty, tokensSpent, customTraits, playerAddress } = customization;
+
+  // Generate random background color based on player address for uniqueness
+  const solidColors = [
+    '#FFB6C1', '#87CEEB', '#98FB98', '#DDA0DD', // Light pink, sky blue, pale green, plum
+    '#F0E68C', '#FFE4B5', '#FFDAB9', '#E0FFFF', // Khaki, moccasin, peach, light cyan
+    '#F5DEB3', '#FFE4E1', '#F0FFF0', '#FFF0F5', // Wheat, misty rose, honeydew, lavender blush
+    '#FFFACD', '#E6E6FA', '#FFF5EE', '#F0F8FF', // Lemon chiffon, lavender, seashell, alice blue
+    '#FDF5E6', '#FAF0E6', '#FFEFD5', '#FFE4C4'  // Old lace, linen, papaya, bisque
+  ];
+
+  const addressSeed = parseInt(playerAddress.slice(2, 10), 16);
+  const backgroundColor = solidColors[addressSeed % solidColors.length];
   
   // Start with the analyzed image description
   let prompt = `Create a high-quality 3D render based on this description: ${imageDescription}. `;
@@ -161,12 +173,15 @@ function buildEnhancedPrompt(imageDescription: string, customization: PrizeCusto
     prompt += `Enhanced with additional decorative touches, refined details, quality improvements. `;
   }
   
-  // Technical requirements
-  prompt += `Professional product photography style, soft studio lighting with dramatic highlights, `;
-  prompt += `slight depth of field, isolated subject on clean gradient background, premium NFT artwork quality. `;
+  // Technical requirements - STRICT BACKGROUND RULES
+  prompt += `CRITICAL: Place the subject on a completely SOLID FLAT background color ${backgroundColor}. `;
+  prompt += `ABSOLUTELY NO gradients, NO textures, NO patterns on the background - it must be a single uniform flat color. `;
+  prompt += `The subject itself should have NO drop shadows, NO cast shadows on the background. `;
+  prompt += `Professional product photography style with soft studio lighting. `;
+  prompt += `Isolated subject on the solid flat background, premium NFT artwork quality. `;
   prompt += `Maintain the character and essence of the original but make it more impressive and valuable-looking. `;
   prompt += `No text, no watermarks, no UI elements, no logos.`;
-  
+
   return prompt;
 }
 

@@ -7,7 +7,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "expression": ["happy", "sleepy", "cheerful", "surprised"],
-        "accessory": ["none", "rainbow", "lightning_bolt", "rain_drops"]
+        "accessory": ["none", "rainbow", "lightning_bolt", "rain_drops"],
+        "cloud_type": ["fluffy", "wispy", "puffy", "storm_cloud"],
+        "size_style": ["small", "medium", "large", "extra_fluffy"]
       }
     },
     {
@@ -17,7 +19,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "pattern": ["plain", "spotted", "striped", "sparkly"],
-        "accessory": ["none", "seashell", "coral", "bubbles"]
+        "accessory": ["none", "seashell", "coral", "bubbles"],
+        "arm_count": ["five", "six", "seven", "eight"],
+        "texture": ["smooth", "bumpy", "glossy", "soft"]
       }
     },
     {
@@ -27,7 +31,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "outfit": ["none", "overalls", "bow_tie", "farmer_hat"],
-        "expression": ["happy", "shy", "playful", "sleepy"]
+        "expression": ["happy", "shy", "playful", "sleepy"],
+        "tail_style": ["curly", "straight", "ribbon_bow", "extra_curly"],
+        "ear_style": ["perked", "floppy", "one_down", "decorated"]
       }
     },
     {
@@ -37,7 +43,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "expression": ["friendly", "mischievous", "shy", "winking"],
-        "accessory": ["none", "bow", "halo", "candy"]
+        "accessory": ["none", "bow", "halo", "candy"],
+        "transparency": ["solid", "slightly_see_through", "ethereal", "wispy"],
+        "tail_style": ["wavy", "pointed", "rounded", "split"]
       }
     },
     {
@@ -47,7 +55,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "color_scheme": ["classic", "rainbow", "metallic", "transparent"],
-        "configuration": ["2x4", "special_piece", "decorated", "stacked"]
+        "configuration": ["2x4", "special_piece", "decorated", "stacked"],
+        "size": ["small", "medium", "large", "mega"],
+        "finish": ["matte", "glossy", "pearl", "glitter"]
       }
     },
     {
@@ -57,7 +67,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "flavor": ["vanilla", "chocolate", "strawberry", "mint", "rainbow"],
-        "topping": ["none", "sprinkles", "cherry", "chocolate_drizzle", "wafer_stick"]
+        "topping": ["none", "sprinkles", "cherry", "chocolate_drizzle", "wafer_stick"],
+        "cone_style": ["waffle", "sugar", "chocolate_dipped", "decorated"],
+        "scoop_count": ["single", "double", "triple", "tower"]
       }
     },
     {
@@ -67,7 +79,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "carving": ["happy", "spooky", "silly", "surprised"],
-        "accessory": ["none", "witch_hat", "bow", "candle_glow"]
+        "accessory": ["none", "witch_hat", "bow", "candle_glow"],
+        "stem_style": ["straight", "curly", "leafy", "twisted"],
+        "light_effect": ["none", "soft_glow", "bright", "flickering"]
       }
     },
     {
@@ -77,7 +91,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "outfit": ["none", "scarf", "bow_tie", "top_hat", "earmuffs"],
-        "accessory": ["none", "fish", "snowflake", "ice_cream"]
+        "accessory": ["none", "fish", "snowflake", "ice_cream"],
+        "expression": ["happy", "cheerful", "proud", "curious"],
+        "belly_pattern": ["white", "heart", "star", "striped"]
       }
     },
     {
@@ -88,7 +104,8 @@
       "customizableTraits": {
         "eyewear": ["none", "sunglasses", "eye_patch", "long_lashes", "reading_glasses"],
         "expression": ["happy", "surprised", "winking", "sleepy"],
-        "accessory": ["none", "bubbles", "seaweed_crown", "pearl_necklace"]
+        "accessory": ["none", "bubbles", "seaweed_crown", "pearl_necklace"],
+        "fin_style": ["standard", "fancy", "large", "ruffled"]
       }
     },
     {
@@ -98,7 +115,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "pattern": ["spots", "heart_spots", "star_spots", "minimal"],
-        "accessory": ["none", "bell", "flower_crown", "bow"]
+        "accessory": ["none", "bell", "flower_crown", "bow"],
+        "expression": ["happy", "peaceful", "silly", "curious"],
+        "horn_style": ["small", "curved", "decorated", "sparkly"]
       }
     },
     {
@@ -108,7 +127,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "ear_style": ["floppy", "perked", "one_up_one_down", "bow_tied"],
-        "accessory": ["none", "carrot", "flower", "basket", "bowtie"]
+        "accessory": ["none", "carrot", "flower", "basket", "bowtie"],
+        "expression": ["happy", "curious", "sleepy", "playful"],
+        "tail_style": ["fluffy", "pompom", "cotton", "extra_fluffy"]
       }
     },
     {
@@ -118,7 +139,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "pattern": ["classic_stripes", "thick_stripes", "dotted", "sparkly"],
-        "accessory": ["none", "flower", "honey_pot", "crown"]
+        "accessory": ["none", "flower", "honey_pot", "crown"],
+        "wing_style": ["standard", "sparkly", "translucent", "iridescent"],
+        "expression": ["happy", "busy", "cheerful", "determined"]
       }
     },
     {
@@ -128,7 +151,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "outfit": ["onesie", "dress", "overalls", "pajamas"],
-        "accessory": ["none", "pacifier", "bottle", "teddy", "rattle"]
+        "accessory": ["none", "pacifier", "bottle", "teddy", "rattle"],
+        "expression": ["happy", "sleepy", "giggling", "curious"],
+        "hair_color": ["blonde", "brown", "black", "ginger"]
       }
     },
     {
@@ -138,7 +163,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "outfit": ["casual", "fancy_dress", "uniform", "costume"],
-        "hair_style": ["pigtails", "bun", "long", "short_curly"]
+        "hair_style": ["pigtails", "bun", "long", "short_curly"],
+        "expression": ["happy", "elegant", "playful", "sweet"],
+        "accessory": ["none", "purse", "hat", "jewelry", "shoes"]
       }
     },
     {
@@ -148,7 +175,9 @@
       "grabDifficulty": 1.0,
       "customizableTraits": {
         "color": ["brown", "honey", "cream", "chocolate"],
-        "accessory": ["none", "bow", "vest", "scarf", "heart"]
+        "accessory": ["none", "bow", "vest", "scarf", "heart"],
+        "expression": ["happy", "sleepy", "loving", "friendly"],
+        "fur_texture": ["fluffy", "soft", "curly", "velvety"]
       }
     },
     {
@@ -159,7 +188,8 @@
       "customizableTraits": {
         "antenna": ["single", "double", "spiral", "glowing"],
         "eye_count": ["two", "three", "four", "one_large"],
-        "accessory": ["none", "space_helmet", "ray_gun", "flying_saucer"]
+        "accessory": ["none", "space_helmet", "ray_gun", "flying_saucer"],
+        "skin_color": ["green", "blue", "purple", "silver"]
       }
     },
     {
@@ -169,7 +199,9 @@
       "grabDifficulty": 1.5,
       "customizableTraits": {
         "pixel_style": ["8bit", "16bit", "glitch", "holographic"],
-        "accessory": ["none", "pixel_sunglasses", "game_controller", "power_up"]
+        "accessory": ["none", "pixel_sunglasses", "game_controller", "power_up"],
+        "color_scheme": ["classic_green", "blue", "red", "rainbow"],
+        "pose": ["standing", "roaring", "running", "jumping"]
       }
     },
     {
@@ -179,7 +211,9 @@
       "grabDifficulty": 1.5,
       "customizableTraits": {
         "circuit_color": ["green", "blue", "red", "rainbow"],
-        "tech_feature": ["led_eyes", "antenna", "circuit_pattern", "hologram"]
+        "tech_feature": ["led_eyes", "antenna", "circuit_pattern", "hologram"],
+        "pose": ["sitting", "jumping", "crouching", "relaxed"],
+        "eye_style": ["digital", "glowing", "scanning", "pixelated"]
       }
     },
     {
@@ -189,7 +223,9 @@
       "grabDifficulty": 1.5,
       "customizableTraits": {
         "cybernetics": ["visor", "ear_implants", "tail_mod", "paw_enhancements"],
-        "led_color": ["blue", "pink", "green", "rainbow"]
+        "led_color": ["blue", "pink", "green", "rainbow"],
+        "pose": ["sitting", "prowling", "standing", "stretching"],
+        "tail_style": ["robotic", "cyber", "glowing", "segmented"]
       }
     },
     {
@@ -199,7 +235,9 @@
       "grabDifficulty": 1.5,
       "customizableTraits": {
         "eye_color": ["red", "blue", "green", "purple", "rainbow"],
-        "accessory": ["none", "eyepatch", "monocle", "visor", "laser_beam"]
+        "accessory": ["none", "eyepatch", "monocle", "visor", "laser_beam"],
+        "skin_color": ["green", "blue", "grey", "purple"],
+        "expression": ["friendly", "fierce", "curious", "silly"]
       }
     },
     {
@@ -209,7 +247,9 @@
       "grabDifficulty": 1.5,
       "customizableTraits": {
         "lava_intensity": ["low_glow", "medium_heat", "high_flames", "volcanic"],
-        "expression": ["happy", "fierce", "playful", "sleepy"]
+        "expression": ["happy", "fierce", "playful", "sleepy"],
+        "size_style": ["small", "medium", "large", "massive"],
+        "particle_effect": ["none", "sparks", "embers", "smoke"]
       }
     },
     {
@@ -219,7 +259,9 @@
       "grabDifficulty": 1.5,
       "customizableTraits": {
         "space_suit": ["astronaut", "alien_tech", "retro", "futuristic"],
-        "accessory": ["none", "helmet", "jetpack", "planet", "star_map"]
+        "accessory": ["none", "helmet", "jetpack", "planet", "star_map"],
+        "expression": ["sleepy", "relaxed", "happy", "dreamy"],
+        "helmet_style": ["bubble", "classic", "visor", "advanced"]
       }
     },
     {
@@ -229,7 +271,9 @@
       "grabDifficulty": 1.5,
       "customizableTraits": {
         "gear_type": ["brass", "copper", "silver", "gold"],
-        "accessory": ["none", "monocle", "top_hat", "pocket_watch", "goggles"]
+        "accessory": ["none", "monocle", "top_hat", "pocket_watch", "goggles"],
+        "feather_color": ["brown", "grey", "white", "bronze"],
+        "wing_style": ["mechanical", "hybrid", "decorated", "clockwork"]
       }
     },
     {
@@ -240,7 +284,8 @@
       "customizableTraits": {
         "weapon": ["katana", "shuriken", "staff", "dual_blades"],
         "mask_color": ["black", "red", "blue", "purple"],
-        "element": ["fire", "water", "lightning", "shadow"]
+        "element": ["fire", "water", "lightning", "shadow"],
+        "pose": ["stealth", "attack", "defensive", "meditation"]
       }
     },
     {
@@ -251,7 +296,8 @@
       "customizableTraits": {
         "egg_color": ["red", "blue", "green", "purple", "gold", "crystal"],
         "pattern": ["scales", "gems", "runes", "flames"],
-        "glow": ["none", "soft", "pulsing", "intense"]
+        "glow": ["none", "soft", "pulsing", "intense"],
+        "pedestal_style": ["none", "stone", "gold", "mystical"]
       }
     },
     {
@@ -262,7 +308,8 @@
       "customizableTraits": {
         "helmet": ["horned", "winged", "crowned", "battle_worn"],
         "weapon": ["axe", "sword", "shield", "hammer"],
-        "beard_style": ["braided", "long", "decorated", "icy"]
+        "beard_style": ["braided", "long", "decorated", "icy"],
+        "armor_style": ["leather", "chainmail", "plate", "fur"]
       }
     },
     {
@@ -273,7 +320,8 @@
       "customizableTraits": {
         "hat_style": ["pointed", "wide_brim", "starry", "crooked"],
         "staff_type": ["crystal", "wooden", "magical", "elemental"],
-        "spell_effect": ["sparkles", "flames", "frost", "lightning"]
+        "spell_effect": ["sparkles", "flames", "frost", "lightning"],
+        "robe_color": ["blue", "purple", "red", "green"]
       }
     },
     {
@@ -284,7 +332,8 @@
       "customizableTraits": {
         "horn_style": ["spiral", "crystal", "rainbow", "glowing"],
         "mane_color": ["rainbow", "pastel", "starlight", "galaxy"],
-        "magic_aura": ["sparkles", "stars", "aurora", "celestial"]
+        "magic_aura": ["sparkles", "stars", "aurora", "celestial"],
+        "wing_style": ["none", "feathered", "ethereal", "crystalline"]
       }
     },
     {
@@ -295,7 +344,8 @@
       "customizableTraits": {
         "outfit": ["overalls", "suit", "maid", "superhero"],
         "eye_count": ["one", "two"],
-        "accessory": ["none", "banana", "ray_gun", "teddy", "tool_belt"]
+        "accessory": ["none", "banana", "ray_gun", "teddy", "tool_belt"],
+        "hair_style": ["none", "spiky", "pompadour", "messy"]
       }
     },
     {
@@ -306,7 +356,8 @@
       "customizableTraits": {
         "reveal_style": ["glowing", "smoky", "sparkly", "holographic"],
         "color_theme": ["gold", "silver", "rainbow", "cosmic"],
-        "effect": ["question_marks", "stars", "mist", "energy"]
+        "effect": ["question_marks", "stars", "mist", "energy"],
+        "wrapping": ["gift_wrap", "chest", "orb", "portal"]
       }
     }
   ]

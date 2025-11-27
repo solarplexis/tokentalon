@@ -743,9 +743,9 @@ export class GameScene extends Phaser.Scene {
     overlay.setDepth(1000);
     overlay.setInteractive();
 
-    // Win panel background (taller to fit attributes)
+    // Win panel background
     const panelWidth = 500;
-    const panelHeight = this.replayData.prizeWon.attributes ? 750 : 600;
+    const panelHeight = 560;
     const panel = this.add.rectangle(centerX, centerY, panelWidth, panelHeight, 0x2c3e50, 1);
     panel.setDepth(1001);
     panel.setStrokeStyle(4, 0xf39c12);
@@ -803,54 +803,8 @@ export class GameScene extends Phaser.Scene {
     rarityText.setOrigin(0.5);
     rarityText.setDepth(1003);
 
-    // Prize attributes display - show custom traits if available
-    const customTraits = this.replayData.prizeWon.customTraits;
-    const attrs = this.replayData.prizeWon.attributes;
-    let attributeElements: Phaser.GameObjects.GameObject[] = [];
-    
-    if (customTraits && Object.keys(customTraits).length > 0) {
-      // Display custom traits from backend (AI-generated)
-      const attrY = centerY + 210;
-      const traitLines = Object.entries(customTraits).map(([category, value]) => {
-        // Convert snake_case to Title Case
-        const displayCategory = category.split('_').map(word => 
-          word.charAt(0).toUpperCase() + word.slice(1)
-        ).join(' ');
-        const displayValue = value.replace(/_/g, ' ');
-        return `${displayCategory}: ${displayValue}`;
-      }).join('\n');
-      
-      const attrText = this.add.text(centerX - 220, attrY, traitLines, {
-        fontSize: '14px',
-        fontFamily: 'Arial',
-        color: '#ecf0f1',
-        align: 'left',
-        lineSpacing: 4
-      });
-      attrText.setDepth(1002);
-      attributeElements.push(attrText);
-    } else if (attrs) {
-      // Fallback to old generic attributes
-      const attrY = centerY + 210;
-      const attrText = this.add.text(centerX - 220, attrY, 
-        `Color: ${attrs.color}\n` +
-        `Pattern: ${attrs.pattern}\n` +
-        `Size: ${attrs.size}\n` +
-        `Condition: ${attrs.condition}\n` +
-        `ID: ${attrs.uniqueId}\n` +
-        `Accuracy: ${attrs.grabAccuracy}%`, {
-        fontSize: '14px',
-        fontFamily: 'Arial',
-        color: '#ecf0f1',
-        align: 'left',
-        lineSpacing: 4
-      });
-      attrText.setDepth(1002);
-      attributeElements.push(attrText);
-    }
-
-    // Claim NFT button (moved down to make room for attributes)
-    const buttonY = attrs ? centerY + 350 : centerY + 240;
+    // Claim NFT button
+    const buttonY = centerY + 240;
     const claimButton = this.add.rectangle(centerX - 80, buttonY, 180, 60, 0xf39c12);
     claimButton.setDepth(1002);
     claimButton.setInteractive({ useHandCursor: true });
@@ -881,8 +835,8 @@ export class GameScene extends Phaser.Scene {
     closeText.setDepth(1003);
 
     // Collect all elements for cleanup
-    const allElements = [overlay, panel, congratsText, prizeImage, prizeNameText, 
-                        rarityBadge, rarityText, ...attributeElements, 
+    const allElements = [overlay, panel, congratsText, prizeImage, prizeNameText,
+                        rarityBadge, rarityText,
                         claimButton, claimText, closeButton, closeText];
 
     // Button hover effects
