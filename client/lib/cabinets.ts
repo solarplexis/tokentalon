@@ -64,15 +64,7 @@ export const CABINETS: Cabinet[] = [
     image: '/assets/images/cabinet/cabinet_tron.jpg',
     description: 'The original claw machine experience',
     theme: 'tron'
-  },
-  // reto
-  {
-    id: 'retro',
-    name: 'Retro Arcade',
-    image: '/assets/images/cabinet/cabinet_retro.jpg',
-    description: 'The original claw machine experience',
-    theme: 'retro'
-  } 
+  }
 ];
 
 /**
