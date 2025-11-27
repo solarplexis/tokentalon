@@ -75,7 +75,9 @@ export class GameScene extends Phaser.Scene {
       'dragon_egg', 'ice_cream_cone', 'jack-o-lantern', 'kawaii_ghost', 'lava_blob',
       'lego_brick', 'minion', 'mystery', 'nemo', 'penguin',
       'piglet', 'pixel_dino', 'space_sloth', 'steampunk_owl', 'teddybear',
-      'unicorn', 'viking_walrus', 'white_cloud', 'wizard_gnome', 'yellow_starfish'
+      'unicorn', 'viking_walrus', 'white_cloud', 'wizard_gnome', 'yellow_starfish',
+      'roblox-goth-girl', 'max-verstappen', 'voodoo-doll', 'egyptian-pharaoh', 
+      'hello-kitty', 'pegasus', 'mermaid'
     ];
     
     prizeNames.forEach(name => {

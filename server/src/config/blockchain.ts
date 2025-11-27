@@ -1,5 +1,7 @@
 import { ethers } from 'ethers';
 import dotenv from 'dotenv';
+// Import auto-generated contract addresses from deployment system
+import { CONTRACTS as DEPLOYED_CONTRACTS } from './contracts';
 
 dotenv.config();
 
@@ -30,19 +32,25 @@ export const NETWORK_CONFIG = {
   }
 };
 
-// Contract Addresses (Update after deployment)
+// Contract Addresses - sourced from auto-generated deployment files
+// These are automatically updated when contracts are deployed via:
+//   cd common && npm run deploy:sepolia
 export const CONTRACT_ADDRESSES = {
-  sepolia: {
+  // Use auto-generated addresses from deployment system
+  ...DEPLOYED_CONTRACTS,
+
+  // Fallback to env vars for networks not yet deployed
+  sepolia: DEPLOYED_CONTRACTS.sepolia || {
     gameToken: process.env.SEPOLIA_GAMETOKEN_ADDRESS || '',
     prizeNFT: process.env.SEPOLIA_PRIZENFT_ADDRESS || '',
     clawMachine: process.env.SEPOLIA_CLAWMACHINE_ADDRESS || ''
   },
-  polygon: {
+  polygon: DEPLOYED_CONTRACTS.polygon || {
     gameToken: process.env.POLYGON_GAMETOKEN_ADDRESS || '',
     prizeNFT: process.env.POLYGON_PRIZENFT_ADDRESS || '',
     clawMachine: process.env.POLYGON_CLAWMACHINE_ADDRESS || ''
   },
-  amoy: {
+  amoy: DEPLOYED_CONTRACTS.polygonAmoy || {
     gameToken: process.env.AMOY_GAMETOKEN_ADDRESS || '',
     prizeNFT: process.env.AMOY_PRIZENFT_ADDRESS || '',
     clawMachine: process.env.AMOY_CLAWMACHINE_ADDRESS || ''

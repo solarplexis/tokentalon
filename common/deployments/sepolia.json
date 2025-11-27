@@ -1,0 +1,50 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployedAt": "2025-11-27T12:00:00.000Z",
+  "deployer": "0x612fB02F7334Af1F75a287de3fd8BbfA11954Eaf",
+  "contracts": {
+    "GameToken": {
+      "address": "0xba2300B8c318b8054D7Bd688ADFd659bD4EBECc2",
+      "deployedAt": "2025-11-27T12:00:00.000Z",
+      "blockNumber": 0,
+      "transactionHash": "",
+      "constructorArgs": [1000000, "1000000000000000"],
+      "verified": false,
+      "version": "1.0.0"
+    },
+    "PrizeNFT": {
+      "address": "0x6e3703Fa98a6cEA8086599ef407cB863e7425759",
+      "deployedAt": "2025-11-27T12:00:00.000Z",
+      "blockNumber": 0,
+      "transactionHash": "",
+      "constructorArgs": [],
+      "verified": false,
+      "version": "1.0.0"
+    },
+    "ClawMachine": {
+      "address": "0x39f24541e076e8557D20b8CfE695DE72e2f9Ea25",
+      "deployedAt": "2025-11-27T12:00:00.000Z",
+      "blockNumber": 0,
+      "transactionHash": "",
+      "constructorArgs": [
+        "0xba2300B8c318b8054D7Bd688ADFd659bD4EBECc2",
+        "0x6e3703Fa98a6cEA8086599ef407cB863e7425759",
+        "0x612fB02F7334Af1F75a287de3fd8BbfA11954Eaf",
+        "10000000000000000000"
+      ],
+      "verified": false,
+      "version": "1.0.0"
+    }
+  },
+  "oracle": {
+    "address": "0x612fB02F7334Af1F75a287de3fd8BbfA11954Eaf",
+    "description": "Backend signing wallet"
+  },
+  "metadata": {
+    "rpcUrl": "https://ethereum-sepolia-rpc.publicnode.com",
+    "explorerUrl": "https://sepolia.etherscan.io",
+    "gasPrice": "20000000000",
+    "deploymentNotes": "Existing Sepolia deployment imported into address management system"
+  }
+}

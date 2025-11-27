@@ -14,3 +14,7 @@ node_modules/
 
 # Logs
 *.log
+
+# Deployment files - COMMITTED to share with team
+# To keep local: add `deployments/` to your global gitignore
+# deployments/

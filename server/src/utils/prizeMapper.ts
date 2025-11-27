@@ -131,7 +131,7 @@ export function formatTraitsForPrompt(traits: SelectedTraits): string {
   
   const traitDescriptions = Object.entries(traits)
     .map(([category, value]) => {
-      // Convert snake_case to readable format
+      // Convert snake_case to readable format. Need to 
       const readableValue = value.replace(/_/g, ' ');
       const readableCategory = category.replace(/_/g, ' ');
       return `${readableCategory}: ${readableValue}`;

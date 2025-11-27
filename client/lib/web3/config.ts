@@ -1,18 +1,26 @@
 import { http, createConfig } from 'wagmi';
 import { sepolia, polygonAmoy } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
+// Import auto-generated contract addresses from deployment system
+import { CONTRACTS as DEPLOYED_CONTRACTS } from '../contracts/addresses';
 
-// Contract addresses from deployment
+// Contract addresses - sourced from auto-generated deployment files
+// These are automatically updated when contracts are deployed via:
+//   cd common && npm run deploy:sepolia
 export const CONTRACTS = {
-  sepolia: {
-    gameToken: '0xba2300B8c318b8054D7Bd688ADFd659bD4EBECc2' as `0x${string}`,
-    prizeNFT: process.env.NEXT_PUBLIC_SEPOLIA_PRIZENFT_ADDRESS as `0x${string}`,
-    clawMachine: process.env.NEXT_PUBLIC_SEPOLIA_CLAWMACHINE_ADDRESS as `0x${string}`,
+  // Use auto-generated addresses from deployment system
+  ...DEPLOYED_CONTRACTS,
+
+  // Fallback to env vars for networks not yet deployed
+  sepolia: DEPLOYED_CONTRACTS.sepolia || {
+    gameToken: (process.env.NEXT_PUBLIC_SEPOLIA_GAMETOKEN_ADDRESS || '') as `0x${string}`,
+    prizeNFT: (process.env.NEXT_PUBLIC_SEPOLIA_PRIZENFT_ADDRESS || '') as `0x${string}`,
+    clawMachine: (process.env.NEXT_PUBLIC_SEPOLIA_CLAWMACHINE_ADDRESS || '') as `0x${string}`,
   },
-  polygonAmoy: {
-    gameToken: process.env.NEXT_PUBLIC_AMOY_GAMETOKEN_ADDRESS as `0x${string}`,
-    prizeNFT: process.env.NEXT_PUBLIC_AMOY_PRIZENFT_ADDRESS as `0x${string}`,
-    clawMachine: process.env.NEXT_PUBLIC_AMOY_CLAWMACHINE_ADDRESS as `0x${string}`,
+  polygonAmoy: DEPLOYED_CONTRACTS.polygonAmoy || {
+    gameToken: (process.env.NEXT_PUBLIC_AMOY_GAMETOKEN_ADDRESS || '') as `0x${string}`,
+    prizeNFT: (process.env.NEXT_PUBLIC_AMOY_PRIZENFT_ADDRESS || '') as `0x${string}`,
+    clawMachine: (process.env.NEXT_PUBLIC_AMOY_CLAWMACHINE_ADDRESS || '') as `0x${string}`,
   },
 } as const;
 

@@ -2,362 +2,1245 @@
   "prizeTypes": [
     {
       "key": "prize_white_cloud",
+      "description": "A fluffy white cloud plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "expression": ["happy", "sleepy", "cheerful", "surprised"],
-        "accessory": ["none", "rainbow", "lightning_bolt", "rain_drops"],
-        "cloud_type": ["fluffy", "wispy", "puffy", "storm_cloud"],
-        "size_style": ["small", "medium", "large", "extra_fluffy"]
+        "expression": [
+          "happy",
+          "sleepy",
+          "cheerful",
+          "surprised"
+        ],
+        "accessory": [
+          "none",
+          "rainbow",
+          "lightning_bolt",
+          "rain_drops"
+        ],
+        "cloud_type": [
+          "fluffy",
+          "wispy",
+          "puffy",
+          "storm_cloud"
+        ],
+        "size_style": [
+          "small",
+          "medium",
+          "large",
+          "extra_fluffy"
+        ]
       }
     },
     {
       "key": "prize_yellow_starfish",
+      "description": "A cheerful yellow starfish plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "pattern": ["plain", "spotted", "striped", "sparkly"],
-        "accessory": ["none", "seashell", "coral", "bubbles"],
-        "arm_count": ["five", "six", "seven", "eight"],
-        "texture": ["smooth", "bumpy", "glossy", "soft"]
+        "pattern": [
+          "plain",
+          "spotted",
+          "striped",
+          "sparkly"
+        ],
+        "accessory": [
+          "none",
+          "seashell",
+          "coral",
+          "bubbles"
+        ],
+        "arm_count": [
+          "five",
+          "six",
+          "seven",
+          "eight"
+        ],
+        "texture": [
+          "smooth",
+          "bumpy",
+          "glossy",
+          "soft"
+        ]
       }
     },
     {
       "key": "prize_piglet",
+      "description": "An adorable pink piglet plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "outfit": ["none", "overalls", "bow_tie", "farmer_hat"],
-        "expression": ["happy", "shy", "playful", "sleepy"],
-        "tail_style": ["curly", "straight", "ribbon_bow", "extra_curly"],
-        "ear_style": ["perked", "floppy", "one_down", "decorated"]
+        "outfit": [
+          "none",
+          "overalls",
+          "bow_tie",
+          "farmer_hat"
+        ],
+        "expression": [
+          "happy",
+          "shy",
+          "playful",
+          "sleepy"
+        ],
+        "tail_style": [
+          "curly",
+          "straight",
+          "ribbon_bow",
+          "extra_curly"
+        ],
+        "ear_style": [
+          "perked",
+          "floppy",
+          "one_down",
+          "decorated"
+        ]
       }
     },
     {
       "key": "prize_kawaii_ghost",
+      "description": "A cute kawaii ghost plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "expression": ["friendly", "mischievous", "shy", "winking"],
-        "accessory": ["none", "bow", "halo", "candy"],
-        "transparency": ["solid", "slightly_see_through", "ethereal", "wispy"],
-        "tail_style": ["wavy", "pointed", "rounded", "split"]
+        "expression": [
+          "friendly",
+          "mischievous",
+          "shy",
+          "winking"
+        ],
+        "accessory": [
+          "none",
+          "bow",
+          "halo",
+          "candy"
+        ],
+        "transparency": [
+          "solid",
+          "slightly_see_through",
+          "ethereal",
+          "wispy"
+        ],
+        "tail_style": [
+          "wavy",
+          "pointed",
+          "rounded",
+          "split"
+        ]
       }
     },
     {
       "key": "prize_lego_brick",
+      "description": "A colorful LEGO brick plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "color_scheme": ["classic", "rainbow", "metallic", "transparent"],
-        "configuration": ["2x4", "special_piece", "decorated", "stacked"],
-        "size": ["small", "medium", "large", "mega"],
-        "finish": ["matte", "glossy", "pearl", "glitter"]
+        "color_scheme": [
+          "classic",
+          "rainbow",
+          "metallic",
+          "transparent"
+        ],
+        "configuration": [
+          "2x4",
+          "special_piece",
+          "decorated",
+          "stacked"
+        ],
+        "size": [
+          "small",
+          "medium",
+          "large",
+          "mega"
+        ],
+        "finish": [
+          "matte",
+          "glossy",
+          "pearl",
+          "glitter"
+        ]
       }
     },
     {
       "key": "prize_ice_cream_cone",
+      "description": "A delicious ice cream cone plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "flavor": ["vanilla", "chocolate", "strawberry", "mint", "rainbow"],
-        "topping": ["none", "sprinkles", "cherry", "chocolate_drizzle", "wafer_stick"],
-        "cone_style": ["waffle", "sugar", "chocolate_dipped", "decorated"],
-        "scoop_count": ["single", "double", "triple", "tower"]
+        "flavor": [
+          "vanilla",
+          "chocolate",
+          "strawberry",
+          "mint",
+          "rainbow"
+        ],
+        "topping": [
+          "none",
+          "sprinkles",
+          "cherry",
+          "chocolate_drizzle",
+          "wafer_stick"
+        ],
+        "cone_style": [
+          "waffle",
+          "sugar",
+          "chocolate_dipped",
+          "decorated"
+        ],
+        "scoop_count": [
+          "single",
+          "double",
+          "triple",
+          "tower"
+        ]
       }
     },
     {
       "key": "prize_jack-o-lantern",
+      "description": "A spooky jack-o-lantern plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "carving": ["happy", "spooky", "silly", "surprised"],
-        "accessory": ["none", "witch_hat", "bow", "candle_glow"],
-        "stem_style": ["straight", "curly", "leafy", "twisted"],
-        "light_effect": ["none", "soft_glow", "bright", "flickering"]
+        "carving": [
+          "happy",
+          "spooky",
+          "silly",
+          "surprised"
+        ],
+        "accessory": [
+          "none",
+          "witch_hat",
+          "bow",
+          "candle_glow"
+        ],
+        "stem_style": [
+          "straight",
+          "curly",
+          "leafy",
+          "twisted"
+        ],
+        "light_effect": [
+          "none",
+          "soft_glow",
+          "bright",
+          "flickering"
+        ]
       }
     },
     {
       "key": "prize_penguin",
+      "description": "A waddling penguin plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "outfit": ["none", "scarf", "bow_tie", "top_hat", "earmuffs"],
-        "accessory": ["none", "fish", "snowflake", "ice_cream"],
-        "expression": ["happy", "cheerful", "proud", "curious"],
-        "belly_pattern": ["white", "heart", "star", "striped"]
+        "outfit": [
+          "none",
+          "scarf",
+          "bow_tie",
+          "top_hat",
+          "earmuffs"
+        ],
+        "accessory": [
+          "none",
+          "fish",
+          "snowflake",
+          "ice_cream"
+        ],
+        "expression": [
+          "happy",
+          "cheerful",
+          "proud",
+          "curious"
+        ],
+        "belly_pattern": [
+          "white",
+          "heart",
+          "star",
+          "striped"
+        ]
       }
     },
     {
       "key": "prize_nemo",
+      "description": "A striped clownfish plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "eyewear": ["none", "sunglasses", "eye_patch", "long_lashes", "reading_glasses"],
-        "expression": ["happy", "surprised", "winking", "sleepy"],
-        "accessory": ["none", "bubbles", "seaweed_crown", "pearl_necklace"],
-        "fin_style": ["standard", "fancy", "large", "ruffled"]
+        "eyewear": [
+          "none",
+          "sunglasses",
+          "eye_patch",
+          "long_lashes",
+          "reading_glasses"
+        ],
+        "expression": [
+          "happy",
+          "surprised",
+          "winking",
+          "sleepy"
+        ],
+        "accessory": [
+          "none",
+          "bubbles",
+          "seaweed_crown",
+          "pearl_necklace"
+        ],
+        "fin_style": [
+          "standard",
+          "fancy",
+          "large",
+          "ruffled"
+        ]
       }
     },
     {
       "key": "prize_cow",
+      "description": "A spotted cow plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "pattern": ["spots", "heart_spots", "star_spots", "minimal"],
-        "accessory": ["none", "bell", "flower_crown", "bow"],
-        "expression": ["happy", "peaceful", "silly", "curious"],
-        "horn_style": ["small", "curved", "decorated", "sparkly"]
+        "pattern": [
+          "spots",
+          "heart_spots",
+          "star_spots",
+          "minimal"
+        ],
+        "accessory": [
+          "none",
+          "bell",
+          "flower_crown",
+          "bow"
+        ],
+        "expression": [
+          "happy",
+          "peaceful",
+          "silly",
+          "curious"
+        ],
+        "horn_style": [
+          "small",
+          "curved",
+          "decorated",
+          "sparkly"
+        ]
       }
     },
     {
       "key": "prize_bunny",
+      "description": "A soft and cuddly bunny plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "ear_style": ["floppy", "perked", "one_up_one_down", "bow_tied"],
-        "accessory": ["none", "carrot", "flower", "basket", "bowtie"],
-        "expression": ["happy", "curious", "sleepy", "playful"],
-        "tail_style": ["fluffy", "pompom", "cotton", "extra_fluffy"]
+        "ear_style": [
+          "floppy",
+          "perked",
+          "one_up_one_down",
+          "bow_tied"
+        ],
+        "accessory": [
+          "none",
+          "carrot",
+          "flower",
+          "basket",
+          "bowtie"
+        ],
+        "expression": [
+          "happy",
+          "curious",
+          "sleepy",
+          "playful"
+        ],
+        "tail_style": [
+          "fluffy",
+          "pompom",
+          "cotton",
+          "extra_fluffy"
+        ]
       }
     },
     {
       "key": "prize_bumblebee",
+      "description": "A buzzing bumblebee plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "pattern": ["classic_stripes", "thick_stripes", "dotted", "sparkly"],
-        "accessory": ["none", "flower", "honey_pot", "crown"],
-        "wing_style": ["standard", "sparkly", "translucent", "iridescent"],
-        "expression": ["happy", "busy", "cheerful", "determined"]
+        "pattern": [
+          "classic_stripes",
+          "thick_stripes",
+          "dotted",
+          "sparkly"
+        ],
+        "accessory": [
+          "none",
+          "flower",
+          "honey_pot",
+          "crown"
+        ],
+        "wing_style": [
+          "standard",
+          "sparkly",
+          "translucent",
+          "iridescent"
+        ],
+        "expression": [
+          "happy",
+          "busy",
+          "cheerful",
+          "determined"
+        ]
       }
     },
     {
       "key": "prize_baby_doll",
+      "description": "A sweet baby doll plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "outfit": ["onesie", "dress", "overalls", "pajamas"],
-        "accessory": ["none", "pacifier", "bottle", "teddy", "rattle"],
-        "expression": ["happy", "sleepy", "giggling", "curious"],
-        "hair_color": ["blonde", "brown", "black", "ginger"]
+        "outfit": [
+          "onesie",
+          "dress",
+          "overalls",
+          "pajamas"
+        ],
+        "accessory": [
+          "none",
+          "pacifier",
+          "bottle",
+          "teddy",
+          "rattle"
+        ],
+        "expression": [
+          "happy",
+          "sleepy",
+          "giggling",
+          "curious"
+        ],
+        "hair_color": [
+          "blonde",
+          "brown",
+          "black",
+          "ginger"
+        ]
       }
     },
     {
       "key": "prize_doll",
+      "description": "A stylish fashion doll plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "outfit": ["casual", "fancy_dress", "uniform", "costume"],
-        "hair_style": ["pigtails", "bun", "long", "short_curly"],
-        "expression": ["happy", "elegant", "playful", "sweet"],
-        "accessory": ["none", "purse", "hat", "jewelry", "shoes"]
+        "outfit": [
+          "casual",
+          "fancy_dress",
+          "uniform",
+          "costume"
+        ],
+        "hair_style": [
+          "pigtails",
+          "bun",
+          "long",
+          "short_curly"
+        ],
+        "expression": [
+          "happy",
+          "elegant",
+          "playful",
+          "sweet"
+        ],
+        "accessory": [
+          "none",
+          "purse",
+          "hat",
+          "jewelry",
+          "shoes"
+        ]
       }
     },
     {
       "key": "prize_teddybear",
+      "description": "A classic teddy bear plushie",
       "rarity": "common",
       "baseSize": 0.8,
-      "grabDifficulty": 1.0,
+      "grabDifficulty": 1,
       "customizableTraits": {
-        "color": ["brown", "honey", "cream", "chocolate"],
-        "accessory": ["none", "bow", "vest", "scarf", "heart"],
-        "expression": ["happy", "sleepy", "loving", "friendly"],
-        "fur_texture": ["fluffy", "soft", "curly", "velvety"]
+        "color": [
+          "brown",
+          "honey",
+          "cream",
+          "chocolate"
+        ],
+        "accessory": [
+          "none",
+          "bow",
+          "vest",
+          "scarf",
+          "heart"
+        ],
+        "expression": [
+          "happy",
+          "sleepy",
+          "loving",
+          "friendly"
+        ],
+        "fur_texture": [
+          "fluffy",
+          "soft",
+          "curly",
+          "velvety"
+        ]
       }
     },
     {
       "key": "prize_alien",
+      "description": "A mysterious alien visitor plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "antenna": ["single", "double", "spiral", "glowing"],
-        "eye_count": ["two", "three", "four", "one_large"],
-        "accessory": ["none", "space_helmet", "ray_gun", "flying_saucer"],
-        "skin_color": ["green", "blue", "purple", "silver"]
+        "antenna": [
+          "single",
+          "double",
+          "spiral",
+          "glowing"
+        ],
+        "eye_count": [
+          "two",
+          "three",
+          "four",
+          "one_large"
+        ],
+        "accessory": [
+          "none",
+          "space_helmet",
+          "ray_gun",
+          "flying_saucer"
+        ],
+        "skin_color": [
+          "green",
+          "blue",
+          "purple",
+          "silver"
+        ]
       }
     },
     {
       "key": "prize_pixel_dino",
+      "description": "A retro pixel art dinosaur plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "pixel_style": ["8bit", "16bit", "glitch", "holographic"],
-        "accessory": ["none", "pixel_sunglasses", "game_controller", "power_up"],
-        "color_scheme": ["classic_green", "blue", "red", "rainbow"],
-        "pose": ["standing", "roaring", "running", "jumping"]
+        "pixel_style": [
+          "8bit",
+          "16bit",
+          "glitch",
+          "holographic"
+        ],
+        "accessory": [
+          "none",
+          "pixel_sunglasses",
+          "game_controller",
+          "power_up"
+        ],
+        "color_scheme": [
+          "classic_green",
+          "blue",
+          "red",
+          "rainbow"
+        ],
+        "pose": [
+          "standing",
+          "roaring",
+          "running",
+          "jumping"
+        ]
       }
     },
     {
       "key": "prize_circuit_frog",
+      "description": "A tech-enhanced circuit frog plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "circuit_color": ["green", "blue", "red", "rainbow"],
-        "tech_feature": ["led_eyes", "antenna", "circuit_pattern", "hologram"],
-        "pose": ["sitting", "jumping", "crouching", "relaxed"],
-        "eye_style": ["digital", "glowing", "scanning", "pixelated"]
+        "circuit_color": [
+          "green",
+          "blue",
+          "red",
+          "rainbow"
+        ],
+        "tech_feature": [
+          "led_eyes",
+          "antenna",
+          "circuit_pattern",
+          "hologram"
+        ],
+        "pose": [
+          "sitting",
+          "jumping",
+          "crouching",
+          "relaxed"
+        ],
+        "eye_style": [
+          "digital",
+          "glowing",
+          "scanning",
+          "pixelated"
+        ]
       }
     },
     {
       "key": "prize_cyber_cat",
+      "description": "A futuristic cybernetic cat plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "cybernetics": ["visor", "ear_implants", "tail_mod", "paw_enhancements"],
-        "led_color": ["blue", "pink", "green", "rainbow"],
-        "pose": ["sitting", "prowling", "standing", "stretching"],
-        "tail_style": ["robotic", "cyber", "glowing", "segmented"]
+        "cybernetics": [
+          "visor",
+          "ear_implants",
+          "tail_mod",
+          "paw_enhancements"
+        ],
+        "led_color": [
+          "blue",
+          "pink",
+          "green",
+          "rainbow"
+        ],
+        "pose": [
+          "sitting",
+          "prowling",
+          "standing",
+          "stretching"
+        ],
+        "tail_style": [
+          "robotic",
+          "cyber",
+          "glowing",
+          "segmented"
+        ]
       }
     },
     {
       "key": "prize_cyclops",
+      "description": "A one-eyed cyclops plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "eye_color": ["red", "blue", "green", "purple", "rainbow"],
-        "accessory": ["none", "eyepatch", "monocle", "visor", "laser_beam"],
-        "skin_color": ["green", "blue", "grey", "purple"],
-        "expression": ["friendly", "fierce", "curious", "silly"]
+        "eye_color": [
+          "red",
+          "blue",
+          "green",
+          "purple",
+          "rainbow"
+        ],
+        "accessory": [
+          "none",
+          "eyepatch",
+          "monocle",
+          "visor",
+          "laser_beam"
+        ],
+        "skin_color": [
+          "green",
+          "blue",
+          "grey",
+          "purple"
+        ],
+        "expression": [
+          "friendly",
+          "fierce",
+          "curious",
+          "silly"
+        ]
       }
     },
     {
       "key": "prize_lava_blob",
+      "description": "A glowing lava blob plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "lava_intensity": ["low_glow", "medium_heat", "high_flames", "volcanic"],
-        "expression": ["happy", "fierce", "playful", "sleepy"],
-        "size_style": ["small", "medium", "large", "massive"],
-        "particle_effect": ["none", "sparks", "embers", "smoke"]
+        "lava_intensity": [
+          "low_glow",
+          "medium_heat",
+          "high_flames",
+          "volcanic"
+        ],
+        "expression": [
+          "happy",
+          "fierce",
+          "playful",
+          "sleepy"
+        ],
+        "size_style": [
+          "small",
+          "medium",
+          "large",
+          "massive"
+        ],
+        "particle_effect": [
+          "none",
+          "sparks",
+          "embers",
+          "smoke"
+        ]
       }
     },
     {
       "key": "prize_space_sloth",
+      "description": "A relaxed astronaut sloth plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "space_suit": ["astronaut", "alien_tech", "retro", "futuristic"],
-        "accessory": ["none", "helmet", "jetpack", "planet", "star_map"],
-        "expression": ["sleepy", "relaxed", "happy", "dreamy"],
-        "helmet_style": ["bubble", "classic", "visor", "advanced"]
+        "space_suit": [
+          "astronaut",
+          "alien_tech",
+          "retro",
+          "futuristic"
+        ],
+        "accessory": [
+          "none",
+          "helmet",
+          "jetpack",
+          "planet",
+          "star_map"
+        ],
+        "expression": [
+          "sleepy",
+          "relaxed",
+          "happy",
+          "dreamy"
+        ],
+        "helmet_style": [
+          "bubble",
+          "classic",
+          "visor",
+          "advanced"
+        ]
       }
     },
     {
       "key": "prize_steampunk_owl",
+      "description": "A mechanical steampunk owl plushie",
       "rarity": "uncommon",
       "baseSize": 0.9,
       "grabDifficulty": 1.5,
       "customizableTraits": {
-        "gear_type": ["brass", "copper", "silver", "gold"],
-        "accessory": ["none", "monocle", "top_hat", "pocket_watch", "goggles"],
-        "feather_color": ["brown", "grey", "white", "bronze"],
-        "wing_style": ["mechanical", "hybrid", "decorated", "clockwork"]
+        "gear_type": [
+          "brass",
+          "copper",
+          "silver",
+          "gold"
+        ],
+        "accessory": [
+          "none",
+          "monocle",
+          "top_hat",
+          "pocket_watch",
+          "goggles"
+        ],
+        "feather_color": [
+          "brown",
+          "grey",
+          "white",
+          "bronze"
+        ],
+        "wing_style": [
+          "mechanical",
+          "hybrid",
+          "decorated",
+          "clockwork"
+        ]
       }
     },
     {
       "key": "prize_chibi_ninja",
+      "description": "A stealthy chibi ninja plushie",
       "rarity": "rare",
-      "baseSize": 1.0,
+      "baseSize": 1,
       "grabDifficulty": 2.5,
       "customizableTraits": {
-        "weapon": ["katana", "shuriken", "staff", "dual_blades"],
-        "mask_color": ["black", "red", "blue", "purple"],
-        "element": ["fire", "water", "lightning", "shadow"],
-        "pose": ["stealth", "attack", "defensive", "meditation"]
+        "weapon": [
+          "katana",
+          "shuriken",
+          "staff",
+          "dual_blades"
+        ],
+        "mask_color": [
+          "black",
+          "red",
+          "blue",
+          "purple"
+        ],
+        "element": [
+          "fire",
+          "water",
+          "lightning",
+          "shadow"
+        ],
+        "pose": [
+          "stealth",
+          "attack",
+          "defensive",
+          "meditation"
+        ]
       }
     },
     {
       "key": "prize_dragon_egg",
+      "description": "A mystical dragon egg plushie",
       "rarity": "rare",
-      "baseSize": 1.0,
+      "baseSize": 1,
       "grabDifficulty": 2.5,
       "customizableTraits": {
-        "egg_color": ["red", "blue", "green", "purple", "gold", "crystal"],
-        "pattern": ["scales", "gems", "runes", "flames"],
-        "glow": ["none", "soft", "pulsing", "intense"],
-        "pedestal_style": ["none", "stone", "gold", "mystical"]
+        "egg_color": [
+          "red",
+          "blue",
+          "green",
+          "purple",
+          "gold",
+          "crystal"
+        ],
+        "pattern": [
+          "scales",
+          "gems",
+          "runes",
+          "flames"
+        ],
+        "glow": [
+          "none",
+          "soft",
+          "pulsing",
+          "intense"
+        ],
+        "pedestal_style": [
+          "none",
+          "stone",
+          "gold",
+          "mystical"
+        ]
       }
     },
     {
       "key": "prize_viking_walrus",
+      "description": "A fierce viking warrior walrus plushie",
       "rarity": "rare",
-      "baseSize": 1.0,
+      "baseSize": 1,
       "grabDifficulty": 2.5,
       "customizableTraits": {
-        "helmet": ["horned", "winged", "crowned", "battle_worn"],
-        "weapon": ["axe", "sword", "shield", "hammer"],
-        "beard_style": ["braided", "long", "decorated", "icy"],
-        "armor_style": ["leather", "chainmail", "plate", "fur"]
+        "helmet": [
+          "horned",
+          "winged",
+          "crowned",
+          "battle_worn"
+        ],
+        "weapon": [
+          "axe",
+          "sword",
+          "shield",
+          "hammer"
+        ],
+        "beard_style": [
+          "braided",
+          "long",
+          "decorated",
+          "icy"
+        ],
+        "armor_style": [
+          "leather",
+          "chainmail",
+          "plate",
+          "fur"
+        ]
       }
     },
     {
       "key": "prize_wizard_gnome",
+      "description": "A magical wizard gnome plushie",
       "rarity": "rare",
-      "baseSize": 1.0,
+      "baseSize": 1,
       "grabDifficulty": 2.5,
       "customizableTraits": {
-        "hat_style": ["pointed", "wide_brim", "starry", "crooked"],
-        "staff_type": ["crystal", "wooden", "magical", "elemental"],
-        "spell_effect": ["sparkles", "flames", "frost", "lightning"],
-        "robe_color": ["blue", "purple", "red", "green"]
+        "hat_style": [
+          "pointed",
+          "wide_brim",
+          "starry",
+          "crooked"
+        ],
+        "staff_type": [
+          "crystal",
+          "wooden",
+          "magical",
+          "elemental"
+        ],
+        "spell_effect": [
+          "sparkles",
+          "flames",
+          "frost",
+          "lightning"
+        ],
+        "robe_color": [
+          "blue",
+          "purple",
+          "red",
+          "green"
+        ]
       }
     },
     {
       "key": "prize_unicorn",
+      "description": "A majestic magical unicorn plushie",
       "rarity": "legendary",
       "baseSize": 1.1,
-      "grabDifficulty": 4.0,
+      "grabDifficulty": 4,
       "customizableTraits": {
-        "horn_style": ["spiral", "crystal", "rainbow", "glowing"],
-        "mane_color": ["rainbow", "pastel", "starlight", "galaxy"],
-        "magic_aura": ["sparkles", "stars", "aurora", "celestial"],
-        "wing_style": ["none", "feathered", "ethereal", "crystalline"]
+        "horn_style": [
+          "spiral",
+          "crystal",
+          "rainbow",
+          "glowing"
+        ],
+        "mane_color": [
+          "rainbow",
+          "pastel",
+          "starlight",
+          "galaxy"
+        ],
+        "magic_aura": [
+          "sparkles",
+          "stars",
+          "aurora",
+          "celestial"
+        ],
+        "wing_style": [
+          "none",
+          "feathered",
+          "ethereal",
+          "crystalline"
+        ]
       }
     },
     {
       "key": "prize_minion",
+      "description": "A silly yellow minion plushie",
       "rarity": "legendary",
       "baseSize": 0.9,
-      "grabDifficulty": 4.0,
+      "grabDifficulty": 4,
       "customizableTraits": {
-        "outfit": ["overalls", "suit", "maid", "superhero"],
-        "eye_count": ["one", "two"],
-        "accessory": ["none", "banana", "ray_gun", "teddy", "tool_belt"],
-        "hair_style": ["none", "spiky", "pompadour", "messy"]
+        "outfit": [
+          "overalls",
+          "suit",
+          "maid",
+          "superhero"
+        ],
+        "eye_count": [
+          "one",
+          "two"
+        ],
+        "accessory": [
+          "none",
+          "banana",
+          "ray_gun",
+          "teddy",
+          "tool_belt"
+        ],
+        "hair_style": [
+          "none",
+          "spiky",
+          "pompadour",
+          "messy"
+        ]
       }
     },
     {
       "key": "prize_mystery",
+      "description": "A mysterious surprise prize plushie",
       "rarity": "legendary",
       "baseSize": 1.1,
-      "grabDifficulty": 4.0,
+      "grabDifficulty": 4,
       "customizableTraits": {
-        "reveal_style": ["glowing", "smoky", "sparkly", "holographic"],
-        "color_theme": ["gold", "silver", "rainbow", "cosmic"],
-        "effect": ["question_marks", "stars", "mist", "energy"],
-        "wrapping": ["gift_wrap", "chest", "orb", "portal"]
+        "reveal_style": [
+          "glowing",
+          "smoky",
+          "sparkly",
+          "holographic"
+        ],
+        "color_theme": [
+          "gold",
+          "silver",
+          "rainbow",
+          "cosmic"
+        ],
+        "effect": [
+          "question_marks",
+          "stars",
+          "mist",
+          "energy"
+        ],
+        "wrapping": [
+          "gift_wrap",
+          "chest",
+          "orb",
+          "portal"
+        ]
+      }
+    },
+    {
+      "key": "prize_roblox-goth-girl",
+      "description": "A stylish Roblox goth girl plushie",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1,
+      "customizableTraits": {
+        "outfit": [
+          "goth_dress",
+          "dark_hoodie",
+          "punk_jacket",
+          "Victorian_gown"
+        ],
+        "hair_style": [
+          "black_ponytail",
+          "purple_bangs",
+          "scene_hair",
+          "half_shaved"
+        ],
+        "accessory": [
+          "none",
+          "choker",
+          "chains",
+          "skull_clips",
+          "fishnet_sleeves"
+        ],
+        "makeup": [
+          "dark_lipstick",
+          "heavy_eyeliner",
+          "natural",
+          "dramatic"
+        ]
+      }
+    },
+    {
+      "key": "prize_max-verstappen",
+      "description": "A racing champion Max Verstappen plushie",
+      "rarity": "legendary",
+      "baseSize": 0.8,
+      "grabDifficulty": 1,
+      "customizableTraits": {
+        "racing_suit": [
+          "red_bull_2024",
+          "red_bull_2023",
+          "orange_special",
+          "championship_edition"
+        ],
+        "helmet": [
+          "classic_design",
+          "lion_edition",
+          "netherlands_tribute",
+          "championship_gold"
+        ],
+        "accessory": [
+          "none",
+          "trophy",
+          "champagne_bottle",
+          "winner_flag",
+          "number_1_board"
+        ],
+        "pose": [
+          "victory_stance",
+          "driving_position",
+          "podium_celebration",
+          "cool_lean"
+        ]
+      }
+    },
+    {
+      "key": "prize_voodoo-doll",
+      "description": "A mystical voodoo doll plushie",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1,
+      "customizableTraits": {
+        "material": [
+          "burlap",
+          "cloth",
+          "straw",
+          "yarn"
+        ],
+        "pin_count": [
+          "none",
+          "one",
+          "three",
+          "many"
+        ],
+        "marking": [
+          "stitched_x",
+          "button_eyes",
+          "painted_face",
+          "symbolic_runes"
+        ],
+        "accessory": [
+          "none",
+          "charm_necklace",
+          "binding_rope",
+          "herb_bundle",
+          "talisman"
+        ]
+      }
+    },
+    {
+      "key": "prize_egyptian-pharaoh",
+      "description": "An ancient Egyptian pharaoh plushie",
+      "rarity": "rare",
+      "baseSize": 0.8,
+      "grabDifficulty": 1,
+      "customizableTraits": {
+        "headdress": [
+          "nemes_striped",
+          "golden_crown",
+          "white_crown",
+          "red_crown"
+        ],
+        "accessory": [
+          "crook_and_flail",
+          "ankh",
+          "scarab_amulet",
+          "staff_of_power"
+        ],
+        "collar": [
+          "golden",
+          "turquoise",
+          "lapis_lazuli",
+          "jeweled"
+        ],
+        "face_marking": [
+          "traditional_eyeliner",
+          "golden_beard",
+          "cobra_symbol",
+          "royal_paint"
+        ]
+      }
+    },
+    {
+      "key": "prize_hello-kitty",
+      "description": "An iconic Hello Kitty plushie",
+      "rarity": "legendary",
+      "baseSize": 0.8,
+      "grabDifficulty": 1,
+      "customizableTraits": {
+        "bow_color": [
+          "classic_red",
+          "pink",
+          "blue",
+          "rainbow",
+          "gold"
+        ],
+        "outfit": [
+          "classic",
+          "dress",
+          "kimono",
+          "overalls",
+          "princess_gown"
+        ],
+        "accessory": [
+          "none",
+          "purse",
+          "flower",
+          "heart",
+          "star_wand"
+        ],
+        "expression": [
+          "classic_smile",
+          "winking",
+          "happy",
+          "sweet"
+        ]
+      }
+    },
+    {
+      "key": "prize_pegasus",
+      "description": "A graceful winged pegasus plushie",
+      "rarity": "uncommon",
+      "baseSize": 0.8,
+      "grabDifficulty": 1,
+      "customizableTraits": {
+        "coat_color": [
+          "white",
+          "silver",
+          "golden",
+          "midnight_blue"
+        ],
+        "wing_style": [
+          "feathered_white",
+          "golden_shimmer",
+          "rainbow",
+          "starlight"
+        ],
+        "mane_style": [
+          "flowing",
+          "braided",
+          "sparkly",
+          "windswept"
+        ],
+        "accessory": [
+          "none",
+          "flower_crown",
+          "golden_bridle",
+          "cloud_trail",
+          "star_dust"
+        ]
+      }
+    },
+    {
+      "key": "prize_mermaid",
+      "description": "An enchanting mermaid plushie",
+      "rarity": "common",
+      "baseSize": 0.8,
+      "grabDifficulty": 1,
+      "customizableTraits": {
+        "tail_color": [
+          "turquoise",
+          "purple",
+          "pink",
+          "rainbow",
+          "silver"
+        ],
+        "hair_style": [
+          "long_flowing",
+          "braided",
+          "seaweed_adorned",
+          "curly"
+        ],
+        "accessory": [
+          "none",
+          "seashell_top",
+          "pearl_necklace",
+          "starfish_clip",
+          "coral_crown"
+        ],
+        "expression": [
+          "happy",
+          "dreamy",
+          "playful",
+          "serene"
+        ]
       }
     }
   ]
