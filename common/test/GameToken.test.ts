@@ -240,17 +240,17 @@ describe("GameToken", function () {
   describe("Faucet", function () {
     it("Should allow anyone to claim faucet tokens", async function () {
       const initialBalance = await gameToken.balanceOf(player1.address);
-      
+
       await gameToken.connect(player1).claimFaucet();
-      
+
       const newBalance = await gameToken.balanceOf(player1.address);
-      expect(newBalance - initialBalance).to.equal(ethers.parseEther("100"));
+      expect(newBalance - initialBalance).to.equal(ethers.parseEther("500"));
     });
 
     it("Should emit FaucetClaimed event", async function () {
       await expect(gameToken.connect(player1).claimFaucet())
         .to.emit(gameToken, "FaucetClaimed")
-        .withArgs(player1.address, ethers.parseEther("100"));
+        .withArgs(player1.address, ethers.parseEther("500"));
     });
 
     it("Should enforce 24 hour cooldown", async function () {
@@ -307,9 +307,166 @@ describe("GameToken", function () {
     it("Should allow different addresses to claim independently", async function () {
       await gameToken.connect(player1).claimFaucet();
       await expect(gameToken.connect(player2).claimFaucet()).to.not.be.reverted;
-      
-      expect(await gameToken.balanceOf(player1.address)).to.equal(ethers.parseEther("100"));
-      expect(await gameToken.balanceOf(player2.address)).to.equal(ethers.parseEther("100"));
+
+      expect(await gameToken.balanceOf(player1.address)).to.equal(ethers.parseEther("500"));
+      expect(await gameToken.balanceOf(player2.address)).to.equal(ethers.parseEther("500"));
+    });
+  });
+
+  describe("Faucet Admin Functions", function () {
+    describe("setFaucetAmount", function () {
+      it("Should allow owner to update faucet amount", async function () {
+        const newAmount = ethers.parseEther("1000");
+
+        await expect(gameToken.setFaucetAmount(newAmount))
+          .to.emit(gameToken, "FaucetAmountUpdated")
+          .withArgs(ethers.parseEther("500"), newAmount);
+
+        expect(await gameToken.faucetAmount()).to.equal(newAmount);
+      });
+
+      it("Should not allow non-owner to update faucet amount", async function () {
+        const newAmount = ethers.parseEther("1000");
+
+        await expect(
+          gameToken.connect(player1).setFaucetAmount(newAmount)
+        ).to.be.revertedWithCustomError(gameToken, "OwnableUnauthorizedAccount");
+      });
+
+      it("Should not allow setting amount to zero", async function () {
+        await expect(
+          gameToken.setFaucetAmount(0)
+        ).to.be.revertedWith("Amount must be greater than 0");
+      });
+
+      it("Should not allow amount exceeding maximum", async function () {
+        const tooMuch = ethers.parseEther("10001"); // Max is 10,000
+
+        await expect(
+          gameToken.setFaucetAmount(tooMuch)
+        ).to.be.revertedWith("Amount exceeds maximum");
+      });
+
+      it("Should use new amount in faucet claims", async function () {
+        const newAmount = ethers.parseEther("1000");
+        await gameToken.setFaucetAmount(newAmount);
+
+        await gameToken.connect(player1).claimFaucet();
+
+        expect(await gameToken.balanceOf(player1.address)).to.equal(newAmount);
+      });
+    });
+
+    describe("setFaucetCooldown", function () {
+      it("Should allow owner to update faucet cooldown", async function () {
+        const newCooldown = 10 * 60; // 10 minutes
+        const oldCooldown = 5 * 60; // 5 minutes
+
+        await expect(gameToken.setFaucetCooldown(newCooldown))
+          .to.emit(gameToken, "FaucetCooldownUpdated")
+          .withArgs(oldCooldown, newCooldown);
+
+        expect(await gameToken.faucetCooldown()).to.equal(newCooldown);
+      });
+
+      it("Should not allow non-owner to update cooldown", async function () {
+        const newCooldown = 10 * 60;
+
+        await expect(
+          gameToken.connect(player1).setFaucetCooldown(newCooldown)
+        ).to.be.revertedWithCustomError(gameToken, "OwnableUnauthorizedAccount");
+      });
+
+      it("Should not allow cooldown too short", async function () {
+        const tooShort = 30; // 30 seconds (min is 1 minute)
+
+        await expect(
+          gameToken.setFaucetCooldown(tooShort)
+        ).to.be.revertedWith("Cooldown too short");
+      });
+
+      it("Should not allow cooldown too long", async function () {
+        const tooLong = 31 * 24 * 60 * 60; // 31 days (max is 30 days)
+
+        await expect(
+          gameToken.setFaucetCooldown(tooLong)
+        ).to.be.revertedWith("Cooldown too long");
+      });
+
+      it("Should use new cooldown for claims", async function () {
+        const newCooldown = 10 * 60; // 10 minutes
+        await gameToken.setFaucetCooldown(newCooldown);
+
+        await gameToken.connect(player1).claimFaucet();
+
+        // Should not be able to claim immediately
+        await expect(
+          gameToken.connect(player1).claimFaucet()
+        ).to.be.revertedWith("Faucet cooldown not expired");
+
+        // Fast forward 10 minutes
+        await ethers.provider.send("evm_increaseTime", [10 * 60]);
+        await ethers.provider.send("evm_mine", []);
+
+        // Should be able to claim now
+        await expect(gameToken.connect(player1).claimFaucet()).to.not.be.reverted;
+      });
+    });
+
+    describe("setFaucetEnabled", function () {
+      it("Should allow owner to disable faucet", async function () {
+        await expect(gameToken.setFaucetEnabled(false))
+          .to.emit(gameToken, "FaucetStatusUpdated")
+          .withArgs(false);
+
+        expect(await gameToken.faucetEnabled()).to.be.false;
+      });
+
+      it("Should allow owner to enable faucet", async function () {
+        await gameToken.setFaucetEnabled(false);
+
+        await expect(gameToken.setFaucetEnabled(true))
+          .to.emit(gameToken, "FaucetStatusUpdated")
+          .withArgs(true);
+
+        expect(await gameToken.faucetEnabled()).to.be.true;
+      });
+
+      it("Should not allow non-owner to change faucet status", async function () {
+        await expect(
+          gameToken.connect(player1).setFaucetEnabled(false)
+        ).to.be.revertedWithCustomError(gameToken, "OwnableUnauthorizedAccount");
+      });
+
+      it("Should prevent claims when faucet is disabled", async function () {
+        await gameToken.setFaucetEnabled(false);
+
+        await expect(
+          gameToken.connect(player1).claimFaucet()
+        ).to.be.revertedWith("Faucet is disabled");
+      });
+
+      it("Should allow claims when faucet is re-enabled", async function () {
+        await gameToken.setFaucetEnabled(false);
+        await gameToken.setFaucetEnabled(true);
+
+        await expect(gameToken.connect(player1).claimFaucet()).to.not.be.reverted;
+      });
+
+      it("Should return false for canClaimFaucet when disabled", async function () {
+        expect(await gameToken.canClaimFaucet(player1.address)).to.be.true;
+
+        await gameToken.setFaucetEnabled(false);
+
+        expect(await gameToken.canClaimFaucet(player1.address)).to.be.false;
+      });
+
+      it("Should return max uint for cooldown remaining when disabled", async function () {
+        await gameToken.setFaucetEnabled(false);
+
+        const remaining = await gameToken.faucetCooldownRemaining(player1.address);
+        expect(remaining).to.equal(ethers.MaxUint256);
+      });
     });
   });
 });

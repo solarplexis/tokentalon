@@ -16,11 +16,23 @@ contract GameToken is ERC20, Ownable {
     /// @dev Token price in wei (for purchasing with ETH)
     uint256 public tokenPrice;
 
-    /// @dev Faucet amount (tokens given per claim)
-    uint256 public constant FAUCET_AMOUNT = 500 * 10**18; // 500 tokens
+    /// @dev Faucet amount (tokens given per claim) - configurable by owner
+    uint256 public faucetAmount = 500 * 10**18; // 500 tokens
 
-    /// @dev Faucet cooldown period (5 minutes for testing)
-    uint256 public constant FAUCET_COOLDOWN = 5 minutes;
+    /// @dev Faucet cooldown period - configurable by owner
+    uint256 public faucetCooldown = 5 minutes;
+
+    /// @dev Faucet enabled/disabled state - configurable by owner
+    bool public faucetEnabled = true;
+
+    /// @dev Maximum allowed faucet amount (safety limit)
+    uint256 public constant MAX_FAUCET_AMOUNT = 10000 * 10**18; // 10,000 tokens
+
+    /// @dev Minimum allowed faucet cooldown (prevent spam)
+    uint256 public constant MIN_FAUCET_COOLDOWN = 1 minutes;
+
+    /// @dev Maximum allowed faucet cooldown
+    uint256 public constant MAX_FAUCET_COOLDOWN = 30 days;
 
     /// @dev Track last faucet claim time for each address
     mapping(address => uint256) public lastFaucetClaim;
@@ -33,6 +45,15 @@ contract GameToken is ERC20, Ownable {
 
     /// @dev Event emitted when token price is updated
     event TokenPriceUpdated(uint256 oldPrice, uint256 newPrice);
+
+    /// @dev Event emitted when faucet amount is updated
+    event FaucetAmountUpdated(uint256 oldAmount, uint256 newAmount);
+
+    /// @dev Event emitted when faucet cooldown is updated
+    event FaucetCooldownUpdated(uint256 oldCooldown, uint256 newCooldown);
+
+    /// @dev Event emitted when faucet is enabled/disabled
+    event FaucetStatusUpdated(bool enabled);
 
     /**
      * @dev Constructor that mints initial supply to deployer
@@ -65,18 +86,19 @@ contract GameToken is ERC20, Ownable {
 
     /**
      * @dev Claim free tokens from faucet (testnet only)
-     * Can be called once every 24 hours per address
+     * Can be called once per cooldown period
      */
     function claimFaucet() external {
+        require(faucetEnabled, "Faucet is disabled");
         require(
-            block.timestamp >= lastFaucetClaim[msg.sender] + FAUCET_COOLDOWN,
+            block.timestamp >= lastFaucetClaim[msg.sender] + faucetCooldown,
             "Faucet cooldown not expired"
         );
-        require(totalSupply() + FAUCET_AMOUNT <= MAX_SUPPLY, "Would exceed max supply");
+        require(totalSupply() + faucetAmount <= MAX_SUPPLY, "Would exceed max supply");
 
         lastFaucetClaim[msg.sender] = block.timestamp;
-        _mint(msg.sender, FAUCET_AMOUNT);
-        emit FaucetClaimed(msg.sender, FAUCET_AMOUNT);
+        _mint(msg.sender, faucetAmount);
+        emit FaucetClaimed(msg.sender, faucetAmount);
     }
 
     /**
@@ -85,7 +107,8 @@ contract GameToken is ERC20, Ownable {
      * @return True if can claim, false otherwise
      */
     function canClaimFaucet(address account) external view returns (bool) {
-        return block.timestamp >= lastFaucetClaim[account] + FAUCET_COOLDOWN;
+        if (!faucetEnabled) return false;
+        return block.timestamp >= lastFaucetClaim[account] + faucetCooldown;
     }
 
     /**
@@ -94,7 +117,8 @@ contract GameToken is ERC20, Ownable {
      * @return Seconds until next claim (0 if can claim now)
      */
     function faucetCooldownRemaining(address account) external view returns (uint256) {
-        uint256 nextClaim = lastFaucetClaim[account] + FAUCET_COOLDOWN;
+        if (!faucetEnabled) return type(uint256).max; // Return max if disabled
+        uint256 nextClaim = lastFaucetClaim[account] + faucetCooldown;
         if (block.timestamp >= nextClaim) return 0;
         return nextClaim - block.timestamp;
     }
@@ -137,5 +161,38 @@ contract GameToken is ERC20, Ownable {
     function getTokenAmount(uint256 ethAmount) external view returns (uint256) {
         if (tokenPrice == 0) return 0;
         return (ethAmount * 10**18) / tokenPrice;
+    }
+
+    /**
+     * @dev Update the faucet amount (only owner)
+     * @param newAmount New faucet amount in wei
+     */
+    function setFaucetAmount(uint256 newAmount) external onlyOwner {
+        require(newAmount > 0, "Amount must be greater than 0");
+        require(newAmount <= MAX_FAUCET_AMOUNT, "Amount exceeds maximum");
+        uint256 oldAmount = faucetAmount;
+        faucetAmount = newAmount;
+        emit FaucetAmountUpdated(oldAmount, newAmount);
+    }
+
+    /**
+     * @dev Update the faucet cooldown period (only owner)
+     * @param newCooldown New cooldown period in seconds
+     */
+    function setFaucetCooldown(uint256 newCooldown) external onlyOwner {
+        require(newCooldown >= MIN_FAUCET_COOLDOWN, "Cooldown too short");
+        require(newCooldown <= MAX_FAUCET_COOLDOWN, "Cooldown too long");
+        uint256 oldCooldown = faucetCooldown;
+        faucetCooldown = newCooldown;
+        emit FaucetCooldownUpdated(oldCooldown, newCooldown);
+    }
+
+    /**
+     * @dev Enable or disable the faucet (only owner)
+     * @param enabled True to enable, false to disable
+     */
+    function setFaucetEnabled(bool enabled) external onlyOwner {
+        faucetEnabled = enabled;
+        emit FaucetStatusUpdated(enabled);
     }
 }

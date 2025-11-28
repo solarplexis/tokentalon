@@ -38,6 +38,27 @@ const EXTENDED_ABI = [
   },
   {
     inputs: [],
+    name: 'faucetAmount',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'faucetCooldown',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'faucetEnabled',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'tokenPrice',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
@@ -76,13 +97,34 @@ export function TokenAcquisition() {
     functionName: 'tokenPrice',
   });
 
+  // Read faucet amount
+  const { data: faucetAmount } = useReadContract({
+    address: tokenAddress,
+    abi: EXTENDED_ABI,
+    functionName: 'faucetAmount',
+  });
+
+  // Read faucet cooldown
+  const { data: faucetCooldown } = useReadContract({
+    address: tokenAddress,
+    abi: EXTENDED_ABI,
+    functionName: 'faucetCooldown',
+  });
+
+  // Check if faucet is enabled
+  const { data: faucetEnabled } = useReadContract({
+    address: tokenAddress,
+    abi: EXTENDED_ABI,
+    functionName: 'faucetEnabled',
+  });
+
   // Check if can claim faucet
   const { data: canClaim, refetch: refetchCanClaim, isLoading: isLoadingCanClaim, error: canClaimError } = useReadContract({
     address: tokenAddress,
     abi: EXTENDED_ABI,
     functionName: 'canClaimFaucet',
     args: address ? [address] : undefined,
-    query: { 
+    query: {
       enabled: !!address,
       retry: 3,
       retryDelay: 1000,
@@ -188,12 +230,18 @@ export function TokenAcquisition() {
         <div className="mb-6 p-4 bg-black/20 rounded-lg">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold">Free Testnet Faucet</h4>
-            <span className="text-green-400 font-bold">500 TALON</span>
+            <span className="text-green-400 font-bold">
+              {faucetAmount ? formatEther(faucetAmount) : '...'} TALON
+            </span>
           </div>
           <p className="text-xs text-purple-200 mb-3">
-            Claim free tokens once every 5 minutes for testing
+            Claim free tokens once every {faucetCooldown ? formatCooldown(faucetCooldown) : '5 minutes'} for testing
           </p>
-          {isLoadingCanClaim || isLoadingCooldown ? (
+          {faucetEnabled === false ? (
+            <div className="text-center py-2 text-sm text-red-400">
+              Faucet is currently disabled
+            </div>
+          ) : isLoadingCanClaim || isLoadingCooldown ? (
             <div className="text-center py-2 text-sm text-purple-300">
               Checking eligibility...
             </div>
@@ -203,7 +251,7 @@ export function TokenAcquisition() {
               disabled={isClaiming || isClaimConfirming}
               className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded transition-colors"
             >
-              {isClaiming || isClaimConfirming ? 'Claiming...' : 'Claim 500 TALON'}
+              {isClaiming || isClaimConfirming ? 'Claiming...' : `Claim ${faucetAmount ? formatEther(faucetAmount) : '...'} TALON`}
             </button>
           ) : (
             <div className="text-center py-2 text-sm text-yellow-300">

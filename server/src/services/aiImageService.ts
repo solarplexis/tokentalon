@@ -52,7 +52,7 @@ export async function generatePrizeImage(
           content: [
             {
               type: 'text',
-              text: 'Analyze this prize image. Describe it in detail focusing on: shape, colors, materials, style, character features, and overall aesthetic. Be specific and descriptive - this will be used to generate a similar but enhanced version.'
+              text: 'Analyze this plushie/stuffed toy prize image. Describe it as a SOFT, CUDDLY PLUSHIE focusing on: the character design, plushie proportions, soft fabric textures, stitching details, cute features, stuffed toy aesthetic, and overall plushie style. Emphasize that this is a STUFFED TOY with plush fabric materials. Be specific and descriptive - this will be used to generate a similar but enhanced plushie version.'
             },
             {
               type: 'image_url',
@@ -119,9 +119,11 @@ function buildEnhancedPrompt(imageDescription: string, customization: PrizeCusto
   const addressSeed = parseInt(playerAddress.slice(2, 10), 16);
   const backgroundColor = solidColors[addressSeed % solidColors.length];
   
-  // Start with the analyzed image description
-  let prompt = `Create a high-quality 3D render based on this description: ${imageDescription}. `;
-  
+  // Start with the analyzed image description - EMPHASIZE PLUSHIE NATURE
+  let prompt = `Create a high-quality 3D render of an adorable PLUSHIE / STUFFED TOY based on this description: ${imageDescription}. `;
+  prompt += `CRITICAL: This MUST look like a soft, cuddly STUFFED TOY / PLUSHIE with fabric texture, stitching, and a cute stuffed toy aesthetic. `;
+  prompt += `Think of it as a collectible plushie you'd win from a claw machine - soft, huggable, with visible plush fabric material. `;
+
   // Add custom trait-based modifications FIRST (most specific)
   if (Object.keys(customTraits).length > 0) {
     const traitDescriptions = Object.entries(customTraits)
@@ -135,51 +137,56 @@ function buildEnhancedPrompt(imageDescription: string, customization: PrizeCusto
     prompt += `IMPORTANT: Add these specific customizations: ${traitDescriptions}. `;
   }
   
-  // Add rarity-based enhancements
+  // Add rarity-based enhancements - KEEP IT PLUSHIE!
   switch (rarity.toLowerCase()) {
     case 'legendary':
-      prompt += `Transform it into a LEGENDARY version with a radiant golden aura, glowing magical particles floating around it, ornate golden decorations and patterns. `;
-      prompt += `Premium mystical materials, holographic rainbow accents, ethereal divine glow effects, celestial energy. `;
+      prompt += `Transform it into a LEGENDARY plushie with premium ultra-soft golden fabric, intricate golden embroidered patterns, and deluxe stitching. `;
+      prompt += `Add a radiant golden aura and glowing magical particles around the plushie, holographic rainbow fabric accents, celestial glow effects. `;
+      prompt += `This is still a STUFFED TOY but made with the most premium plush materials and magical enhancements. `;
       break;
     case 'epic':
-      prompt += `Transform it into an EPIC version with purple and blue mystical energy effects, shimmering magical particles. `;
-      prompt += `Enhanced with crystals, arcane symbols, high-quality enchanted materials, powerful mystical glow. `;
+      prompt += `Transform it into an EPIC plushie with high-quality purple and blue fabric, magical embroidered symbols, shimmering sequins or metallic thread. `;
+      prompt += `Add purple/blue mystical energy effects around the plushie, small crystal decorations sewn on, powerful mystical glow. `;
+      prompt += `This is still a STUFFED TOY but with premium magical fabric and mystical plush effects. `;
       break;
     case 'rare':
-      prompt += `Transform it into a RARE version with blue energy effects, magical sparkles, and polished enchanted finish. `;
-      prompt += `Quality craftsmanship with subtle magical glow, refined details, gentle shimmer. `;
+      prompt += `Transform it into a RARE plushie with quality blue-accented fabric, magical sparkle effects, polished stitching and embroidery. `;
+      prompt += `Add blue energy effects around the plushie, subtle magical glow, refined plush details. `;
+      prompt += `This is still a STUFFED TOY but with enhanced magical fabric and quality craftsmanship. `;
       break;
     case 'uncommon':
-      prompt += `Transform it into an UNCOMMON version with soft green highlights, slight magical shimmer, and enhanced clean design. `;
-      prompt += `Good quality with subtle improvements, light glow accents. `;
+      prompt += `Transform it into an UNCOMMON plushie with enhanced fabric quality, soft green highlights in the stitching, slight shimmer effect. `;
+      prompt += `Clean plushie design with improved materials, light glow accents around the stuffed toy. `;
+      prompt += `This is still a STUFFED TOY but with better plush materials and subtle improvements. `;
       break;
     default: // common
-      prompt += `Keep the basic design but make it look clean and polished, with simple materials and soft lighting. `;
+      prompt += `Keep the basic plushie design clean and polished, with simple soft fabric materials and gentle lighting. Classic stuffed toy look. `;
   }
   
-  // Add difficulty-based detail enhancements
+  // Add difficulty-based detail enhancements - PLUSHIE FOCUSED
   if (difficulty >= 8) {
-    prompt += `Add extremely intricate patterns, ultra-detailed textures, masterwork quality embellishments, complex ornamental features. `;
+    prompt += `Add extremely intricate embroidered patterns, ultra-detailed plush fabric textures, masterwork quality plushie stitching, complex ornamental embroidery. `;
   } else if (difficulty >= 6) {
-    prompt += `Add detailed decorative features, special unique elements, enhanced texturing. `;
+    prompt += `Add detailed embroidered decorations, special unique plushie elements, enhanced fabric texturing and stitching. `;
   } else if (difficulty >= 4) {
-    prompt += `Add clean detailed elements, nice subtle features, smooth polished look. `;
+    prompt += `Add clean plushie details, nice subtle fabric features, smooth polished stuffed toy look. `;
   }
-  
-  // Add uniqueness based on tokens spent (more tokens = more elaborate)
+
+  // Add uniqueness based on tokens spent (more tokens = more elaborate) - PLUSHIE FOCUSED
   if (tokensSpent > 50) {
-    prompt += `Extra elaborate with bonus premium decorative elements, luxury accents, special unique features. `;
+    prompt += `Extra elaborate plushie with bonus premium fabric elements, luxury plush accents, special unique stuffed toy features. `;
   } else if (tokensSpent > 30) {
-    prompt += `Enhanced with additional decorative touches, refined details, quality improvements. `;
+    prompt += `Enhanced plushie with additional fabric touches, refined stitching details, quality plush improvements. `;
   }
-  
-  // Technical requirements - STRICT BACKGROUND RULES
-  prompt += `CRITICAL: Place the subject on a completely SOLID FLAT background color ${backgroundColor}. `;
+
+  // Technical requirements - STRICT BACKGROUND RULES + PLUSHIE EMPHASIS
+  prompt += `CRITICAL: Place this PLUSHIE/STUFFED TOY on a completely SOLID FLAT background color ${backgroundColor}. `;
   prompt += `ABSOLUTELY NO gradients, NO textures, NO patterns on the background - it must be a single uniform flat color. `;
-  prompt += `The subject itself should have NO drop shadows, NO cast shadows on the background. `;
-  prompt += `Professional product photography style with soft studio lighting. `;
-  prompt += `Isolated subject on the solid flat background, premium NFT artwork quality. `;
-  prompt += `Maintain the character and essence of the original but make it more impressive and valuable-looking. `;
+  prompt += `The plushie should have NO drop shadows, NO cast shadows on the background. `;
+  prompt += `Professional product photography style with soft studio lighting that highlights the soft plush fabric texture. `;
+  prompt += `Isolated stuffed toy on the solid flat background, premium collectible plushie NFT quality. `;
+  prompt += `REMEMBER: This must look like a SOFT, CUDDLY STUFFED TOY with visible fabric texture and plushie characteristics. `;
+  prompt += `Maintain the character and essence of the original plushie but make it more impressive and collectible-looking. `;
   prompt += `No text, no watermarks, no UI elements, no logos.`;
 
   return prompt;

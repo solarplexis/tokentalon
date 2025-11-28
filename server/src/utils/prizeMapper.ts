@@ -119,6 +119,7 @@ export function getPrizeName(prizeKey: string): string {
   // Remove "prize_" prefix and convert to Title Case
   return prizeKey
     .replace('prize_', '')
+    .replace(/-/g, ' ')
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
