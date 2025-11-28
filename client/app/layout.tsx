@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TokenTalon",
+  title: "Home - TokenTalon",
   description: "TokenTalon - Blockchain Claw Machine Game",
 };
 

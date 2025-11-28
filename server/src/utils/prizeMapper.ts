@@ -116,11 +116,12 @@ export function generateCustomTraits(
  * e.g., "prize_nemo" → "Nemo", "prize_dragon_egg" → "Dragon Egg"
  */
 export function getPrizeName(prizeKey: string): string {
-  // Remove "prize_" prefix and convert to Title Case
+  // Remove "prize_" prefix, replace hyphens and underscores with spaces, then Title Case
   return prizeKey
     .replace('prize_', '')
-    .replace(/-/g, ' ')
-    .split('_')
+    .replace(/[-_]/g, ' ')  // Replace both hyphens and underscores with spaces
+    .split(' ')  // Split on spaces
+    .filter(word => word.length > 0)  // Remove empty strings
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
