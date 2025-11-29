@@ -5,6 +5,7 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadCont
 import { formatEther, parseEther } from 'viem';
 import { CONTRACTS, GAMETOKEN_ABI } from '@/lib/web3';
 import { sepolia } from 'wagmi/chains';
+import { useTranslations } from 'next-intl';
 
 const EXTENDED_ABI = [
   ...GAMETOKEN_ABI,
@@ -74,10 +75,11 @@ const EXTENDED_ABI = [
 ] as const;
 
 export function TokenAcquisition() {
+  const t = useTranslations('wallet');
   const { address, chain } = useAccount();
   const [ethAmount, setEthAmount] = useState('0.1');
   const [lastTxHash, setLastTxHash] = useState<`0x${string}` | undefined>();
-  
+
   const chainId = chain?.id || sepolia.id;
   const tokenAddress = chainId === sepolia.id 
     ? CONTRACTS.sepolia.gameToken 
@@ -207,16 +209,18 @@ export function TokenAcquisition() {
     const hours = Number(seconds) / 3600;
     if (hours < 1) {
       const minutes = Math.ceil(Number(seconds) / 60);
-      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+      return minutes === 1
+        ? t('timeMinute', { count: minutes })
+        : t('timeMinutes', { count: minutes });
     }
-    return `${hours.toFixed(1)} hours`;
+    return t('timeHours', { count: hours.toFixed(1) });
   };
 
   if (!address) {
     return (
       <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white border border-white/20">
-        <h3 className="text-lg font-bold mb-2">Get Tokens</h3>
-        <p className="text-sm text-purple-200">Connect wallet to get TALON tokens</p>
+        <h3 className="text-lg font-bold mb-2">{t('getTokens')}</h3>
+        <p className="text-sm text-purple-200">{t('connectWalletPrompt')}</p>
       </div>
     );
   }
@@ -224,26 +228,26 @@ export function TokenAcquisition() {
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white border border-white/20 space-y-6">
       <div>
-        <h3 className="text-lg font-bold mb-4">Get TALON Tokens</h3>
-        
+        <h3 className="text-lg font-bold mb-4">{t('getTokens')}</h3>
+
         {/* Faucet Section */}
         <div className="mb-6 p-4 bg-black/20 rounded-lg">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-semibold">Free Testnet Faucet</h4>
+            <h4 className="font-semibold">{t('freeTestnetFaucet')}</h4>
             <span className="text-green-400 font-bold">
               {faucetAmount ? formatEther(faucetAmount) : '...'} TALON
             </span>
           </div>
           <p className="text-xs text-purple-200 mb-3">
-            Claim free tokens once every {faucetCooldown ? formatCooldown(faucetCooldown) : '5 minutes'} for testing
+            {t('faucetDescription', { cooldown: faucetCooldown ? formatCooldown(faucetCooldown) : '5 minutes' })}
           </p>
           {faucetEnabled === false ? (
             <div className="text-center py-2 text-sm text-red-400">
-              Faucet is currently disabled
+              {t('faucetDisabled')}
             </div>
           ) : isLoadingCanClaim || isLoadingCooldown ? (
             <div className="text-center py-2 text-sm text-purple-300">
-              Checking eligibility...
+              {t('checkingEligibility')}
             </div>
           ) : canClaim ? (
             <button
@@ -251,20 +255,20 @@ export function TokenAcquisition() {
               disabled={isClaiming || isClaimConfirming}
               className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded transition-colors"
             >
-              {isClaiming || isClaimConfirming ? 'Claiming...' : `Claim ${faucetAmount ? formatEther(faucetAmount) : '...'} TALON`}
+              {isClaiming || isClaimConfirming ? t('claiming') : t('claimTokens', { amount: faucetAmount ? formatEther(faucetAmount) : '...' })}
             </button>
           ) : (
             <div className="text-center py-2 text-sm text-yellow-300">
-              Next claim in: {cooldownRemaining !== undefined ? (cooldownRemaining === BigInt(0) ? 'Available now' : formatCooldown(cooldownRemaining)) : 'Calculating...'}
+              {t('nextClaimIn')}: {cooldownRemaining !== undefined ? (cooldownRemaining === BigInt(0) ? t('availableNow') : formatCooldown(cooldownRemaining)) : t('calculating')}
             </div>
           )}
         </div>
 
         {/* Buy Section */}
         <div className="p-4 bg-black/20 rounded-lg">
-          <h4 className="font-semibold mb-3">Buy with ETH</h4>
+          <h4 className="font-semibold mb-3">{t('buyWithEth')}</h4>
           <div className="mb-3">
-            <label className="text-xs text-purple-200 block mb-1">ETH Amount</label>
+            <label className="text-xs text-purple-200 block mb-1">{t('ethAmount')}</label>
             <input
               type="number"
               step="0.001"
@@ -275,20 +279,20 @@ export function TokenAcquisition() {
             />
           </div>
           <div className="text-sm mb-3">
-            <span className="text-purple-200">You'll receive: </span>
+            <span className="text-purple-200">{t('youllReceive')}: </span>
             <span className="font-bold text-blue-400">
               {tokenAmount ? formatEther(tokenAmount) : '0'} TALON
             </span>
           </div>
           <div className="text-xs text-purple-300 mb-3">
-            Price: {tokenPrice ? formatEther(tokenPrice) : '...'} ETH per TALON
+            {t('price')}: {tokenPrice ? formatEther(tokenPrice) : '...'} ETH per TALON
           </div>
           <button
             onClick={handleBuyTokens}
             disabled={isBuying || isBuyConfirming || !ethAmount || parseFloat(ethAmount) <= 0}
             className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded transition-colors"
           >
-            {isBuying || isBuyConfirming ? 'Buying...' : 'Buy Tokens'}
+            {isBuying || isBuyConfirming ? t('buying') : t('buyTokens')}
           </button>
         </div>
       </div>

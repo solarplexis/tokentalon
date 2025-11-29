@@ -8,15 +8,23 @@ import { useTokenBalance } from '@/lib/web3';
 import { formatUnits } from 'viem';
 import GameController from '@/components/game/GameController';
 import ClaimPrizeOverlay from '@/components/game/ClaimPrizeOverlay';
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
+
+// Create a loading component that uses translations
+function GameLoading() {
+  const tCommon = useTranslations('common');
+  return (
+    <div className="flex items-center justify-center h-[600px]">
+      <p className="text-white text-xl">{tCommon('loading')}</p>
+    </div>
+  );
+}
 
 // Dynamically import PhaserGame with no SSR to avoid window/document issues
 const PhaserGame = dynamic(() => import('@/components/game/PhaserGame'), {
   ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-[600px]">
-      <p className="text-white text-xl">Loading game...</p>
-    </div>
-  ),
+  loading: () => <GameLoading />,
 });
 
 interface PrizeWon {
@@ -28,6 +36,7 @@ interface PrizeWon {
 }
 
 export default function GamePage() {
+  const t = useTranslations('game');
   const { address, chain } = useAccount();
   const { data: balance } = useTokenBalance(address, chain?.id);
   const [payForGrabFn, setPayForGrabFn] = useState<(() => Promise<boolean>) | null>(null);
@@ -76,10 +85,15 @@ export default function GamePage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
+      {/* Language Switcher - Top Left */}
+      <div className="absolute top-4 left-4 z-[100]">
+        <LanguageSwitcher />
+      </div>
+
       {/* Balance Display - Top Right */}
       {address && balance !== undefined && (
         <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-xl px-4 py-2 border-2 border-green-400">
-          <div className="text-xs text-green-300 opacity-70">Your Balance</div>
+          <div className="text-xs text-green-300 opacity-70">{t('yourBalance')}</div>
           <div className="text-lg font-bold text-green-400">
             {formatUnits(balance, 18)} TALON
           </div>
@@ -92,15 +106,15 @@ export default function GamePage() {
             onClick={() => setShowHowToPlay(!showHowToPlay)}
             className="w-full flex items-center justify-between text-white text-xl hover:text-white/80 transition"
           >
-            <span>🎯 How to Play</span>
+            <span>🎯 {t('howToPlay')}</span>
             <span className="text-2xl">{showHowToPlay ? '−' : '+'}</span>
           </button>
           {showHowToPlay && (
             <div className="text-white/80 space-y-1 mt-2">
-              <p>← → Arrow Keys: Move the claw left/right</p>
-              <p>↑ ↓ Arrow Keys: Move the claw forward/backward</p>
-              <p>SPACE: Drop the claw to grab a prize</p>
-              <p>Goal: Grab a prize and bring it to the center drop zone!</p>
+              <p>{t('arrowKeysLeftRight')}</p>
+              <p>{t('arrowKeysForwardBackward')}</p>
+              <p>{t('spaceToGrab')}</p>
+              <p>{t('goal')}</p>
             </div>
           )}
         </div>
@@ -126,13 +140,13 @@ export default function GamePage() {
             href="/"
             className="inline-block bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-3 px-6 rounded-xl border-2 border-white/30 transition"
           >
-            ← Back to Home
+            ← {t('backToHome')}
           </Link>
           <Link
             href="/gallery"
             className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl border-2 border-purple-400 transition"
           >
-            View Prize Gallery →
+            {t('viewPrizeGallery')} →
           </Link>
         </div>
       </div>

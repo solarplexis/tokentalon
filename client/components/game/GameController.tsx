@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useGameFlow } from '@/lib/web3/useGameFlow';
 import { formatUnits } from 'viem';
+import { useTranslations } from 'next-intl';
 
 interface GameControllerProps {
   onGameReady: (payForGrab: () => Promise<boolean>) => void;
@@ -11,18 +12,19 @@ interface GameControllerProps {
 }
 
 export default function GameController({ onGameReady, onGameStart }: GameControllerProps) {
+  const t = useTranslations('game');
   const { address, chain, isConnected } = useAccount();
-  const { 
-    state, 
-    balance, 
-    gameCost, 
-    checkApproval, 
-    approveTokens, 
+  const {
+    state,
+    balance,
+    gameCost,
+    checkApproval,
+    approveTokens,
     payForGrab,
     isApproveSuccess,
-    isPayForGrabSuccess 
+    isPayForGrabSuccess
   } = useGameFlow(chain?.id);
-  
+
   const [gameStarted, setGameStarted] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -101,42 +103,42 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className="text-center space-y-6 p-8 bg-gradient-to-br from-purple-900/90 to-blue-900/90 rounded-2xl border-4 border-purple-400 max-w-md">
-        <h2 className="text-4xl font-bold text-white">🎮 Ready to Play?</h2>
-        
+        <h2 className="text-4xl font-bold text-white">🎮 {t('readyToPlay')}</h2>
+
         {!isConnected ? (
           <div className="space-y-4">
-            <p className="text-white/80">Connect your wallet to start playing</p>
+            <p className="text-white/80">{t('connectWalletToStart')}</p>
             <button
               disabled
               className="w-full bg-gray-500 cursor-not-allowed text-white font-bold py-4 px-8 rounded-xl text-xl"
             >
-              Connect Wallet First
+              {t('connectWalletFirst')}
             </button>
           </div>
         ) : !hasEnoughBalance ? (
           <div className="space-y-4">
             <p className="text-white/80">
-              You need at least {gameCost ? formatUnits(gameCost, 18) : '10'} TALON to play
+              {t('needAtLeast', { amount: gameCost ? formatUnits(gameCost, 18) : '10' })}
             </p>
             <p className="text-white/60">
-              Current balance: {balance ? formatUnits(balance, 18) : '0'} TALON
+              {t('currentBalance')}: {balance ? formatUnits(balance, 18) : '0'} TALON
             </p>
             <button
               disabled
               className="w-full bg-gray-500 cursor-not-allowed text-white font-bold py-4 px-8 rounded-xl text-xl"
             >
-              Insufficient Balance
+              {t('insufficientBalance')}
             </button>
           </div>
         ) : (
           <div className="space-y-4">
             <p className="text-white/80">
-              Each claw grab costs {gameCost ? formatUnits(gameCost, 18) : '10'} TALON
+              {t('eachGrabCosts', { amount: gameCost ? formatUnits(gameCost, 18) : '10' })}
             </p>
             <p className="text-green-400 font-semibold">
-              Your balance: {balance ? formatUnits(balance, 18) : '0'} TALON
+              {t('yourBalance')}: {balance ? formatUnits(balance, 18) : '0'} TALON
             </p>
-            
+
             {state.error && (
               <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-lg text-sm">
                 {state.error}
@@ -155,12 +157,12 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
                 </svg>
               )}
               {state.isApproving
-                ? 'Processing Approval...'
-                : needsApproval 
-                  ? 'Approve Game Play'
+                ? t('processingApproval')
+                : needsApproval
+                  ? t('approveGamePlay')
                   : (state.isPaying || isInitializing)
-                    ? 'Processing Payment...'
-                    : `Play for ${gameCost ? formatUnits(gameCost, 18) : '10'} TALON`
+                    ? t('processingPayment')
+                    : t('playFor', { amount: gameCost ? formatUnits(gameCost, 18) : '10' })
               }
             </button>
           </div>

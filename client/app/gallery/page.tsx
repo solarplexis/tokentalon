@@ -5,20 +5,28 @@ import Image from 'next/image';
 import { useAccount } from 'wagmi';
 import { useNFTGallery } from '@/lib/web3/useNFTGallery';
 import { WalletConnect } from '@/components/wallet/WalletConnect';
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 
 export default function GalleryPage() {
+  const t = useTranslations('gallery');
   const { isConnected } = useAccount();
   const { nfts, isLoading, balance } = useNFTGallery();
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
+      {/* Language Switcher - Top Left */}
+      <div className="absolute top-4 left-4 z-[100]">
+        <LanguageSwitcher />
+      </div>
+
       <div className="w-full max-w-7xl space-y-8 py-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-5xl font-bold text-white">🏆 NFT Gallery</h1>
+            <h1 className="text-5xl font-bold text-white">🏆 {t('title')}</h1>
             {isConnected && (
               <p className="text-xl text-purple-200 mt-2">
-                {balance} {balance === 1 ? 'NFT' : 'NFTs'} collected
+                {t('nftsCollected', { count: balance })}
               </p>
             )}
           </div>
@@ -26,14 +34,14 @@ export default function GalleryPage() {
             href="/"
             className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-3 px-6 rounded-xl border-2 border-white/30 transition-colors"
           >
-            ← Back to Home
+            ← {t('backToHome')}
           </Link>
         </div>
 
         {!isConnected ? (
           <div className="flex flex-col items-center justify-center min-h-[400px] space-y-6">
             <p className="text-xl text-purple-200">
-              Connect your wallet to view your NFT collection
+              {t('connectWalletPrompt')}
             </p>
             <WalletConnect />
           </div>
@@ -41,19 +49,19 @@ export default function GalleryPage() {
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center space-y-4">
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto"></div>
-              <p className="text-white text-lg">Loading your collection...</p>
+              <p className="text-white text-lg">{t('loading')}</p>
             </div>
           </div>
         ) : balance === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[400px] space-y-6">
             <p className="text-xl text-purple-200">
-              You haven't collected any prizes yet
+              {t('noPrizesYet')}
             </p>
             <Link
               href="/game"
               className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105"
             >
-              🎮 Play Now
+              🎮 {t('playNow')}
             </Link>
           </div>
         ) : (
@@ -69,8 +77,9 @@ export default function GalleryPage() {
 }
 
 function NFTCard({ nft }: { nft: any }) {
+  const t = useTranslations('gallery');
   const imageUrl = nft.metadata?.image?.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
-  
+
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105">
       <div className="aspect-square relative bg-gradient-to-br from-purple-500/20 to-blue-500/20">
@@ -92,17 +101,17 @@ function NFTCard({ nft }: { nft: any }) {
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-white/50">No image</p>
+            <p className="text-white/50">{t('noImage')}</p>
           </div>
         )}
       </div>
-      
+
       <div className="p-4 space-y-3">
         <div>
           <h3 className="text-xl font-bold text-white truncate">
-            {nft.metadata?.name || `Prize #${nft.tokenId}`}
+            {nft.metadata?.name || `${t('prize')} #${nft.tokenId}`}
           </h3>
-          <p className="text-sm text-purple-200">Token ID: {nft.tokenId}</p>
+          <p className="text-sm text-purple-200">{t('tokenId')}: {nft.tokenId}</p>
         </div>
         
         {nft.metadata?.attributes && nft.metadata.attributes.length > 0 && (

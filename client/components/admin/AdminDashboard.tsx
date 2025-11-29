@@ -5,6 +5,8 @@ import { CONTRACTS } from '@/lib/web3';
 import { sepolia } from 'wagmi/chains';
 import { FaucetControls } from './FaucetControls';
 import { SystemStats } from './SystemStats';
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 
 const GAMETOKEN_ABI = [
   {
@@ -17,6 +19,8 @@ const GAMETOKEN_ABI = [
 ] as const;
 
 export function AdminDashboard() {
+  const t = useTranslations('admin');
+  const tCommon = useTranslations('common');
   const { address, chain, isConnected } = useAccount();
   const chainId = chain?.id || sepolia.id;
   const tokenAddress = chainId === sepolia.id
@@ -36,12 +40,12 @@ export function AdminDashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white/10 backdrop-blur-sm rounded-xl p-8 text-center border border-white/20">
-          <h1 className="text-3xl font-bold text-white mb-4">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-white mb-4">{t('dashboard')}</h1>
           <p className="text-purple-200 mb-6">
-            Please connect your wallet to access the admin dashboard.
+            {t('connectWalletPrompt')}
           </p>
           <div className="text-sm text-purple-300">
-            Only the contract owner can access this page.
+            {t('onlyOwner')}
           </div>
         </div>
       </div>
@@ -51,7 +55,7 @@ export function AdminDashboard() {
   if (isLoadingOwner) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black flex items-center justify-center">
-        <div className="text-white text-xl">Verifying permissions...</div>
+        <div className="text-white text-xl">{tCommon('loading')}</div>
       </div>
     );
   }
@@ -61,13 +65,13 @@ export function AdminDashboard() {
       <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white/10 backdrop-blur-sm rounded-xl p-8 text-center border border-red-500/50">
           <div className="text-6xl mb-4">🚫</div>
-          <h1 className="text-3xl font-bold text-white mb-4">Access Denied</h1>
+          <h1 className="text-3xl font-bold text-white mb-4">{t('accessDenied')}</h1>
           <p className="text-red-300 mb-4">
-            You are not the contract owner.
+            {t('notOwner')}
           </p>
           <div className="text-sm text-purple-300 space-y-1">
-            <div>Your address: {address?.slice(0, 6)}...{address?.slice(-4)}</div>
-            <div>Owner address: {owner?.slice(0, 6)}...{owner?.slice(-4)}</div>
+            <div>{t('yourAddress')}: {address?.slice(0, 6)}...{address?.slice(-4)}</div>
+            <div>{t('ownerAddress')}: {owner?.slice(0, 6)}...{owner?.slice(-4)}</div>
           </div>
         </div>
       </div>
@@ -79,12 +83,17 @@ export function AdminDashboard() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
-          <p className="text-purple-200">
-            Manage TokenTalon system parameters and view statistics
-          </p>
-          <div className="mt-2 text-sm text-purple-300">
-            Connected as owner: {address?.slice(0, 6)}...{address?.slice(-4)}
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-2">{t('dashboard')}</h1>
+              <p className="text-purple-200">
+                {t('managementSubtitle')}
+              </p>
+              <div className="mt-2 text-sm text-purple-300">
+                {t('connectedAsOwner')}: {address?.slice(0, 6)}...{address?.slice(-4)}
+              </div>
+            </div>
+            <LanguageSwitcher />
           </div>
         </div>
 
@@ -108,8 +117,8 @@ export function AdminDashboard() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-purple-400">
-          <p>TokenTalon Admin Dashboard v1.0</p>
-          <p className="mt-1">Always verify transactions before confirming</p>
+          <p>{t('version')}</p>
+          <p className="mt-1">{t('verifyTransactions')}</p>
         </div>
       </div>
     </div>

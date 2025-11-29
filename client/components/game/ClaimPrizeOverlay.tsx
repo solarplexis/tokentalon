@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useAccount } from 'wagmi';
 import { useGameFlow } from '@/lib/web3/useGameFlow';
+import { useTranslations } from 'next-intl';
 
 interface PrizeWon {
   id: string;
@@ -24,6 +25,7 @@ export default function ClaimPrizeOverlay({
   replayData,
   onClose
 }: ClaimPrizeOverlayProps) {
+  const t = useTranslations('game');
   const { chain } = useAccount();
   const { submitWin, claimPrize, state } = useGameFlow(chain?.id);
   const [isMounted, setIsMounted] = useState(true);
@@ -31,31 +33,34 @@ export default function ClaimPrizeOverlay({
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Rarity colors
-  const rarityConfig = {
-    common: {
-      bg: 'bg-gray-500',
-      border: 'border-gray-400',
-      text: 'Common'
-    },
-    uncommon: {
-      bg: 'bg-green-500',
-      border: 'border-green-400',
-      text: 'Uncommon'
-    },
-    rare: {
-      bg: 'bg-blue-500',
-      border: 'border-blue-400',
-      text: 'Rare'
-    },
-    legendary: {
-      bg: 'bg-purple-500',
-      border: 'border-purple-400',
-      text: 'Legendary'
-    }
+  // Rarity colors - using translation keys for text
+  const getRarityConfig = (rarity: string) => {
+    const configs = {
+      common: {
+        bg: 'bg-gray-500',
+        border: 'border-gray-400',
+        text: t('rarityCommon')
+      },
+      uncommon: {
+        bg: 'bg-green-500',
+        border: 'border-green-400',
+        text: t('rarityUncommon')
+      },
+      rare: {
+        bg: 'bg-blue-500',
+        border: 'border-blue-400',
+        text: t('rarityRare')
+      },
+      legendary: {
+        bg: 'bg-purple-500',
+        border: 'border-purple-400',
+        text: t('rarityLegendary')
+      }
+    };
+    return configs[rarity.toLowerCase() as keyof typeof configs] || configs.common;
   };
 
-  const rarityStyle = rarityConfig[prizeWon.rarity.toLowerCase() as keyof typeof rarityConfig] || rarityConfig.common;
+  const rarityStyle = getRarityConfig(prizeWon.rarity);
 
   const handleClaim = async () => {
     try {
@@ -116,9 +121,9 @@ export default function ClaimPrizeOverlay({
         {/* Congratulations Header */}
         <div className="text-center mb-6">
           <h2 className="text-4xl font-bold text-yellow-400 mb-2">
-            CONGRATULATIONS!
+            {t('congratulations')}
           </h2>
-          <p className="text-white/70 text-sm">You won a prize!</p>
+          <p className="text-white/70 text-sm">{t('youWonAPrize')}</p>
         </div>
 
         {/* Prize Image */}
@@ -158,7 +163,7 @@ export default function ClaimPrizeOverlay({
         {/* Success Message */}
         {isSuccess && (
           <div className="mb-4 bg-green-500/20 border border-green-500 text-green-200 px-4 py-2 rounded-lg text-sm">
-            🎊 Prize claimed successfully! Check your gallery.
+            {t('prizeClaimedSuccess')}
           </div>
         )}
 
@@ -175,7 +180,7 @@ export default function ClaimPrizeOverlay({
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             )}
-            {isSuccess ? '✓ Claimed!' : isClaiming ? 'Claiming...' : 'Claim as NFT'}
+            {isSuccess ? t('claimed') : isClaiming ? t('claimingPrize') : t('claimAsNFT')}
           </button>
 
           <button
@@ -183,7 +188,7 @@ export default function ClaimPrizeOverlay({
             disabled={isClaiming}
             className="flex-1 bg-slate-600 hover:bg-slate-700 disabled:bg-slate-800 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl text-lg shadow-lg transform transition hover:scale-105 disabled:scale-100"
           >
-            Close
+            {t('close')}
           </button>
         </div>
       </div>

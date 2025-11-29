@@ -9,8 +9,12 @@ import { WalletConnect, TokenAcquisition } from '@/components/wallet';
 import { useTokenBalance, useGameCost, useTokenAllowance, CONTRACTS } from '@/lib/web3';
 import { useRouter } from 'next/navigation';
 import { useGameFlow } from '@/lib/web3/useGameFlow';
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 
 export function HomeContent() {
+  const t = useTranslations('home');
+  const tCommon = useTranslations('common');
   const [cabinet, setCabinet] = useState<Cabinet | null>(null);
   const { address, isConnected, chain } = useAccount();
   const { data: balance, isLoading: isLoadingBalance, error: balanceError } = useTokenBalance(address, chain?.id);
@@ -75,13 +79,18 @@ export function HomeContent() {
   if (!cabinet) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <div className="text-white text-2xl">Loading...</div>
+        <div className="text-white text-2xl">{tCommon('loading')}</div>
       </div>
     );
   }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
+      {/* Language Switcher in Top Left */}
+      <div className="absolute top-4 left-4 z-[100]">
+        <LanguageSwitcher />
+      </div>
+
       {/* Wallet Connection in Top Right */}
       <div className="absolute top-4 right-4 z-[100]">
         <WalletConnect />
@@ -96,7 +105,7 @@ export function HomeContent() {
         {/* Header */}
         <div className="text-center space-y-4">
           <p className="text-xl text-purple-200">
-            Web3 Claw Machine - Win NFT Prizes!
+            {t('subtitle')}
           </p>
         </div>
 
@@ -133,22 +142,22 @@ export function HomeContent() {
               onClick={handlePlayNow}
               className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-xl text-center text-xl shadow-lg transform transition hover:scale-105"
             >
-              Play Game
+              {t('playGame')}
             </button>
           ) : (
             <button
               disabled
               className="flex-1 bg-gray-500 cursor-not-allowed text-white font-bold py-4 px-8 rounded-xl text-center text-xl shadow-lg opacity-50"
-              title="Connect wallet to play"
+              title={t('connectWalletToPlay')}
             >
-              Connect Wallet to Play
+              {t('connectWalletToPlay')}
             </button>
           )}
           <Link
             href="/gallery"
             className="flex-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-xl text-center text-xl border-2 border-white/30 shadow-lg transform transition hover:scale-105"
           >
-            View Gallery
+            {t('viewGallery')}
           </Link>
         </div>
 
@@ -161,23 +170,23 @@ export function HomeContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mt-8">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white border border-white/20">
             <div className="text-4xl mb-2">🎯</div>
-            <h3 className="text-lg font-bold mb-2">Connect Wallet</h3>
+            <h3 className="text-lg font-bold mb-2">{t('infoCard1Title')}</h3>
             <p className="text-sm text-purple-200">
-              Use your Web3 wallet to spend tokens and play
+              {t('infoCard1Description')}
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white border border-white/20">
             <div className="text-4xl mb-2">🎮</div>
-            <h3 className="text-lg font-bold mb-2">Grab a Prize</h3>
+            <h3 className="text-lg font-bold mb-2">{t('infoCard2Title')}</h3>
             <p className="text-sm text-purple-200">
-              Control the claw and try to grab your favorite prize
+              {t('infoCard2Description')}
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-white border border-white/20">
             <div className="text-4xl mb-2">🏆</div>
-            <h3 className="text-lg font-bold mb-2">Win NFTs</h3>
+            <h3 className="text-lg font-bold mb-2">{t('infoCard3Title')}</h3>
             <p className="text-sm text-purple-200">
-              Successful grabs mint unique NFTs with replay data
+              {t('infoCard3Description')}
             </p>
           </div>
         </div>
@@ -185,7 +194,7 @@ export function HomeContent() {
 
       {/* Footer */}
       <footer className="mt-16 text-white/60 text-sm">
-        <p>Powered by blockchain technology</p>
+        <p>{t('footer')}</p>
       </footer>
     </div>
   );

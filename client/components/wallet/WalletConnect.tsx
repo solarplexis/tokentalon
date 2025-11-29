@@ -4,8 +4,10 @@ import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useEffect, useState } from 'react';
 import { useTokenBalance } from '@/lib/web3';
 import { formatUnits } from 'viem';
+import { useTranslations } from 'next-intl';
 
 export function WalletConnect() {
+  const t = useTranslations('wallet');
   const { address, isConnected, chain } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
@@ -56,7 +58,7 @@ export function WalletConnect() {
           onClick={() => disconnect()}
           className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
         >
-          Disconnect
+          {t('disconnect')}
         </button>
       </div>
     );
@@ -68,7 +70,7 @@ export function WalletConnect() {
         onClick={() => setShowDropdown(!showDropdown)}
         className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-semibold"
       >
-        Connect Wallet
+        {t('connectWallet')}
       </button>
       {showDropdown && (
         <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-white/20 rounded-lg shadow-xl overflow-hidden z-[100]">
