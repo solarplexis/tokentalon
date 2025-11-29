@@ -138,6 +138,8 @@
     "chainId": "ID de Cadena",
     "contractBalance": "Saldo del contrato",
     "contractAddresses": "Direcciones de Contratos",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
     "minutes": "Minutos",
     "hours": "Horas",
     "days": "Días",

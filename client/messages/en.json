@@ -138,6 +138,8 @@
     "chainId": "Chain ID",
     "contractBalance": "Contract balance",
     "contractAddresses": "Contract Addresses",
+    "copy": "Copy",
+    "copied": "Copied!",
     "minutes": "Minutes",
     "hours": "Hours",
     "days": "Days",
