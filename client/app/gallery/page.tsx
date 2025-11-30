@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAccount } from 'wagmi';
@@ -7,11 +8,13 @@ import { useNFTGallery } from '@/lib/web3/useNFTGallery';
 import { WalletConnect } from '@/components/wallet/WalletConnect';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
+import { TransferNFTModal } from '@/components/gallery/TransferNFTModal';
 
 export default function GalleryPage() {
   const t = useTranslations('gallery');
   const { isConnected } = useAccount();
-  const { nfts, isLoading, balance } = useNFTGallery();
+  const { nfts, isLoading, balance, refetch } = useNFTGallery();
+  const [transferModal, setTransferModal] = useState<{ tokenId: string; name: string } | null>(null);
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
@@ -67,16 +70,30 @@ export default function GalleryPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {nfts.map((nft) => (
-              <NFTCard key={nft.tokenId} nft={nft} />
+              <NFTCard
+                key={nft.tokenId}
+                nft={nft}
+                onTransfer={() => setTransferModal({ tokenId: nft.tokenId, name: nft.metadata?.name || `Prize #${nft.tokenId}` })}
+              />
             ))}
           </div>
+        )}
+
+        {/* Transfer Modal */}
+        {transferModal && (
+          <TransferNFTModal
+            tokenId={transferModal.tokenId}
+            nftName={transferModal.name}
+            onClose={() => setTransferModal(null)}
+            onSuccess={() => refetch()}
+          />
         )}
       </div>
     </div>
   );
 }
 
-function NFTCard({ nft }: { nft: any }) {
+function NFTCard({ nft, onTransfer }: { nft: any; onTransfer: () => void }) {
   const t = useTranslations('gallery');
   const imageUrl = nft.metadata?.image?.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
 
@@ -117,7 +134,7 @@ function NFTCard({ nft }: { nft: any }) {
         {nft.metadata?.attributes && nft.metadata.attributes.length > 0 && (
           <div className="space-y-1">
             {nft.metadata.attributes
-              .filter((attr: any) => 
+              .filter((attr: any) =>
                 !['Prize ID', 'Difficulty', 'Tokens Spent'].includes(attr.trait_type)
               )
               .slice(0, 3)
@@ -129,6 +146,17 @@ function NFTCard({ nft }: { nft: any }) {
               ))}
           </div>
         )}
+
+        {/* Transfer Button */}
+        <button
+          onClick={onTransfer}
+          className="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+          </svg>
+          {t('sendNFT')}
+        </button>
       </div>
     </div>
   );

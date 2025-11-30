@@ -162,6 +162,17 @@
     "playToWin": "Play the game to win prizes!",
     "viewDetails": "View Details",
     "rarity": "Rarity",
-    "wonOn": "Won on"
+    "wonOn": "Won on",
+    "sendNFT": "Send NFT",
+    "transferNFT": "Transfer NFT",
+    "recipientAddress": "Recipient Address",
+    "invalidAddress": "Invalid Ethereum address",
+    "cannotTransferToSelf": "Cannot transfer to your own address",
+    "transferSuccess": "NFT transferred successfully!",
+    "transferring": "Transferring...",
+    "confirming": "Confirming...",
+    "transferred": "Transferred!",
+    "transfer": "Transfer",
+    "cancel": "Cancel"
   }
 }
