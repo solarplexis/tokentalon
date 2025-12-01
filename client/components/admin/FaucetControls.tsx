@@ -5,6 +5,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { parseEther, formatEther } from 'viem';
 import { CONTRACTS } from '@/lib/web3';
 import { sepolia } from 'wagmi/chains';
+import { useTranslations } from 'next-intl';
 
 const GAMETOKEN_ABI = [
   {
@@ -52,6 +53,8 @@ const GAMETOKEN_ABI = [
 ] as const;
 
 export function FaucetControls() {
+  const t = useTranslations('admin');
+  const tCommon = useTranslations('common');
   const { chain } = useAccount();
   const chainId = chain?.id || sepolia.id;
   const tokenAddress = chainId === sepolia.id
@@ -122,7 +125,7 @@ export function FaucetControls() {
   const handleSetAmount = () => {
     const amount = parseFloat(newAmount);
     if (amount <= 0 || amount > 10000) {
-      alert('Amount must be between 0 and 10,000 TALON');
+      alert(t('alertAmountRange'));
       return;
     }
 
@@ -149,7 +152,7 @@ export function FaucetControls() {
     }
 
     if (seconds < 60 || seconds > 30 * 86400) {
-      alert('Cooldown must be between 1 minute and 30 days');
+      alert(t('alertCooldownRange'));
       return;
     }
 
@@ -174,26 +177,26 @@ export function FaucetControls() {
 
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-      <h2 className="text-2xl font-bold text-white mb-4">Faucet Controls</h2>
+      <h2 className="text-2xl font-bold text-white mb-4">{t('faucetControls')}</h2>
 
       {/* Current Values Display */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Current Amount</div>
+          <div className="text-purple-300 text-sm mb-1">{t('currentAmount')}</div>
           <div className="text-white text-2xl font-bold">
             {faucetAmount ? formatEther(faucetAmount) : '...'} TALON
           </div>
         </div>
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Current Cooldown</div>
+          <div className="text-purple-300 text-sm mb-1">{t('currentCooldown')}</div>
           <div className="text-white text-2xl font-bold">
             {currentCooldownMinutes} min
           </div>
         </div>
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Status</div>
+          <div className="text-purple-300 text-sm mb-1">{t('status')}</div>
           <div className={`text-2xl font-bold ${faucetEnabled ? 'text-green-400' : 'text-red-400'}`}>
-            {faucetEnabled ? '✅ Enabled' : '❌ Disabled'}
+            {faucetEnabled ? `✅ ${tCommon('enabled')}` : `❌ ${tCommon('disabled')}`}
           </div>
         </div>
       </div>
@@ -203,7 +206,7 @@ export function FaucetControls() {
         {/* Faucet Amount */}
         <div className="bg-black/20 rounded-lg p-4">
           <label className="text-white font-semibold mb-3 block">
-            Faucet Amount (TALON)
+            {t('faucetAmount')}
           </label>
           <div className="flex gap-4 items-end">
             <div className="flex-1">
@@ -235,18 +238,18 @@ export function FaucetControls() {
               disabled={isAmountPending}
               className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-500 text-white font-bold py-2 px-6 rounded transition-colors"
             >
-              {isAmountPending ? 'Updating...' : 'Update'}
+              {isAmountPending ? t('updating') : tCommon('update')}
             </button>
           </div>
           <div className="text-xs text-purple-300 mt-2">
-            Range: 10 - 10,000 TALON
+            {t('faucetAmountRange', { min: '10', max: '10,000' })}
           </div>
         </div>
 
         {/* Faucet Cooldown */}
         <div className="bg-black/20 rounded-lg p-4">
           <label className="text-white font-semibold mb-3 block">
-            Faucet Cooldown
+            {t('faucetCooldown')}
           </label>
           <div className="flex gap-4 items-end">
             <div className="flex-1">
@@ -260,9 +263,9 @@ export function FaucetControls() {
                 className="w-full h-2 bg-purple-300 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-xs text-purple-300 mt-1">
-                <span>Min</span>
-                <span>Mid</span>
-                <span>Max</span>
+                <span>{t('min')}</span>
+                <span>{t('mid')}</span>
+                <span>{t('max')}</span>
               </div>
             </div>
             <input
@@ -277,20 +280,20 @@ export function FaucetControls() {
               onChange={(e) => setCooldownUnit(e.target.value as 'minutes' | 'hours' | 'days')}
               className="bg-black/30 border border-white/20 rounded px-3 py-2 text-white"
             >
-              <option value="minutes">Minutes</option>
-              <option value="hours">Hours</option>
-              <option value="days">Days</option>
+              <option value="minutes">{t('minutes')}</option>
+              <option value="hours">{t('hours')}</option>
+              <option value="days">{t('days')}</option>
             </select>
             <button
               onClick={handleSetCooldown}
               disabled={isCooldownPending}
               className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-500 text-white font-bold py-2 px-6 rounded transition-colors"
             >
-              {isCooldownPending ? 'Updating...' : 'Update'}
+              {isCooldownPending ? t('updating') : tCommon('update')}
             </button>
           </div>
           <div className="text-xs text-purple-300 mt-2">
-            Range: 1 minute - 30 days
+            {t('faucetCooldownRange', { min: '1 minute', max: '30 days' })}
           </div>
         </div>
 
@@ -298,9 +301,9 @@ export function FaucetControls() {
         <div className="bg-black/20 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-white font-semibold mb-1">Faucet Status</div>
+              <div className="text-white font-semibold mb-1">{t('faucetStatus')}</div>
               <div className="text-sm text-purple-300">
-                {faucetEnabled ? 'Users can claim tokens' : 'Faucet is disabled'}
+                {faucetEnabled ? t('usersCanClaim') : t('faucetIsDisabled')}
               </div>
             </div>
             <button
@@ -310,7 +313,7 @@ export function FaucetControls() {
                 faucetEnabled ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
               } disabled:bg-gray-500 text-white font-bold py-3 px-8 rounded transition-colors`}
             >
-              {isEnabledPending ? 'Updating...' : faucetEnabled ? 'Disable Faucet' : 'Enable Faucet'}
+              {isEnabledPending ? t('updating') : faucetEnabled ? t('disableFaucet') : t('enableFaucet')}
             </button>
           </div>
         </div>
@@ -319,20 +322,20 @@ export function FaucetControls() {
       {/* Transaction Status */}
       {(amountHash || cooldownHash || enabledHash) && (
         <div className="mt-4 p-4 bg-blue-500/20 border border-blue-500/50 rounded-lg">
-          <div className="text-blue-300 text-sm font-semibold mb-2">Transaction Status</div>
+          <div className="text-blue-300 text-sm font-semibold mb-2">{t('transactionStatus')}</div>
           {amountHash && (
             <div className="text-xs text-blue-200 mb-1">
-              Amount: {isAmountSuccess ? '✅ Confirmed' : '⏳ Pending...'}
+              {t('amountLabel')}: {isAmountSuccess ? `✅ ${t('confirmed')}` : `⏳ ${t('pending')}`}
             </div>
           )}
           {cooldownHash && (
             <div className="text-xs text-blue-200 mb-1">
-              Cooldown: {isCooldownSuccess ? '✅ Confirmed' : '⏳ Pending...'}
+              {t('cooldownLabel')}: {isCooldownSuccess ? `✅ ${t('confirmed')}` : `⏳ ${t('pending')}`}
             </div>
           )}
           {enabledHash && (
             <div className="text-xs text-blue-200">
-              Status: {isEnabledSuccess ? '✅ Confirmed' : '⏳ Pending...'}
+              {t('statusLabel')}: {isEnabledSuccess ? `✅ ${t('confirmed')}` : `⏳ ${t('pending')}`}
             </div>
           )}
         </div>

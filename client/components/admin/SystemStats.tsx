@@ -29,6 +29,13 @@ const GAMETOKEN_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ] as const;
 
 const CLAWMACHINE_ABI = [
@@ -46,6 +53,7 @@ export function SystemStats() {
   const { chain } = useAccount();
   const chainId = chain?.id || sepolia.id;
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   const tokenAddress = chainId === sepolia.id
     ? CONTRACTS.sepolia.gameToken
@@ -91,13 +99,23 @@ export function SystemStats() {
     functionName: 'costPerPlay',
   });
 
-  // Contract balances
+  // Contract ETH balances
   const { data: gameTokenBalance } = useBalance({
     address: tokenAddress,
+    chainId: chainId,
   });
 
   const { data: clawMachineBalance } = useBalance({
     address: clawMachineAddress,
+    chainId: chainId,
+  });
+
+  // ClawMachine TALON token balance (what players paid to play)
+  const { data: clawMachineTalonBalance } = useReadContract({
+    address: tokenAddress,
+    abi: GAMETOKEN_ABI,
+    functionName: 'balanceOf',
+    args: [clawMachineAddress],
   });
 
   const supplyPercentage = totalSupply && maxSupply
@@ -106,17 +124,17 @@ export function SystemStats() {
 
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-      <h2 className="text-2xl font-bold text-white mb-4">System Statistics</h2>
+      <h2 className="text-2xl font-bold text-white mb-4">{t('systemStats')}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Supply */}
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Total Supply</div>
+          <div className="text-purple-300 text-sm mb-1">{t('totalSupply')}</div>
           <div className="text-white text-2xl font-bold">
             {totalSupply ? formatEther(totalSupply) : '...'}
           </div>
           <div className="text-purple-400 text-xs mt-1">
-            {maxSupply && `Max: ${formatEther(maxSupply)}`}
+            {maxSupply && `${t('maxSupply')}: ${formatEther(maxSupply)}`}
           </div>
           <div className="mt-2">
             <div className="w-full bg-purple-900/50 rounded-full h-2">
@@ -126,54 +144,92 @@ export function SystemStats() {
               />
             </div>
             <div className="text-xs text-purple-300 mt-1">
-              {supplyPercentage.toFixed(2)}% of max supply
+              {supplyPercentage.toFixed(2)}% {t('ofMaxSupply')}
             </div>
           </div>
         </div>
 
         {/* Token Price */}
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Token Price</div>
+          <div className="text-purple-300 text-sm mb-1">{t('tokenPrice')}</div>
           <div className="text-white text-2xl font-bold">
             {tokenPrice ? formatEther(tokenPrice) : '...'} ETH
           </div>
-          <div className="text-purple-400 text-xs mt-1">per TALON</div>
+          <div className="text-purple-400 text-xs mt-1">{t('perToken')}</div>
         </div>
 
         {/* Game Cost */}
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Cost Per Play</div>
+          <div className="text-purple-300 text-sm mb-1">{t('costPerPlay')}</div>
           <div className="text-white text-2xl font-bold">
             {costPerPlay ? formatEther(costPerPlay) : '...'}
           </div>
-          <div className="text-purple-400 text-xs mt-1">TALON tokens</div>
+          <div className="text-purple-400 text-xs mt-1">{t('talonTokens')}</div>
         </div>
 
         {/* Network */}
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Network</div>
+          <div className="text-purple-300 text-sm mb-1">{t('network')}</div>
           <div className="text-white text-2xl font-bold capitalize">
-            {chain?.name || 'Unknown'}
+            {chain?.name || t('unknown')}
           </div>
-          <div className="text-purple-400 text-xs mt-1">Chain ID: {chainId}</div>
+          <div className="text-purple-400 text-xs mt-1">{t('chainId')}: {chainId}</div>
         </div>
 
         {/* GameToken Contract Balance */}
-        <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">GameToken ETH</div>
+        <div className="bg-black/20 rounded-lg p-4 relative">
+          <div className="flex items-start justify-between mb-1">
+            <div className="text-purple-300 text-sm">{t('gameTokenEth')}</div>
+            <div className="relative">
+              <button
+                onClick={() => setActiveTooltip(activeTooltip === 'gameToken' ? null : 'gameToken')}
+                className="text-purple-400 hover:text-purple-300 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                </svg>
+              </button>
+              {/* Tooltip */}
+              {activeTooltip === 'gameToken' && (
+                <div className="absolute right-0 top-6 w-64 bg-slate-800 border border-purple-400 rounded-lg p-3 text-xs text-white shadow-xl z-50">
+                  <p className="font-semibold text-purple-300 mb-1">{t('gameTokenEthTooltipTitle')}</p>
+                  <p>{t('gameTokenEthTooltipDescription')}</p>
+                </div>
+              )}
+            </div>
+          </div>
           <div className="text-white text-2xl font-bold">
             {gameTokenBalance ? parseFloat(formatEther(gameTokenBalance.value)).toFixed(4) : '0'} ETH
           </div>
-          <div className="text-purple-400 text-xs mt-1">Contract balance</div>
+          <div className="text-purple-400 text-xs mt-1">{t('contractBalance')}</div>
         </div>
 
-        {/* ClawMachine Contract Balance */}
-        <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">ClawMachine ETH</div>
-          <div className="text-white text-2xl font-bold">
-            {clawMachineBalance ? parseFloat(formatEther(clawMachineBalance.value)).toFixed(4) : '0'} ETH
+        {/* ClawMachine Contract Balances */}
+        <div className="bg-black/20 rounded-lg p-4 relative">
+          <div className="flex items-start justify-between mb-1">
+            <div className="text-purple-300 text-sm">{t('clawMachine')}</div>
+            <div className="relative">
+              <button
+                onClick={() => setActiveTooltip(activeTooltip === 'clawMachine' ? null : 'clawMachine')}
+                className="text-purple-400 hover:text-purple-300 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                </svg>
+              </button>
+              {/* Tooltip */}
+              {activeTooltip === 'clawMachine' && (
+                <div className="absolute right-0 top-6 w-64 bg-slate-800 border border-purple-400 rounded-lg p-3 text-xs text-white shadow-xl z-50">
+                  <p className="font-semibold text-purple-300 mb-1">{t('clawMachineTooltipTitle')}</p>
+                  <p>{t('clawMachineTooltipTalonBalance')}</p>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="text-purple-400 text-xs mt-1">Contract balance</div>
+          <div className="text-white text-2xl font-bold">
+            {clawMachineTalonBalance ? formatEther(clawMachineTalonBalance) : '0'} TALON
+          </div>
+          <div className="text-purple-400 text-xs mt-1">{t('contractBalance')}</div>
         </div>
 
         {/* Contract Addresses */}
