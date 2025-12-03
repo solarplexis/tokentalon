@@ -79,10 +79,11 @@ export function TokenAcquisition() {
   const { address, chain } = useAccount();
   const [ethAmount, setEthAmount] = useState('0.1');
   const [lastTxHash, setLastTxHash] = useState<`0x${string}` | undefined>();
+  const [hasSetDefaultAmount, setHasSetDefaultAmount] = useState(false);
 
   const chainId = chain?.id || sepolia.id;
-  const tokenAddress = chainId === sepolia.id 
-    ? CONTRACTS.sepolia.gameToken 
+  const tokenAddress = chainId === sepolia.id
+    ? CONTRACTS.sepolia.gameToken
     : CONTRACTS.polygonAmoy.gameToken;
 
   console.log('TokenAcquisition Debug:', {
@@ -98,6 +99,16 @@ export function TokenAcquisition() {
     abi: EXTENDED_ABI,
     functionName: 'tokenPrice',
   });
+
+  // Set default ETH amount to buy 100 TALON tokens
+  useEffect(() => {
+    if (tokenPrice && !hasSetDefaultAmount) {
+      const targetTokens = parseEther('100'); // 100 TALON
+      const requiredEth = (tokenPrice * targetTokens) / parseEther('1');
+      setEthAmount(formatEther(requiredEth));
+      setHasSetDefaultAmount(true);
+    }
+  }, [tokenPrice, hasSetDefaultAmount]);
 
   // Read faucet amount
   const { data: faucetAmount } = useReadContract({

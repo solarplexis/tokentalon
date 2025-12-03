@@ -543,7 +543,8 @@ client/
 │   ├── admin/              # Admin panel components
 │   │   ├── AdminDashboard.tsx    # Main admin view
 │   │   ├── SystemStats.tsx       # Contract statistics
-│   │   └── FaucetControls.tsx    # Faucet configuration
+│   │   ├── FaucetControls.tsx    # Faucet configuration
+│   │   └── TokenPriceControl.tsx # Token price configuration
 │   └── i18n/               # Internationalization
 │       └── LanguageSwitcher.tsx  # Language selector
 │
@@ -643,6 +644,7 @@ const WalletConnect = () => {
 **TokenAcquisition.tsx**
 - Faucet claim interface (testnet)
 - Token purchase with ETH
+- Dynamic default ETH amount (calculates to buy 100 TALON based on current price)
 - Cooldown timer display
 - Balance updates
 
@@ -705,6 +707,14 @@ export function useNFTGallery() {
 - Set cooldown period (1 min - 30 days)
 - Enable/disable faucet
 - Live transaction status
+
+**TokenPriceControl.tsx**
+- Configure TALON token price (0.000001 - 1 ETH per TALON)
+- Real-time price display from contract
+- Slider and number input for precise control
+- Transaction status tracking
+- Auto-refresh price after successful update
+- Validates price range before submission
 
 ### 5.3 Web3 Integration (Wagmi + Viem)
 
@@ -769,7 +779,8 @@ const { isLoading, isSuccess } = useWaitForTransactionReceipt({
 {
   "common": {
     "connectWallet": "Connect Wallet",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "update": "Update"
   },
   "game": {
     "startGame": "Start Game",
@@ -778,7 +789,12 @@ const { isLoading, isSuccess } = useWaitForTransactionReceipt({
   },
   "admin": {
     "dashboard": "Admin Dashboard",
-    "systemStats": "System Statistics"
+    "systemStats": "System Statistics",
+    "tokenPriceControl": "Token Price Configuration",
+    "currentTokenPrice": "Current Price",
+    "newTokenPrice": "New Price (ETH)",
+    "ethPerToken": "ETH per TALON",
+    "tokenPriceUpdated": "Token price updated successfully"
   }
 }
 ```
@@ -931,16 +947,21 @@ Admin Dashboard (AdminDashboard.tsx)
   ├─> Check if connected wallet is contract owner
   │   └─> GameToken.owner() === connectedAddress
   │
+  ├─> System Stats (SystemStats.tsx)
+  │   ├─> Read GameToken.totalSupply()
+  │   ├─> Read GameToken.tokenPrice()
+  │   ├─> Read ClawMachine.costPerPlay()
+  │   └─> Read contract balances
+  │
   ├─> Faucet Controls (FaucetControls.tsx)
   │   ├─> GameToken.setFaucetAmount(newAmount)
   │   ├─> GameToken.setFaucetCooldown(newCooldown)
   │   └─> GameToken.setFaucetEnabled(true/false)
   │
-  └─> System Stats (SystemStats.tsx)
-      ├─> Read GameToken.totalSupply()
-      ├─> Read GameToken.tokenPrice()
-      ├─> Read ClawMachine.costPerPlay()
-      └─> Read contract balances
+  └─> Token Price Control (TokenPriceControl.tsx)
+      ├─> Read GameToken.tokenPrice() (current price)
+      ├─> GameToken.setTokenPrice(newPrice)
+      └─> Auto-refetch price after successful update
 ```
 
 ---
@@ -993,10 +1014,15 @@ app/
     │   │   ├── Supply metrics
     │   │   ├── Pricing info
     │   │   └── Contract addresses
-    │   └── FaucetControls
-    │       ├── Amount slider
-    │       ├── Cooldown config
-    │       └── Enable/disable toggle
+    │   ├── FaucetControls
+    │   │   ├── Amount slider
+    │   │   ├── Cooldown config
+    │   │   └── Enable/disable toggle
+    │   └── TokenPriceControl
+    │       ├── Current price display
+    │       ├── Price slider (0.000001-1 ETH)
+    │       ├── Number input
+    │       └── Update button with validation
     └── Footer
 ```
 

@@ -5,6 +5,7 @@ import { CONTRACTS } from '@/lib/web3';
 import { sepolia } from 'wagmi/chains';
 import { FaucetControls } from './FaucetControls';
 import { SystemStats } from './SystemStats';
+import { TokenPriceControl } from './TokenPriceControl';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 
@@ -107,6 +108,11 @@ export function AdminDashboard() {
           {/* Faucet Controls */}
           <div className="lg:col-span-2">
             <FaucetControls />
+          </div>
+
+          {/* Token Price Controls */}
+          <div className="lg:col-span-2">
+            <TokenPriceControl />
           </div>
 
           {/* Future: Game Controls */}

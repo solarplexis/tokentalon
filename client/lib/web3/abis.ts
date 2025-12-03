@@ -31,6 +31,13 @@ export const GAMETOKEN_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    inputs: [{ internalType: 'uint256', name: 'newPrice', type: 'uint256' }],
+    name: 'setTokenPrice',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ] as const;
 
 export const PRIZENFT_ABI = [
