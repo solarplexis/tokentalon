@@ -42,17 +42,22 @@ export interface GameTokenInterface extends Interface {
       | "faucetCooldownRemaining"
       | "faucetEnabled"
       | "getTokenAmount"
+      | "getTokenPriceEth"
       | "lastFaucetClaim"
       | "mint"
       | "name"
       | "owner"
+      | "priceFeed"
       | "renounceOwnership"
       | "setFaucetAmount"
       | "setFaucetCooldown"
       | "setFaucetEnabled"
+      | "setPriceFeed"
       | "setTokenPrice"
+      | "setTokenPriceUsd"
       | "symbol"
       | "tokenPrice"
+      | "tokenPriceUsd"
       | "totalSupply"
       | "transfer"
       | "transferFrom"
@@ -68,7 +73,9 @@ export interface GameTokenInterface extends Interface {
       | "FaucetCooldownUpdated"
       | "FaucetStatusUpdated"
       | "OwnershipTransferred"
+      | "PriceFeedUpdated"
       | "TokenPriceUpdated"
+      | "TokenPriceUsdUpdated"
       | "TokensPurchased"
       | "Transfer"
   ): EventFragment;
@@ -132,6 +139,10 @@ export interface GameTokenInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getTokenPriceEth",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "lastFaucetClaim",
     values: [AddressLike]
   ): string;
@@ -141,6 +152,7 @@ export interface GameTokenInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "priceFeed", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
@@ -158,12 +170,24 @@ export interface GameTokenInterface extends Interface {
     values: [boolean]
   ): string;
   encodeFunctionData(
+    functionFragment: "setPriceFeed",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setTokenPrice",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTokenPriceUsd",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "tokenPrice",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenPriceUsd",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -231,12 +255,17 @@ export interface GameTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getTokenPriceEth",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "lastFaucetClaim",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "priceFeed", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
@@ -254,11 +283,23 @@ export interface GameTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setPriceFeed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setTokenPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTokenPriceUsd",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenPrice", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenPriceUsd",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
@@ -360,7 +401,36 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace PriceFeedUpdatedEvent {
+  export type InputTuple = [
+    oldPriceFeed: AddressLike,
+    newPriceFeed: AddressLike
+  ];
+  export type OutputTuple = [oldPriceFeed: string, newPriceFeed: string];
+  export interface OutputObject {
+    oldPriceFeed: string;
+    newPriceFeed: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace TokenPriceUpdatedEvent {
+  export type InputTuple = [oldPrice: BigNumberish, newPrice: BigNumberish];
+  export type OutputTuple = [oldPrice: bigint, newPrice: bigint];
+  export interface OutputObject {
+    oldPrice: bigint;
+    newPrice: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace TokenPriceUsdUpdatedEvent {
   export type InputTuple = [oldPrice: BigNumberish, newPrice: BigNumberish];
   export type OutputTuple = [oldPrice: bigint, newPrice: bigint];
   export interface OutputObject {
@@ -504,6 +574,8 @@ export interface GameToken extends BaseContract {
     "view"
   >;
 
+  getTokenPriceEth: TypedContractMethod<[], [bigint], "view">;
+
   lastFaucetClaim: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
 
   mint: TypedContractMethod<
@@ -515,6 +587,8 @@ export interface GameToken extends BaseContract {
   name: TypedContractMethod<[], [string], "view">;
 
   owner: TypedContractMethod<[], [string], "view">;
+
+  priceFeed: TypedContractMethod<[], [string], "view">;
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
@@ -536,8 +610,20 @@ export interface GameToken extends BaseContract {
     "nonpayable"
   >;
 
+  setPriceFeed: TypedContractMethod<
+    [newPriceFeed: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
   setTokenPrice: TypedContractMethod<
     [newPrice: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setTokenPriceUsd: TypedContractMethod<
+    [newPriceUsd: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -545,6 +631,8 @@ export interface GameToken extends BaseContract {
   symbol: TypedContractMethod<[], [string], "view">;
 
   tokenPrice: TypedContractMethod<[], [bigint], "view">;
+
+  tokenPriceUsd: TypedContractMethod<[], [bigint], "view">;
 
   totalSupply: TypedContractMethod<[], [bigint], "view">;
 
@@ -629,6 +717,9 @@ export interface GameToken extends BaseContract {
     nameOrSignature: "getTokenAmount"
   ): TypedContractMethod<[ethAmount: BigNumberish], [bigint], "view">;
   getFunction(
+    nameOrSignature: "getTokenPriceEth"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "lastFaucetClaim"
   ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
   getFunction(
@@ -645,6 +736,9 @@ export interface GameToken extends BaseContract {
     nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "priceFeed"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
@@ -657,13 +751,22 @@ export interface GameToken extends BaseContract {
     nameOrSignature: "setFaucetEnabled"
   ): TypedContractMethod<[enabled: boolean], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "setPriceFeed"
+  ): TypedContractMethod<[newPriceFeed: AddressLike], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "setTokenPrice"
   ): TypedContractMethod<[newPrice: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setTokenPriceUsd"
+  ): TypedContractMethod<[newPriceUsd: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "symbol"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "tokenPrice"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "tokenPriceUsd"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "totalSupply"
@@ -732,11 +835,25 @@ export interface GameToken extends BaseContract {
     OwnershipTransferredEvent.OutputObject
   >;
   getEvent(
+    key: "PriceFeedUpdated"
+  ): TypedContractEvent<
+    PriceFeedUpdatedEvent.InputTuple,
+    PriceFeedUpdatedEvent.OutputTuple,
+    PriceFeedUpdatedEvent.OutputObject
+  >;
+  getEvent(
     key: "TokenPriceUpdated"
   ): TypedContractEvent<
     TokenPriceUpdatedEvent.InputTuple,
     TokenPriceUpdatedEvent.OutputTuple,
     TokenPriceUpdatedEvent.OutputObject
+  >;
+  getEvent(
+    key: "TokenPriceUsdUpdated"
+  ): TypedContractEvent<
+    TokenPriceUsdUpdatedEvent.InputTuple,
+    TokenPriceUsdUpdatedEvent.OutputTuple,
+    TokenPriceUsdUpdatedEvent.OutputObject
   >;
   getEvent(
     key: "TokensPurchased"
@@ -820,6 +937,17 @@ export interface GameToken extends BaseContract {
       OwnershipTransferredEvent.OutputObject
     >;
 
+    "PriceFeedUpdated(address,address)": TypedContractEvent<
+      PriceFeedUpdatedEvent.InputTuple,
+      PriceFeedUpdatedEvent.OutputTuple,
+      PriceFeedUpdatedEvent.OutputObject
+    >;
+    PriceFeedUpdated: TypedContractEvent<
+      PriceFeedUpdatedEvent.InputTuple,
+      PriceFeedUpdatedEvent.OutputTuple,
+      PriceFeedUpdatedEvent.OutputObject
+    >;
+
     "TokenPriceUpdated(uint256,uint256)": TypedContractEvent<
       TokenPriceUpdatedEvent.InputTuple,
       TokenPriceUpdatedEvent.OutputTuple,
@@ -829,6 +957,17 @@ export interface GameToken extends BaseContract {
       TokenPriceUpdatedEvent.InputTuple,
       TokenPriceUpdatedEvent.OutputTuple,
       TokenPriceUpdatedEvent.OutputObject
+    >;
+
+    "TokenPriceUsdUpdated(uint256,uint256)": TypedContractEvent<
+      TokenPriceUsdUpdatedEvent.InputTuple,
+      TokenPriceUsdUpdatedEvent.OutputTuple,
+      TokenPriceUsdUpdatedEvent.OutputObject
+    >;
+    TokenPriceUsdUpdated: TypedContractEvent<
+      TokenPriceUsdUpdatedEvent.InputTuple,
+      TokenPriceUsdUpdatedEvent.OutputTuple,
+      TokenPriceUsdUpdatedEvent.OutputObject
     >;
 
     "TokensPurchased(address,uint256,uint256)": TypedContractEvent<

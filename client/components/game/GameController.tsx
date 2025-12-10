@@ -121,7 +121,7 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
               {t('needAtLeast', { amount: gameCost ? formatUnits(gameCost, 18) : '10' })}
             </p>
             <p className="text-white/60">
-              {t('currentBalance')}: {balance ? formatUnits(balance, 18) : '0'} TALON
+              {t('currentBalance')}: {balance ? Math.floor(parseFloat(formatUnits(balance, 18))) : '0'} TALON
             </p>
             <button
               disabled
@@ -136,7 +136,7 @@ export default function GameController({ onGameReady, onGameStart }: GameControl
               {t('eachGrabCosts', { amount: gameCost ? formatUnits(gameCost, 18) : '10' })}
             </p>
             <p className="text-green-400 font-semibold">
-              {t('yourBalance')}: {balance ? formatUnits(balance, 18) : '0'} TALON
+              {t('yourBalance')}: {balance ? Math.floor(parseFloat(formatUnits(balance, 18))) : '0'} TALON
             </p>
 
             {state.error && (

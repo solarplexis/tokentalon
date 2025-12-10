@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/AggregatorV3Interface.sol";
 
 /**
  * @title GameToken
@@ -13,8 +14,14 @@ contract GameToken is ERC20, Ownable {
     /// @dev Maximum supply cap (10 million tokens)
     uint256 public constant MAX_SUPPLY = 10_000_000 * 10**18;
 
-    /// @dev Token price in wei (for purchasing with ETH)
+    /// @dev Token price in wei (for purchasing with ETH) - deprecated, use tokenPriceUsd
     uint256 public tokenPrice;
+
+    /// @dev Token price in USD with 8 decimals (e.g., 50 = $0.00000050)
+    uint256 public tokenPriceUsd;
+
+    /// @dev Chainlink price feed for ETH/USD conversion
+    AggregatorV3Interface public priceFeed;
 
     /// @dev Faucet amount (tokens given per claim) - configurable by owner
     uint256 public faucetAmount = 500 * 10**18; // 500 tokens
@@ -55,29 +62,61 @@ contract GameToken is ERC20, Ownable {
     /// @dev Event emitted when faucet is enabled/disabled
     event FaucetStatusUpdated(bool enabled);
 
+    /// @dev Event emitted when price feed address is updated
+    event PriceFeedUpdated(address indexed oldPriceFeed, address indexed newPriceFeed);
+
+    /// @dev Event emitted when token price in USD is updated
+    event TokenPriceUsdUpdated(uint256 oldPrice, uint256 newPrice);
+
     /**
      * @dev Constructor that mints initial supply to deployer
      * @param initialSupply Initial number of tokens to mint (in whole tokens, not wei)
-     * @param _tokenPrice Price of one token in wei
+     * @param _tokenPriceUsd Price of one token in USD with 8 decimals (e.g., 50 = $0.00000050)
+     * @param _priceFeedAddress Address of Chainlink ETH/USD price feed
      */
     constructor(
         uint256 initialSupply,
-        uint256 _tokenPrice
+        uint256 _tokenPriceUsd,
+        address _priceFeedAddress
     ) ERC20("TokenTalon Game Token", "TALON") Ownable(msg.sender) {
         require(initialSupply * 10**18 <= MAX_SUPPLY, "Initial supply exceeds max");
-        tokenPrice = _tokenPrice;
+        require(_tokenPriceUsd > 0, "Token price must be positive");
+        require(_priceFeedAddress != address(0), "Invalid price feed address");
+
+        tokenPriceUsd = _tokenPriceUsd;
+        priceFeed = AggregatorV3Interface(_priceFeedAddress);
+
+        // Set initial tokenPrice for backwards compatibility
+        tokenPrice = getTokenPriceEth();
+
         _mint(msg.sender, initialSupply * 10**18);
     }
 
     /**
+     * @dev Get current token price in ETH calculated from USD price and ETH/USD rate
+     * @return Token price in wei
+     */
+    function getTokenPriceEth() public view returns (uint256) {
+        (, int256 ethUsdPrice, , , ) = priceFeed.latestRoundData();
+        require(ethUsdPrice > 0, "Invalid price feed data");
+
+        // tokenPriceUsd has 8 decimals, ethUsdPrice has 8 decimals
+        // Result should be in wei (18 decimals)
+        // Formula: (tokenPriceUsd * 1e18) / ethUsdPrice
+        return (tokenPriceUsd * 1e18) / uint256(ethUsdPrice);
+    }
+
+    /**
      * @dev Allows anyone to purchase tokens by sending ETH
-     * Automatically calculates token amount based on current price
+     * Automatically calculates token amount based on current ETH/USD price
      */
     function buyTokens() external payable {
         require(msg.value > 0, "Must send ETH to buy tokens");
-        require(tokenPrice > 0, "Token price not set");
 
-        uint256 tokenAmount = (msg.value * 10**18) / tokenPrice;
+        uint256 currentPrice = getTokenPriceEth();
+        require(currentPrice > 0, "Token price not set");
+
+        uint256 tokenAmount = (msg.value * 10**18) / currentPrice;
         require(totalSupply() + tokenAmount <= MAX_SUPPLY, "Would exceed max supply");
 
         _mint(msg.sender, tokenAmount);
@@ -135,6 +174,7 @@ contract GameToken is ERC20, Ownable {
 
     /**
      * @dev Update the token price (only owner)
+     * @notice DEPRECATED: Use setTokenPriceUsd() instead for dynamic pricing
      * @param newPrice New price in wei
      */
     function setTokenPrice(uint256 newPrice) external onlyOwner {
@@ -142,6 +182,33 @@ contract GameToken is ERC20, Ownable {
         uint256 oldPrice = tokenPrice;
         tokenPrice = newPrice;
         emit TokenPriceUpdated(oldPrice, newPrice);
+    }
+
+    /**
+     * @dev Update the token price in USD terms (only owner)
+     * Price will automatically adjust based on ETH/USD rate
+     * @param newPriceUsd New price in USD with 8 decimals (e.g., 50 = $0.00000050)
+     */
+    function setTokenPriceUsd(uint256 newPriceUsd) external onlyOwner {
+        require(newPriceUsd > 0, "Price must be greater than 0");
+        uint256 oldPrice = tokenPriceUsd;
+        tokenPriceUsd = newPriceUsd;
+        // Update tokenPrice for backwards compatibility
+        tokenPrice = getTokenPriceEth();
+        emit TokenPriceUsdUpdated(oldPrice, newPriceUsd);
+    }
+
+    /**
+     * @dev Update the Chainlink price feed address (only owner)
+     * @param newPriceFeed Address of new Chainlink ETH/USD price feed
+     */
+    function setPriceFeed(address newPriceFeed) external onlyOwner {
+        require(newPriceFeed != address(0), "Invalid price feed address");
+        address oldPriceFeed = address(priceFeed);
+        priceFeed = AggregatorV3Interface(newPriceFeed);
+        // Update tokenPrice for backwards compatibility
+        tokenPrice = getTokenPriceEth();
+        emit PriceFeedUpdated(oldPriceFeed, newPriceFeed);
     }
 
     /**
@@ -159,8 +226,9 @@ contract GameToken is ERC20, Ownable {
      * @return Amount of tokens that can be purchased
      */
     function getTokenAmount(uint256 ethAmount) external view returns (uint256) {
-        if (tokenPrice == 0) return 0;
-        return (ethAmount * 10**18) / tokenPrice;
+        uint256 currentPrice = getTokenPriceEth();
+        if (currentPrice == 0) return 0;
+        return (ethAmount * 10**18) / currentPrice;
     }
 
     /**

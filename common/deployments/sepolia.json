@@ -1,38 +1,39 @@
 {
   "network": "sepolia",
   "chainId": 11155111,
-  "deployedAt": "2025-11-28T16:09:03.504Z",
+  "deployedAt": "2025-12-10T16:57:01.764Z",
   "deployer": "0x1E8eeB986B71FEf99106f3De93A4B1F01Eff26e9",
   "contracts": {
     "GameToken": {
-      "address": "0x2C7c4F884a06aA128347A3C28324C481058cdC18",
-      "deployedAt": "2025-11-28T16:09:03.505Z",
+      "address": "0xb60ce62D3e638ec1d85f0FAaB5C0d4632152f812",
+      "deployedAt": "2025-12-10T16:57:01.764Z",
       "blockNumber": 0,
-      "transactionHash": "0xb05afea43779c4fd60bc7de8a3592d0691ba91e9b0e68ae3a66b8a7b729d9919",
+      "transactionHash": "0xff0cb7de3f9bc27df455807bbdf9ae08c9f1dfdd63481ece93f1afcf413bf94d",
       "constructorArgs": [
         1000000,
-        "1000000000000000"
+        50,
+        "0x694AA1769357215DE4FAC081bf1f309aDC325306"
       ],
       "verified": false,
-      "version": "1.0.0"
+      "version": "2.0.0"
     },
     "PrizeNFT": {
-      "address": "0x7e0EC19E316728CCFA9bb1B0Be768E5c87AA8Ae4",
-      "deployedAt": "2025-11-28T16:09:03.505Z",
+      "address": "0x817c36f86A616321D75BDE872C74f96B17886305",
+      "deployedAt": "2025-12-10T16:57:01.764Z",
       "blockNumber": 0,
-      "transactionHash": "0x53aaabf5b7a3810d42ed1673a91522dbe5927c90dba2fb5b42019092124f9c98",
+      "transactionHash": "0x097e303d2159a61bb2e6135f03fa0b48b989a4f4f282e5db83b248f4e08da3c3",
       "constructorArgs": [],
       "verified": false,
       "version": "1.0.0"
     },
     "ClawMachine": {
-      "address": "0x1dE0DCf5Dd47D9e9CE7425cd72f719dC6455B81f",
-      "deployedAt": "2025-11-28T16:09:03.505Z",
+      "address": "0xE4642499800d4704eF03aF7bBda46BBf66f68AEd",
+      "deployedAt": "2025-12-10T16:57:01.764Z",
       "blockNumber": 0,
-      "transactionHash": "0x66c8c07206a29ab9a4862bada7c7010a05d16776662249fd8576c484f3487d2b",
+      "transactionHash": "0x92ca59bb1d45223ed35cda9b107637a998a5bf1019cae3e760f920ab93400bd2",
       "constructorArgs": [
-        "0x2C7c4F884a06aA128347A3C28324C481058cdC18",
-        "0x7e0EC19E316728CCFA9bb1B0Be768E5c87AA8Ae4",
+        "0xb60ce62D3e638ec1d85f0FAaB5C0d4632152f812",
+        "0x817c36f86A616321D75BDE872C74f96B17886305",
         "0x1E8eeB986B71FEf99106f3De93A4B1F01Eff26e9",
         "10000000000000000000"
       ],
@@ -47,7 +48,7 @@
   "metadata": {
     "rpcUrl": "https://ethereum-sepolia-rpc.publicnode.com",
     "explorerUrl": "https://sepolia.etherscan.io",
-    "gasPrice": "100031",
+    "gasPrice": "1000009",
     "deploymentNotes": "Deployed sepolia contracts"
   }
 }

@@ -18,7 +18,7 @@ export function WalletInfo() {
     <div className="grid grid-cols-3 gap-4 p-4 bg-gray-800 rounded-lg">
       <div className="text-center">
         <div className="text-2xl font-bold text-blue-400">
-          {tokenBalance ? formatEther(tokenBalance) : '0'}
+          {tokenBalance ? Math.floor(parseFloat(formatEther(tokenBalance))) : '0'}
         </div>
         <div className="text-xs opacity-70">CLAW Tokens</div>
       </div>

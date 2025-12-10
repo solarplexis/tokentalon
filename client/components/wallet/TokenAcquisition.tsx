@@ -77,7 +77,7 @@ const EXTENDED_ABI = [
 export function TokenAcquisition() {
   const t = useTranslations('wallet');
   const { address, chain } = useAccount();
-  const [ethAmount, setEthAmount] = useState('0.1');
+  const [tokenAmount, setTokenAmount] = useState('10');
   const [lastTxHash, setLastTxHash] = useState<`0x${string}` | undefined>();
   const [hasSetDefaultAmount, setHasSetDefaultAmount] = useState(false);
 
@@ -93,22 +93,21 @@ export function TokenAcquisition() {
     isConnected: !!address,
   });
 
-  // Read token price
+  // Read token price (ETH per token)
   const { data: tokenPrice } = useReadContract({
     address: tokenAddress,
     abi: EXTENDED_ABI,
     functionName: 'tokenPrice',
   });
 
-  // Set default ETH amount to buy 100 TALON tokens
-  useEffect(() => {
-    if (tokenPrice && !hasSetDefaultAmount) {
-      const targetTokens = parseEther('100'); // 100 TALON
-      const requiredEth = (tokenPrice * targetTokens) / parseEther('1');
-      setEthAmount(formatEther(requiredEth));
-      setHasSetDefaultAmount(true);
-    }
-  }, [tokenPrice, hasSetDefaultAmount]);
+  // Calculate ETH cost based on token amount
+  const calculateEthCost = () => {
+    if (!tokenPrice || !tokenAmount) return BigInt(0);
+    const tokens = parseEther(tokenAmount);
+    return (tokenPrice * tokens) / parseEther('1');
+  };
+
+  const ethCost = calculateEthCost();
 
   // Read faucet amount
   const { data: faucetAmount } = useReadContract({
@@ -166,14 +165,6 @@ export function TokenAcquisition() {
     cooldownError: cooldownError?.message,
   });
 
-  // Get token amount for ETH
-  const { data: tokenAmount } = useReadContract({
-    address: tokenAddress,
-    abi: EXTENDED_ABI,
-    functionName: 'getTokenAmount',
-    args: [parseEther(ethAmount || '0')],
-  });
-
   const { writeContract: buyTokens, data: buyHash, isPending: isBuying } = useWriteContract();
   const { writeContract: claimFaucet, data: claimHash, isPending: isClaiming } = useWriteContract();
 
@@ -200,11 +191,18 @@ export function TokenAcquisition() {
   }, [isClaimSuccess, refetchCanClaim, refetchCooldown]);
 
   const handleBuyTokens = () => {
+    // Validate token amount is in increments of 10
+    const tokens = parseInt(tokenAmount);
+    if (tokens % 10 !== 0) {
+      alert('Please enter a token amount in increments of 10 (10, 20, 30, etc.)');
+      return;
+    }
+
     buyTokens({
       address: tokenAddress,
       abi: EXTENDED_ABI,
       functionName: 'buyTokens',
-      value: parseEther(ethAmount),
+      value: ethCost,
     });
   };
 
@@ -279,31 +277,33 @@ export function TokenAcquisition() {
         <div className="p-4 bg-black/20 rounded-lg">
           <h4 className="font-semibold mb-3">{t('buyWithEth')}</h4>
           <div className="mb-3">
-            <label className="text-xs text-purple-200 block mb-1">{t('ethAmount')}</label>
+            <label className="text-xs text-purple-200 block mb-1">
+              Number of TALON Tokens (increments of 10)
+            </label>
             <input
               type="number"
-              step="0.001"
-              min="0"
-              value={ethAmount}
-              onChange={(e) => setEthAmount(e.target.value)}
+              step="10"
+              min="10"
+              value={tokenAmount}
+              onChange={(e) => setTokenAmount(e.target.value)}
               className="w-full bg-black/30 border border-white/20 rounded px-3 py-2 text-white"
             />
           </div>
           <div className="text-sm mb-3">
-            <span className="text-purple-200">{t('youllReceive')}: </span>
+            <span className="text-purple-200">Cost: </span>
             <span className="font-bold text-blue-400">
-              {tokenAmount ? formatEther(tokenAmount) : '0'} TALON
+              {ethCost ? formatEther(ethCost) : '0'} ETH
             </span>
           </div>
           <div className="text-xs text-purple-300 mb-3">
-            {t('price')}: {tokenPrice ? formatEther(tokenPrice) : '...'} ETH per TALON
+            {t('price')}: {tokenPrice ? parseFloat(formatEther(tokenPrice)).toFixed(10) : '...'} ETH per TALON
           </div>
           <button
             onClick={handleBuyTokens}
-            disabled={isBuying || isBuyConfirming || !ethAmount || parseFloat(ethAmount) <= 0}
+            disabled={isBuying || isBuyConfirming || !tokenAmount || parseInt(tokenAmount) < 10 || parseInt(tokenAmount) % 10 !== 0}
             className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded transition-colors"
           >
-            {isBuying || isBuyConfirming ? t('buying') : t('buyTokens')}
+            {isBuying || isBuyConfirming ? t('buying') : `Buy ${tokenAmount} TALON`}
           </button>
         </div>
       </div>

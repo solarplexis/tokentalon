@@ -50,7 +50,7 @@ export function WalletConnect() {
           </div>
           {balance !== undefined && (
             <div className="text-xs font-bold text-green-400 mt-1">
-              {formatUnits(balance, 18)} TALON
+              {Math.floor(parseFloat(formatUnits(balance, 18)))} TALON
             </div>
           )}
         </div>

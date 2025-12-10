@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useAccount, useReadContract, useBalance } from 'wagmi';
+import { useState, useEffect } from 'react';
+import { useAccount, useReadContract, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatEther } from 'viem';
 import { CONTRACTS } from '@/lib/web3';
 import { sepolia } from 'wagmi/chains';
@@ -34,6 +34,13 @@ const GAMETOKEN_ABI = [
     name: 'balanceOf',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ] as const;
@@ -122,6 +129,38 @@ export function SystemStats() {
     ? (Number(totalSupply) / Number(maxSupply)) * 100
     : 0;
 
+  // Withdraw functionality
+  const { writeContract, data: withdrawHash, isPending: isWithdrawPending } = useWriteContract();
+  const { isSuccess: isWithdrawSuccess } = useWaitForTransactionReceipt({ hash: withdrawHash });
+
+  // Refetch balance after successful withdrawal
+  useEffect(() => {
+    if (isWithdrawSuccess) {
+      // Refetch will happen automatically via wagmi
+    }
+  }, [isWithdrawSuccess]);
+
+  const handleWithdraw = () => {
+    if (!gameTokenBalance || gameTokenBalance.value === BigInt(0)) {
+      alert('No ETH to withdraw');
+      return;
+    }
+
+    const confirmed = confirm(
+      `Withdraw ${formatEther(gameTokenBalance.value)} ETH from the GameToken contract?`
+    );
+
+    if (!confirmed) return;
+
+    writeContract({
+      address: tokenAddress,
+      abi: GAMETOKEN_ABI,
+      functionName: 'withdraw',
+    });
+  };
+
+  const hasBalance = gameTokenBalance && gameTokenBalance.value > BigInt(0);
+
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
       <h2 className="text-2xl font-bold text-white mb-4">{t('systemStats')}</h2>
@@ -153,7 +192,7 @@ export function SystemStats() {
         <div className="bg-black/20 rounded-lg p-4">
           <div className="text-purple-300 text-sm mb-1">{t('tokenPrice')}</div>
           <div className="text-white text-2xl font-bold">
-            {tokenPrice ? formatEther(tokenPrice) : '...'} ETH
+            {tokenPrice ? parseFloat(formatEther(tokenPrice)).toFixed(10) : '...'} ETH
           </div>
           <div className="text-purple-400 text-xs mt-1">{t('perToken')}</div>
         </div>
@@ -202,6 +241,18 @@ export function SystemStats() {
             {gameTokenBalance ? parseFloat(formatEther(gameTokenBalance.value)).toFixed(4) : '0'} ETH
           </div>
           <div className="text-purple-400 text-xs mt-1">{t('contractBalance')}</div>
+          {/* Withdraw Button */}
+          <button
+            onClick={handleWithdraw}
+            disabled={isWithdrawPending || !hasBalance}
+            className={`mt-3 w-full py-1.5 px-3 rounded text-xs font-semibold transition-colors ${
+              hasBalance && !isWithdrawPending
+                ? 'bg-green-500 hover:bg-green-600 text-white'
+                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            {isWithdrawPending ? '⏳ Withdrawing...' : isWithdrawSuccess ? '✅ Withdrawn!' : '💸 Withdraw'}
+          </button>
         </div>
 
         {/* ClawMachine Contract Balances */}
