@@ -60,7 +60,7 @@ export function TokenPriceControl() {
 
     // Validate price ($0.01 to $5.00)
     if (priceUsdDecimal < 0.01 || priceUsdDecimal > 5.0) {
-      alert('Price must be between $0.01 and $5.00');
+      alert(t('alertPriceRange'));
       return;
     }
 
@@ -85,39 +85,39 @@ export function TokenPriceControl() {
       {/* Current Value Display */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-purple-300 text-sm mb-1">Current Token Price (USD)</div>
+          <div className="text-purple-300 text-sm mb-1">{t('currentTokenPriceUsd')}</div>
           <div className="text-white text-2xl font-bold">
-            ${tokenPriceUsd ? (Number(tokenPriceUsd) / 1e8).toFixed(2) : '...'} USD
+            ${tokenPriceUsd ? (Number(tokenPriceUsd) / 1e8).toFixed(2) : '...'} {t('usd')}
           </div>
-          <div className="text-purple-400 text-xs mt-1">Per TALON token</div>
+          <div className="text-purple-400 text-xs mt-1">{t('perTalonToken')}</div>
         </div>
         <div className="bg-black/20 rounded-lg p-4">
-          <div className="text-green-300 text-sm mb-1">Current Token Price (ETH)</div>
+          <div className="text-green-300 text-sm mb-1">{t('currentTokenPriceEth')}</div>
           <div className="text-white text-2xl font-bold">
-            {tokenPriceEth ? formatEther(tokenPriceEth) : '...'} ETH
+            {tokenPriceEth ? formatEther(tokenPriceEth) : '...'} {t('eth')}
           </div>
-          <div className="text-green-400 text-xs mt-1">Auto-calculated from ETH/USD price</div>
+          <div className="text-green-400 text-xs mt-1">{t('autoCalculatedFromEthUsd')}</div>
         </div>
       </div>
 
       {/* Game Cost Display */}
       <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6">
-        <div className="text-blue-300 text-sm mb-1">Game Cost (10 TALON)</div>
+        <div className="text-blue-300 text-sm mb-1">{t('gameCost10Talon')}</div>
         <div className="text-white text-xl font-bold">
-          ${gameCostUsd.toFixed(2)} USD
+          ${gameCostUsd.toFixed(2)} {t('usd')}
           {tokenPriceEth && (
             <span className="text-green-300 ml-2">
-              / {formatEther(BigInt(tokenPriceEth) * BigInt(10))} ETH
+              / {formatEther(BigInt(tokenPriceEth) * BigInt(10))} {t('eth')}
             </span>
           )}
         </div>
-        <div className="text-blue-400 text-xs mt-1">Price per game stays consistent in USD</div>
+        <div className="text-blue-400 text-xs mt-1">{t('pricePerGameConsistentUsd')}</div>
       </div>
 
       {/* Price Control */}
       <div className="bg-black/20 rounded-lg p-4">
         <label className="text-white font-semibold mb-3 block">
-          New Token Price (USD)
+          {t('newTokenPriceUsd')}
         </label>
         <div className="flex gap-4 items-end">
           <div className="flex-1">
@@ -158,10 +158,10 @@ export function TokenPriceControl() {
           </button>
         </div>
         <div className="text-xs text-purple-300 mt-2">
-          Price range: $0.01 to $5.00 USD per token
+          {t('priceRangeUsdPerToken')}
         </div>
         <div className="text-xs text-green-300 mt-1">
-          💡 ETH price will automatically adjust based on current ETH/USD rate from Chainlink
+          {t('ethPriceAutoAdjust')}
         </div>
       </div>
 

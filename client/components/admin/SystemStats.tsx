@@ -66,6 +66,10 @@ export function SystemStats() {
     ? CONTRACTS.sepolia.gameToken
     : CONTRACTS.polygonAmoy.gameToken;
 
+  const prizeNFTAddress = chainId === sepolia.id
+    ? CONTRACTS.sepolia.prizeNFT
+    : CONTRACTS.polygonAmoy.prizeNFT;
+
   const clawMachineAddress = chainId === sepolia.id
     ? CONTRACTS.sepolia.clawMachine
     : CONTRACTS.polygonAmoy.clawMachine;
@@ -170,10 +174,10 @@ export function SystemStats() {
         <div className="bg-black/20 rounded-lg p-4">
           <div className="text-purple-300 text-sm mb-1">{t('totalSupply')}</div>
           <div className="text-white text-2xl font-bold">
-            {totalSupply ? formatEther(totalSupply) : '...'}
+            {totalSupply ? Math.floor(parseFloat(formatEther(totalSupply))) : '...'}
           </div>
           <div className="text-purple-400 text-xs mt-1">
-            {maxSupply && `${t('maxSupply')}: ${formatEther(maxSupply)}`}
+            {maxSupply && `${t('maxSupply')}: ${Math.floor(parseFloat(formatEther(maxSupply)))}`}
           </div>
           <div className="mt-2">
             <div className="w-full bg-purple-900/50 rounded-full h-2">
@@ -201,7 +205,7 @@ export function SystemStats() {
         <div className="bg-black/20 rounded-lg p-4">
           <div className="text-purple-300 text-sm mb-1">{t('costPerPlay')}</div>
           <div className="text-white text-2xl font-bold">
-            {costPerPlay ? formatEther(costPerPlay) : '...'}
+            {costPerPlay ? Math.floor(parseFloat(formatEther(costPerPlay))) : '...'}
           </div>
           <div className="text-purple-400 text-xs mt-1">{t('talonTokens')}</div>
         </div>
@@ -278,7 +282,7 @@ export function SystemStats() {
             </div>
           </div>
           <div className="text-white text-2xl font-bold">
-            {clawMachineTalonBalance ? formatEther(clawMachineTalonBalance) : '0'} TALON
+            {clawMachineTalonBalance ? Math.floor(parseFloat(formatEther(clawMachineTalonBalance))) : '0'} TALON
           </div>
           <div className="text-purple-400 text-xs mt-1">{t('contractBalance')}</div>
         </div>
@@ -298,6 +302,27 @@ export function SystemStats() {
                 title="Copy full address"
               >
                 {copiedAddress === 'gameToken' ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="inline-block w-3 h-3">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="inline-block w-3 h-3">
+                    <path d="M9 18q-.825 0-1.412-.587C7 16.826 7 16.55 7 16V4q0-.824.588-1.412C8.176 1.999 8.45 2 9 2h9q.824 0 1.413.588C20.002 3.175 20 3.45 20 4v12q0 .824-.587 1.413c-.587.589-.863.587-1.413.587zm0-2h9V4H9zm-4 6q-.824 0-1.412-.587C2.999 20.826 3 20.55 3 20V6h2v14h11v2z"></path>
+                  </svg>
+                )}
+              </button>
+            </div>
+            <div className="text-white flex items-center gap-2">
+              <span className="text-purple-400">PrizeNFT:</span>{' '}
+              <span className="font-mono">
+                {prizeNFTAddress?.slice(0, 10)}...{prizeNFTAddress?.slice(-8)}
+              </span>
+              <button
+                onClick={() => copyToClipboard(prizeNFTAddress, 'prizeNFT')}
+                className="text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+                title="Copy full address"
+              >
+                {copiedAddress === 'prizeNFT' ? (
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="inline-block w-3 h-3">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                   </svg>
