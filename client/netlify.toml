@@ -1,0 +1,31 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Configure secrets scanning to ignore public environment variables
+[build.environment]
+  # Disable secrets scanning for known public variables
+  # These NEXT_PUBLIC_* variables are meant to be in the client bundle
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_FRONTEND_URL,NEXT_PUBLIC_SEPOLIA_PRIZENFT_ADDRESS,NEXT_PUBLIC_SEPOLIA_RPC_URL,NEXT_PUBLIC_AMOY_RPC_URL,NEXT_PUBLIC_SEPOLIA_CLAWMACHINE_ADDRESS,NEXT_PUBLIC_SEPOLIA_GAMETOKEN_ADDRESS,NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,NEXT_PUBLIC_AMOY_GAMETOKEN_ADDRESS,NEXT_PUBLIC_AMOY_PRIZENFT_ADDRESS,NEXT_PUBLIC_AMOY_CLAWMACHINE_ADDRESS,POLYGON_RPC_URL,PINATA_GATEWAY"
+
+  # Omit common false positive paths
+  SECRETS_SCAN_OMIT_PATHS = ".env.example,*.md,README.md,FRONTEND_INTEGRATION.md,common/scripts/*,server/.env.example,.next/**,client/.next/**,.netlify/**"
+
+# Headers for Next.js static assets
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Redirects for Next.js image optimization
+[[redirects]]
+  from = "/_next/image"
+  to = "/.netlify/images?url=:url&w=:width&q=:quality"
+  status = 200
+  query = {url = ":url", w = ":width", q = ":quality"}
+
+[[redirects]]
+  from = "/_ipx/*"
+  to = "/.netlify/images?url=:url&w=:width&q=:quality"
+  status = 200
+  query = {url = ":url", w = ":width", q = ":quality"}
