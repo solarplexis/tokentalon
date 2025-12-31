@@ -32,7 +32,7 @@ export function HomeContent() {
   useEffect(() => {
     if (address && chain?.id) {
       const needsApproval = checkApproval();
-      console.log('Approval check:', { needsApproval });
+      // console.log('Approval check:', { needsApproval });
     }
   }, [address, chain?.id, checkApproval]);
 
@@ -43,32 +43,32 @@ export function HomeContent() {
     }
   }, [isStartGameSuccess, gameState.isPlaying, router]);
 
-  console.log('HomeContent Debug:', {
-    address,
-    isConnected,
-    chainId: chain?.id,
-    balance: balance?.toString(),
-    gameCost: gameCost?.toString(),
-    allowance: allowance?.toString(), // Raw allowance value
-    clawMachineAddress, // Add this to verify correct contract
-    isLoadingBalance,
-    isLoadingGameCost,
-    balanceError: balanceError?.message,
-    gameCostError: gameCostError?.message,
-    gameState: {
-      hasActiveSession: gameState.hasActiveSession,
-      needsApproval: gameState.needsApproval,
-      isApproving: gameState.isApproving,
-      isStarting: gameState.isStarting,
-      isForfeitng: gameState.isForfeitng,
-      error: gameState.error,
-    },
-  });
+  // console.log('HomeContent Debug:', {
+  //   address,
+  //   isConnected,
+  //   chainId: chain?.id,
+  //   balance: balance?.toString(),
+  //   gameCost: gameCost?.toString(),
+  //   allowance: allowance?.toString(), // Raw allowance value
+  //   clawMachineAddress, // Add this to verify correct contract
+  //   isLoadingBalance,
+  //   isLoadingGameCost,
+  //   balanceError: balanceError?.message,
+  //   gameCostError: gameCostError?.message,
+  //   gameState: {
+  //     hasActiveSession: gameState.hasActiveSession,
+  //     needsApproval: gameState.needsApproval,
+  //     isApproving: gameState.isApproving,
+  //     isStarting: gameState.isStarting,
+  //     isForfeitng: gameState.isForfeitng,
+  //     error: gameState.error,
+  //   },
+  // });
 
   const hasEnoughTokens = balance && gameCost && balance >= gameCost;
 
   const handlePlayNow = () => {
-    console.log('Navigating to game page');
+    // console.log('Navigating to game page');
     router.push('/game');
   };
 
@@ -116,6 +116,7 @@ export function HomeContent() {
               src={cabinet.image}
               alt={cabinet.name}
               fill
+              sizes="100vw"
               className="object-cover"
               priority
               onError={(e) => {

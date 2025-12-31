@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     // Upload generated image to IPFS
     console.log(`📤 Uploading AI-generated image to IPFS...`);
     const prizeImageHash = await ipfsService.uploadPrizeImage(imageBuffer, prizeId);
-    console.log(`✅ Image uploaded: ipfs://${prizeImageHash}`);
+    // console.log(`✅ Image uploaded: ipfs://${prizeImageHash}`);
 
     // Generate readable prize name with rarity
     const prizeName = prizeMapper.getPrizeName(prizeInfo.key);

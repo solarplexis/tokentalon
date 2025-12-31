@@ -92,9 +92,9 @@ export function completeSession(sessionId: string, prizeId: number): boolean {
 
   session.active = false;
   session.prizeId = prizeId;
-  
-  console.log(`✅ Completed game session: ${sessionId} - Prize ${prizeId}`);
-  
+
+  // console.log(`✅ Completed game session: ${sessionId} - Prize ${prizeId}`);
+
   return true;
 }
 

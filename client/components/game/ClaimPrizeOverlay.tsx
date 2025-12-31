@@ -133,6 +133,7 @@ export default function ClaimPrizeOverlay({
               src={prizeImagePath}
               alt={prizeWon.name}
               fill
+              sizes="192px"
               className="object-contain"
               priority
             />
