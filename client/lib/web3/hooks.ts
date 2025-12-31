@@ -84,36 +84,21 @@ export function useClaimPrize(chainId: number = sepolia.id) {
 
 /**
  * Hook to get game session details
+ * TODO: Re-enable when contract supports this function
  */
 export function useGameSession(sessionId: bigint | undefined, chainId: number = sepolia.id) {
-  const contract = chainId === sepolia.id ? CONTRACTS.sepolia.clawMachine : CONTRACTS.polygonAmoy.clawMachine;
-  
-  return useReadContract({
-    address: contract,
-    abi: CLAWMACHINE_ABI,
-    functionName: 'getGameSession',
-    args: sessionId !== undefined ? [sessionId] : undefined,
-    query: {
-      enabled: sessionId !== undefined,
-    },
-  });
+  // Stubbed out - function not in current contract ABI
+  return { data: undefined, isLoading: false, error: null };
 }
 
 /**
  * Hook to get player stats
+ * TODO: Re-enable when contract supports this function or use getGrabCount
  */
 export function usePlayerStats(address: `0x${string}` | undefined, chainId: number = sepolia.id) {
-  const contract = chainId === sepolia.id ? CONTRACTS.sepolia.clawMachine : CONTRACTS.polygonAmoy.clawMachine;
-  
-  return useReadContract({
-    address: contract,
-    abi: CLAWMACHINE_ABI,
-    functionName: 'getPlayerStats',
-    args: address ? [address] : undefined,
-    query: {
-      enabled: !!address,
-    },
-  });
+  // Stubbed out - function not in current contract ABI
+  // Contract has getGrabCount(address) but not getPlayerStats
+  return { data: undefined, isLoading: false, error: null };
 }
 
 /**

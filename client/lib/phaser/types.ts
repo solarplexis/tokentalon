@@ -12,6 +12,7 @@ export interface PrizeData {
   type: string;
   rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
   value: number;
+  prizeId?: number; // Numeric prize ID for backend
   position3D?: { x: number; y: number; z: number }; // Add 3D position tracking
   customTraits?: Record<string, string>; // AI-generated custom traits from backend
   attributes?: {

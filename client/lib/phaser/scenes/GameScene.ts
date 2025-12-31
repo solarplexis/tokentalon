@@ -30,10 +30,17 @@ export class GameScene extends Phaser.Scene {
 
   // Replay recording
   private replayData: ReplayData = {
+    sessionId: '',
     startTime: 0,
     inputs: [],
     prizePositions: [],
     result: 'loss',
+    physicsData: {
+      clawPath: [],
+      prizePosition: { x: 0, y: 0, z: 0 },
+      grabForce: 0,
+      dropHeight: 0,
+    },
   };
   private isRecording = false;
 
@@ -717,18 +724,22 @@ export class GameScene extends Phaser.Scene {
     
     // Check if player won
     if (this.replayData.result === 'won' && this.replayData.prizeWon) {
+      // Store prize reference before delayed call
+      const capturedPrizeWon = this.replayData.prizeWon;
+      const capturedReplayData = { ...this.replayData };
+
       // Notify React about prize won after a short delay
       this.time.delayedCall(800, () => {
         const onPrizeWon = this.game.registry.get('onPrizeWon');
         if (onPrizeWon) {
           const prizeWon = {
-            id: this.replayData.prizeWon.id,
-            name: this.replayData.prizeWon.id.replace('prize_', '').replace(/_/g, ' '),
-            rarity: this.replayData.prizeWon.rarity,
-            prizeId: this.replayData.prizeWon.prizeId,
-            customTraits: this.replayData.prizeWon.customTraits
+            id: capturedPrizeWon.id,
+            name: capturedPrizeWon.id.replace('prize_', '').replace(/_/g, ' '),
+            rarity: capturedPrizeWon.rarity,
+            prizeId: capturedPrizeWon.prizeId,
+            customTraits: capturedPrizeWon.customTraits
           };
-          onPrizeWon(prizeWon, this.replayData);
+          onPrizeWon(prizeWon, capturedReplayData);
         }
       });
     } else {

@@ -115,7 +115,9 @@ export async function uploadPrizeImage(imageData: Buffer | string, prizeId: numb
   return retryWithBackoff(
     async () => {
       // Upload Buffer directly (AI-generated image)
-      const blob = new Blob([imageData], { type: 'image/png' });
+      // Convert Buffer to Uint8Array for Blob compatibility
+      const uint8Array = new Uint8Array(imageData);
+      const blob = new Blob([uint8Array], { type: 'image/png' });
       const file = new File([blob], `prize-${prizeId}.png`, { type: 'image/png' });
       const upload = await pinata.upload.public.file(file);
       // console.log('✅ Prize image uploaded to IPFS:', upload.cid);

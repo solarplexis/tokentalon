@@ -42,12 +42,12 @@ export const CONTRACT_ADDRESSES = {
     prizeNFT: process.env.SEPOLIA_PRIZENFT_ADDRESS || '',
     clawMachine: process.env.SEPOLIA_CLAWMACHINE_ADDRESS || ''
   },
-  polygon: DEPLOYED_CONTRACTS.polygon || {
+  polygon: {
     gameToken: process.env.POLYGON_GAMETOKEN_ADDRESS || '',
     prizeNFT: process.env.POLYGON_PRIZENFT_ADDRESS || '',
     clawMachine: process.env.POLYGON_CLAWMACHINE_ADDRESS || ''
   },
-  amoy: DEPLOYED_CONTRACTS.polygonAmoy || {
+  amoy: {
     gameToken: process.env.AMOY_GAMETOKEN_ADDRESS || '',
     prizeNFT: process.env.AMOY_PRIZENFT_ADDRESS || '',
     clawMachine: process.env.AMOY_CLAWMACHINE_ADDRESS || ''

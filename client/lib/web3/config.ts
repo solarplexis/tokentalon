@@ -17,7 +17,7 @@ export const CONTRACTS = {
     prizeNFT: (process.env.NEXT_PUBLIC_SEPOLIA_PRIZENFT_ADDRESS || '') as `0x${string}`,
     clawMachine: (process.env.NEXT_PUBLIC_SEPOLIA_CLAWMACHINE_ADDRESS || '') as `0x${string}`,
   },
-  polygonAmoy: DEPLOYED_CONTRACTS.polygonAmoy || {
+  polygonAmoy: {
     gameToken: (process.env.NEXT_PUBLIC_AMOY_GAMETOKEN_ADDRESS || '') as `0x${string}`,
     prizeNFT: (process.env.NEXT_PUBLIC_AMOY_PRIZENFT_ADDRESS || '') as `0x${string}`,
     clawMachine: (process.env.NEXT_PUBLIC_AMOY_CLAWMACHINE_ADDRESS || '') as `0x${string}`,

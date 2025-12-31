@@ -1,14 +1,13 @@
 'use client';
 
 import { useAccount } from 'wagmi';
-import { useTokenBalance, useNFTBalance, usePlayerStats } from '@/lib/web3';
+import { useTokenBalance, useNFTBalance } from '@/lib/web3';
 import { formatEther } from 'viem';
 
 export function WalletInfo() {
   const { address, chain } = useAccount();
   const { data: tokenBalance } = useTokenBalance(address, chain?.id);
   const { data: nftBalance } = useNFTBalance(address, chain?.id);
-  const { data: playerStats } = usePlayerStats(address, chain?.id);
 
   if (!address) {
     return null;
@@ -30,7 +29,7 @@ export function WalletInfo() {
       </div>
       <div className="text-center">
         <div className="text-2xl font-bold text-green-400">
-          {playerStats ? `${playerStats[1].toString()}/${playerStats[0].toString()}` : '0/0'}
+          0/0
         </div>
         <div className="text-xs opacity-70">Wins/Games</div>
       </div>
