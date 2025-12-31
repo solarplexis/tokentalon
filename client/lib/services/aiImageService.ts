@@ -30,46 +30,16 @@ export async function generatePrizeImage(
   customization: PrizeCustomization
 ): Promise<Buffer> {
   try {
-    // Step 1: Read base prize image
-    const fs = await import('fs');
-    const path = await import('path');
-    
-    const imageBuffer = fs.readFileSync(customization.basePrizeImagePath);
-    const base64Image = imageBuffer.toString('base64');
-    const imageDataUrl = `data:image/png;base64,${base64Image}`;
-    
-    console.log('🔍 Analyzing base prize image with GPT-4 Vision...');
-    
-    // Step 2: Use GPT-4 Vision to analyze the prize image
-    const analysisResponse = await openai.chat.completions.create({
-      model: 'gpt-4o', // GPT-4 with vision
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: 'Analyze this plushie/stuffed toy prize image. Describe it as a SOFT, CUDDLY PLUSHIE focusing on: the character design, plushie proportions, soft fabric textures, stitching details, cute features, stuffed toy aesthetic, and overall plushie style. Emphasize that this is a STUFFED TOY with plush fabric materials. Be specific and descriptive - this will be used to generate a similar but enhanced plushie version.'
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: imageDataUrl
-              }
-            }
-          ]
-        }
-      ],
-      max_tokens: 300
-    });
-    
-    const imageDescription = analysisResponse.choices[0].message.content || '';
-    console.log('📝 Image analysis:', imageDescription);
-    
-    // Step 3: Build enhanced prompt based on analysis + customization
-    const prompt = buildEnhancedPrompt(imageDescription, customization);
-    
-    console.log('🎨 Generating enhanced AI image with DALL-E 3...');
+    console.log('🎨 Generating AI image with DALL-E 3 (skipping Vision to save time)...');
+
+    // Build prompt directly from prize info without Vision analysis to save time
+    // This reduces execution time from ~20-30s to ~10-15s
+    const baseDescription = `A cute, adorable ${customization.basePrizeType} plushie/stuffed toy. ` +
+      `This is a soft, cuddly PLUSHIE with fabric texture, stitching, and a stuffed toy aesthetic. ` +
+      `Think of it as a collectible plushie you'd win from a claw machine.`;
+
+    const prompt = buildEnhancedPrompt(baseDescription, customization);
+
     console.log('📋 Prompt:', prompt);
 
     // Step 4: Generate enhanced image with DALL-E 3
