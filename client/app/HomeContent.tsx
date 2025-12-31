@@ -20,7 +20,7 @@ export function HomeContent() {
   const { data: balance, isLoading: isLoadingBalance, error: balanceError } = useTokenBalance(address, chain?.id);
   const { data: gameCost, isLoading: isLoadingGameCost, error: gameCostError } = useGameCost(chain?.id);
   const router = useRouter();
-  const { state: gameState, startGame, forfeitGame, isStartGameSuccess, checkApproval } = useGameFlow(chain?.id);
+  const { state: gameState, checkApproval, isPayForGrabSuccess } = useGameFlow(chain?.id);
   
   // Check actual allowance
   const clawMachineAddress = chain?.id === 11155111 
@@ -36,12 +36,12 @@ export function HomeContent() {
     }
   }, [address, chain?.id, checkApproval]);
 
-  // Navigate to game when transaction is confirmed
+  // Navigate to game when payment is confirmed
   useEffect(() => {
-    if (isStartGameSuccess && gameState.isPlaying) {
+    if (isPayForGrabSuccess) {
       router.push('/game');
     }
-  }, [isStartGameSuccess, gameState.isPlaying, router]);
+  }, [isPayForGrabSuccess, router]);
 
   // console.log('HomeContent Debug:', {
   //   address,
