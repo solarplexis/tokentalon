@@ -28,10 +28,16 @@ export const CONTRACTS = {
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
 
 // Create connectors once at module level
+// Only create WalletConnect on client-side to avoid IndexedDB errors during SSR
 const getConnectors = () => {
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
   if (projectId) {
     return [
-      walletConnect({ 
+      walletConnect({
         projectId,
         showQrModal: true,
         metadata: {
@@ -44,7 +50,7 @@ const getConnectors = () => {
     ];
   }
   return [
-    injected({ 
+    injected({
       shimDisconnect: true,
     }),
   ];
