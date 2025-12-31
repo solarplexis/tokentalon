@@ -4,9 +4,13 @@ import { sepolia } from 'viem/chains';
 import { PRIZENFT_ABI } from '@/lib/web3/abis';
 import { CONTRACTS } from '@/lib/web3/config';
 
+// Disable Next.js route caching for real-time NFT updates
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Simple cache to avoid repeated queries (in production, use Redis)
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 10000; // 10 seconds
+const CACHE_TTL = 2000; // 2 seconds - reduced for faster NFT updates
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -24,12 +28,14 @@ export async function GET(request: NextRequest) {
     const cacheKey = `nfts_${address.toLowerCase()}`;
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      console.log(`🔄 Returning cached data for ${address}`);
       return NextResponse.json(cached.data);
     }
 
+    // Use public Sepolia RPC (thirdweb allows 1000 blocks, Alchemy free tier only 10)
     const client = createPublicClient({
       chain: sepolia,
-      transport: http(),
+      transport: http('https://ethereum-sepolia-rpc.publicnode.com'),
     });
 
     const contractAddress = CONTRACTS.sepolia.prizeNFT;
@@ -43,6 +49,7 @@ export async function GET(request: NextRequest) {
     });
 
     const balanceNum = Number(balance);
+    console.log(`📊 Balance for ${address}: ${balanceNum}`);
 
     if (balanceNum === 0) {
       const result = { balance: 0, nfts: [] };
@@ -50,152 +57,139 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(result);
     }
 
-    // For simplicity, use Alchemy NFT API if available
-    // Otherwise, we'll need to query events or use a subgraph
-    const alchemyKey = process.env.ALCHEMY_API_KEY;
-    
-    if (alchemyKey) {
-      // Use Alchemy NFT API
-      const alchemyUrl = `https://eth-sepolia.g.alchemy.com/nft/v3/${alchemyKey}/getNFTsForOwner`;
-      const alchemyParams = new URLSearchParams({
-        owner: address,
-        'contractAddresses[]': contractAddress,
-        withMetadata: 'true',
+    // Query PrizeClaimed events from ClawMachine contract
+    // This is more efficient than Transfer events since it's more targeted
+    console.log(`🔍 Scanning PrizeClaimed events to find owned NFTs...`);
+
+    const clawMachineAddress = CONTRACTS.sepolia.clawMachine;
+    const currentBlock = await client.getBlockNumber();
+
+    // Scan last 1000 blocks (about 2-3 hours on Sepolia), should catch recent claims
+    const BLOCKS_TO_SCAN = 1000n;
+    const startBlock = currentBlock > BLOCKS_TO_SCAN ? currentBlock - BLOCKS_TO_SCAN : 0n;
+
+    console.log(`📊 Scanning blocks ${startBlock} to ${currentBlock}`);
+
+    // Declare ownedTokenIds outside try block for proper scoping
+    const ownedTokenIds = new Set<string>();
+
+    try {
+      // Get all PrizeClaimed events for this player
+      const claimedEvents = await client.getContractEvents({
+        address: clawMachineAddress,
+        abi: [
+          {
+            anonymous: false,
+            inputs: [
+              { indexed: true, name: 'player', type: 'address' },
+              { indexed: true, name: 'tokenId', type: 'uint256' },
+              { indexed: false, name: 'prizeId', type: 'uint256' },
+              { indexed: false, name: 'voucherHash', type: 'bytes32' }
+            ],
+            name: 'PrizeClaimed',
+            type: 'event'
+          }
+        ],
+        eventName: 'PrizeClaimed',
+        args: {
+          player: address as `0x${string}`
+        },
+        fromBlock: startBlock,
+        toBlock: 'latest'
       });
 
-      console.log('Fetching from Alchemy:', `${alchemyUrl}?${alchemyParams}`);
-      const response = await fetch(`${alchemyUrl}?${alchemyParams}`);
-      const data = await response.json();
-      console.log('Alchemy response:', JSON.stringify(data, null, 2));
+      console.log(`🎁 Found ${claimedEvents.length} PrizeClaimed events`);
 
-      if (!response.ok) {
-        console.error('Alchemy API error:', data);
-        // Fall through to event-based approach
-      } else {
-        const nfts = data.ownedNfts?.map((nft: any) => {
-          console.log('Processing NFT:', JSON.stringify(nft, null, 2));
-          
-          // Alchemy NFT API v3 format
-          const tokenId = nft.tokenId || nft.id?.tokenId || '';
-          
-          // Try multiple possible locations for tokenURI
-          let tokenURI = '';
-          
-          // Direct tokenUri field
-          if (nft.tokenUri) {
-            tokenURI = nft.tokenUri.raw || nft.tokenUri.gateway || nft.tokenUri;
-          }
-          
-          // Contract level tokenUri
-          if (!tokenURI && nft.contract?.tokenUri) {
-            tokenURI = nft.contract.tokenUri;
-          }
-          
-          // Metadata field
-          if (!tokenURI && nft.raw?.metadata?.tokenURI) {
-            tokenURI = nft.raw.metadata.tokenURI;
-          }
-          
-          // Try to get from contract using tokenId if we have it
-          if (!tokenURI && tokenId) {
-            // We'll fetch it directly from contract in this case
-            console.log(`No tokenURI from Alchemy for token ${tokenId}, will fetch from contract`);
-          }
-          
-          return {
-            tokenId,
-            tokenURI,
-            needsContractFetch: !tokenURI
-          };
-        }) || [];
+      // Extract token IDs from events
+      claimedEvents.forEach((log: any) => {
+        ownedTokenIds.add(log.args.tokenId.toString());
+        console.log(`  Token ID: ${log.args.tokenId}, Prize ID: ${log.args.prizeId}`);
+      });
 
-        // For NFTs without URI from Alchemy, fetch directly from contract
-        const nftsWithUri = await Promise.all(
-          nfts.map(async (nft: any) => {
-            if (nft.needsContractFetch && nft.tokenId) {
-              try {
-                const uri = await client.readContract({
-                  address: contractAddress,
-                  abi: PRIZENFT_ABI,
-                  functionName: 'tokenURI',
-                  args: [BigInt(nft.tokenId)],
-                });
-                console.log(`Fetched URI from contract for token ${nft.tokenId}: ${uri}`);
-                return { tokenId: nft.tokenId, tokenURI: uri };
-              } catch (error) {
-                console.error(`Error fetching URI for token ${nft.tokenId}:`, error);
-                return nft;
-              }
+      // Also check for any NFTs transferred to this address (not claimed)
+      // This catches NFTs received via transfer
+      try {
+        const transfersTo = await client.getContractEvents({
+          address: contractAddress,
+          abi: [
+            {
+              anonymous: false,
+              inputs: [
+                { indexed: true, name: 'from', type: 'address' },
+                { indexed: true, name: 'to', type: 'address' },
+                { indexed: true, name: 'tokenId', type: 'uint256' }
+              ],
+              name: 'Transfer',
+              type: 'event'
             }
-            return nft;
-          })
-        );
+          ],
+          eventName: 'Transfer',
+          args: {
+            to: address as `0x${string}`
+          },
+          fromBlock: startBlock,
+          toBlock: 'latest'
+        });
 
-        const validNfts = nftsWithUri.filter((nft: any) => nft.tokenURI);
+        console.log(`📥 Found ${transfersTo.length} Transfer events TO address`);
+        transfersTo.forEach((log: any) => {
+          ownedTokenIds.add(log.args.tokenId.toString());
+        });
+      } catch (error) {
+        console.warn(`⚠️ Could not scan Transfer events (using PrizeClaimed only):`, error);
+      }
 
-        console.log(`Found ${validNfts.length} NFTs with valid URIs (${nfts.length} total from Alchemy)`);
-        const result = { balance: balanceNum, nfts: validNfts };
-        cache.set(cacheKey, { data: result, timestamp: Date.now() });
-        return NextResponse.json(result);
+    } catch (error) {
+      console.error(`❌ Error scanning PrizeClaimed events:`, error);
+      throw error;
+    }
+
+    console.log(`🎯 Calculated ${ownedTokenIds.size} owned tokens (balance: ${balanceNum})`);
+
+    // Get token URIs for owned tokens in batches to avoid rate limits
+    const BATCH_SIZE = 5;
+    const tokenIdArray = Array.from(ownedTokenIds);
+    const nfts: any[] = [];
+
+    for (let i = 0; i < tokenIdArray.length; i += BATCH_SIZE) {
+      const batch = tokenIdArray.slice(i, i + BATCH_SIZE);
+      console.log(`📦 Fetching URIs for batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} tokens)`);
+
+      const batchResults = await Promise.all(
+        batch.map(async (tokenId) => {
+          try {
+            const uri = await client.readContract({
+              address: contractAddress,
+              abi: PRIZENFT_ABI,
+              functionName: 'tokenURI',
+              args: [BigInt(tokenId)],
+            });
+
+            // console.log(`✅ Token ID=${tokenId}, URI=${uri}`);
+
+            return {
+              tokenId: tokenId,
+              tokenURI: uri
+            };
+          } catch (error) {
+            console.error(`❌ Error fetching URI for token ${tokenId}:`, error);
+            return null;
+          }
+        })
+      );
+
+      nfts.push(...batchResults);
+
+      // Small delay between batches to respect rate limits
+      if (i + BATCH_SIZE < tokenIdArray.length) {
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
 
-    // Fallback: Query recent PrizeMinted events
-    // This works for recently minted NFTs without scanning entire history
-    const currentBlock = await client.getBlockNumber();
-    const BLOCKS_TO_SCAN = 10000n; // Last ~10k blocks (about 1 day on Sepolia)
-    const startBlock = currentBlock > BLOCKS_TO_SCAN ? currentBlock - BLOCKS_TO_SCAN : 0n;
-    
-    const mintedLogs = await client.getContractEvents({
-      address: contractAddress,
-      abi: [
-        {
-          anonymous: false,
-          inputs: [
-            { indexed: true, name: 'tokenId', type: 'uint256' },
-            { indexed: true, name: 'winner', type: 'address' },
-            { indexed: true, name: 'prizeId', type: 'uint256' },
-            { indexed: false, name: 'metadataURI', type: 'string' },
-            { indexed: false, name: 'difficulty', type: 'uint8' }
-          ],
-          name: 'PrizeMinted',
-          type: 'event'
-        }
-      ],
-      eventName: 'PrizeMinted',
-      args: {
-        winner: address as `0x${string}`
-      },
-      fromBlock: startBlock,
-      toBlock: 'latest'
-    });
-
-    // Get token URIs for minted tokens
-    const nfts = await Promise.all(
-      mintedLogs.slice(0, balanceNum).map(async (log: any) => {
-        const tokenId = log.args.tokenId;
-        try {
-          const uri = await client.readContract({
-            address: contractAddress,
-            abi: PRIZENFT_ABI,
-            functionName: 'tokenURI',
-            args: [tokenId],
-          });
-
-          return {
-            tokenId: tokenId.toString(),
-            tokenURI: uri
-          };
-        } catch (error) {
-          console.error(`Error fetching URI for token ${tokenId}:`, error);
-          return null;
-        }
-      })
-    );
-
     const validNfts = nfts.filter(nft => nft !== null);
+    // console.log(`✅ Found ${validNfts.length} valid NFTs with URIs`);
+
     const result = { balance: balanceNum, nfts: validNfts };
-    
     cache.set(cacheKey, { data: result, timestamp: Date.now() });
     return NextResponse.json(result);
 

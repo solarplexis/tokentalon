@@ -86,12 +86,12 @@ export function TokenAcquisition() {
     ? CONTRACTS.sepolia.gameToken
     : CONTRACTS.polygonAmoy.gameToken;
 
-  console.log('TokenAcquisition Debug:', {
-    address,
-    chainId,
-    tokenAddress,
-    isConnected: !!address,
-  });
+  // console.log('TokenAcquisition Debug:', {
+  //   address,
+  //   chainId,
+  //   tokenAddress,
+  //   isConnected: !!address,
+  // });
 
   // Read token price (ETH per token)
   const { data: tokenPrice } = useReadContract({
@@ -156,14 +156,14 @@ export function TokenAcquisition() {
     },
   });
 
-  console.log('Faucet Status:', {
-    canClaim,
-    cooldownRemaining: cooldownRemaining?.toString(),
-    isLoadingCanClaim,
-    isLoadingCooldown,
-    canClaimError: canClaimError?.message,
-    cooldownError: cooldownError?.message,
-  });
+  // console.log('Faucet Status:', {
+  //   canClaim,
+  //   cooldownRemaining: cooldownRemaining?.toString(),
+  //   isLoadingCanClaim,
+  //   isLoadingCooldown,
+  //   canClaimError: canClaimError?.message,
+  //   cooldownError: cooldownError?.message,
+  // });
 
   const { writeContract: buyTokens, data: buyHash, isPending: isBuying } = useWriteContract();
   const { writeContract: claimFaucet, data: claimHash, isPending: isClaiming } = useWriteContract();

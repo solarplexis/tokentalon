@@ -29,6 +29,7 @@ export function useNFTGallery(chainId: number = sepolia.id) {
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [balance, setBalance] = useState(0);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   useEffect(() => {
     if (!address) {
@@ -40,18 +41,18 @@ export function useNFTGallery(chainId: number = sepolia.id) {
     const fetchNFTs = async () => {
       setIsLoading(true);
       try {
-        // Add cache buster to ensure fresh data when address changes
+        // Add cache buster to ensure fresh data
         const cacheBuster = Date.now();
         // Fetch NFTs from backend API that queries events
         const response = await fetch(`/api/nft/owned?address=${address}&chainId=${chainId}&t=${cacheBuster}`);
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch NFTs');
         }
-        
+
         const data = await response.json();
         setBalance(data.balance || 0);
-        
+
         if (data.nfts && data.nfts.length > 0) {
           // Initialize NFTs with loading state
           const nftList: NFT[] = data.nfts.map((nft: any) => ({
@@ -59,9 +60,9 @@ export function useNFTGallery(chainId: number = sepolia.id) {
             tokenURI: nft.tokenURI,
             isLoading: true
           }));
-          
+
           setNfts(nftList);
-          
+
           // Fetch metadata for each NFT
           data.nfts.forEach((nft: any) => {
             fetchMetadata(nft.tokenId, nft.tokenURI);
@@ -79,7 +80,7 @@ export function useNFTGallery(chainId: number = sepolia.id) {
     };
 
     fetchNFTs();
-  }, [address, chainId]);
+  }, [address, chainId, refetchTrigger]);
 
   const fetchMetadata = async (tokenId: string, uri: string) => {
     try {
@@ -122,9 +123,8 @@ export function useNFTGallery(chainId: number = sepolia.id) {
     isLoading,
     balance,
     refetch: () => {
-      if (address) {
-        setNfts([]);
-      }
+      // Trigger a re-fetch by updating the refetchTrigger
+      setRefetchTrigger(prev => prev + 1);
     }
   };
 }

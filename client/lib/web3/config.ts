@@ -69,7 +69,8 @@ export const config = createConfig({
 });
 
 // Backend API configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Now using Next.js API routes (same origin), so no need for full URL
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 export const API_ENDPOINTS = {
   game: {

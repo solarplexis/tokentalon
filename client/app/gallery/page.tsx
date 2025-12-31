@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAccount } from 'wagmi';
@@ -15,6 +15,18 @@ export default function GalleryPage() {
   const { isConnected } = useAccount();
   const { nfts, isLoading, balance, refetch } = useNFTGallery();
   const [transferModal, setTransferModal] = useState<{ tokenId: string; name: string } | null>(null);
+
+  // Auto-refetch when page becomes visible (e.g., after claiming a prize)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isConnected) {
+        refetch();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isConnected, refetch]);
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
@@ -113,6 +125,7 @@ function NFTCard({ nft, onTransfer }: { nft: any; onTransfer: () => void }) {
             src={imageUrl || ''}
             alt={nft.metadata?.name || `NFT #${nft.tokenId}`}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover"
             unoptimized
           />
