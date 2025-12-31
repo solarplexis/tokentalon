@@ -56,25 +56,16 @@ export async function POST(request: NextRequest) {
     // Use custom traits from frontend (already generated and displayed to user)
     const customTraits = body.customTraits || {};
 
-    console.log(`🎨 Generating unique AI image for prize #${prizeId} (${prizeInfo.key}, ${rarity})...`);
-    console.log(`📁 Base image: ${prizeImagePath}`);
+    // TEMPORARY: Skip AI generation to avoid Netlify timeout (10-26s limit)
+    // TODO: Move AI generation to background job or separate service
+    console.log(`📁 Using base image for prize #${prizeId} (${prizeInfo.key}, ${rarity})`);
     console.log(`✨ Custom traits:`, customTraits);
 
-    // Generate unique AI image for this specific NFT based on the prize image
-    const imageBuffer = await aiImageService.generatePrizeImage({
-      basePrizeName: prizeInfo.key,
-      basePrizeType: prizeInfo.key.replace('prize_', '').replace(/_/g, ' '),
-      basePrizeImagePath: prizeImagePath,
-      customTraits,
-      rarity,
-      difficulty,
-      tokensSpent: replayData.tokensSpent || 10,
-      playerAddress: walletAddress,
-      timestamp: Date.now()
-    });
+    // Read base prize image and upload to IPFS
+    const fs = await import('fs');
+    const imageBuffer = fs.readFileSync(prizeImagePath);
 
-    // Upload generated image to IPFS
-    console.log(`📤 Uploading AI-generated image to IPFS...`);
+    console.log(`📤 Uploading prize image to IPFS...`);
     const prizeImageHash = await ipfsService.uploadPrizeImage(imageBuffer, prizeId);
     // console.log(`✅ Image uploaded: ipfs://${prizeImageHash}`);
 
